@@ -84,7 +84,7 @@ export function CreateUserDialog({
       nama_lengkap: "",
       email: "",
       password: "",
-      role: "pembelajar",
+      role: "admin",
       id_lembaga: "",
       status: "aktif",
     },
@@ -108,7 +108,7 @@ export function CreateUserDialog({
         nama_lengkap: "",
         email: "",
         password: "",
-        role: "pembelajar",
+        role: "admin",
         id_lembaga: "",
         status: "aktif",
       });
@@ -225,6 +225,7 @@ export function CreateUserDialog({
             <Select
               value={watch("role")}
               onValueChange={(value: any) => setValue("role", value)}
+              disabled={!isEditMode}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -237,6 +238,11 @@ export function CreateUserDialog({
             </Select>
             {errors.role && (
               <p className="text-sm text-red-500">{errors.role.message}</p>
+            )}
+            {!isEditMode && (
+              <p className="text-[10px] text-muted-foreground">
+                Pengguna baru yang dibuat melalui panel Superadmin otomatis diberikan akses Admin.
+              </p>
             )}
           </div>
 
