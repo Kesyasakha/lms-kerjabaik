@@ -34,7 +34,7 @@ export async function getAdminCourses(
     .select(
       `
       *,
-      instruktur:pengguna!id_kursus_instruktur_fkey(
+      instruktur:pengguna!id_instruktur(
         id,
         nama_lengkap,
         email
@@ -228,7 +228,7 @@ export async function getCourseDetail(kursusId: string) {
     .select(
       `
       *,
-      instruktur:pengguna!id_kursus_instruktur_fkey(
+      instruktur:pengguna!id_instruktur(
         id,
         nama_lengkap,
         email

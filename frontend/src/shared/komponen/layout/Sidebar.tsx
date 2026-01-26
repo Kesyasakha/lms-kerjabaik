@@ -124,15 +124,9 @@ const navItems: NavItem[] = [
         roles: ["pembelajar"],
     },
     {
-        label: "Tugas",
+        label: "Tugas & Kuis",
         href: "/pembelajar/assignments",
         icon: <ClipboardList className="h-5 w-5 flex-shrink-0" />,
-        roles: ["pembelajar"],
-    },
-    {
-        label: "Penilaian",
-        href: "/pembelajar/assessments",
-        icon: <FileText className="h-5 w-5 flex-shrink-0" />,
         roles: ["pembelajar"],
     },
 ];
@@ -143,8 +137,6 @@ interface AppSidebarProps {
     user: any;
     handleLogout: () => void;
 }
-
-
 
 export function AppSidebarContent({ user, handleLogout }: AppSidebarProps) {
     const { open, animate } = useSidebar();
@@ -220,7 +212,6 @@ export function AppSidebarContent({ user, handleLogout }: AppSidebarProps) {
         </SidebarBody>
     );
 }
-
 
 export const Logo = () => {
     return (

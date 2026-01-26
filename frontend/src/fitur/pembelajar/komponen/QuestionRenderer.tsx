@@ -4,6 +4,7 @@ import { Textarea } from '@/komponen/ui/textarea';
 import { Input } from '@/komponen/ui/input';
 import { Label } from '@/komponen/ui/label';
 import { Card, CardContent } from '@/komponen/ui/card';
+import { AlertCircle } from 'lucide-react';
 import type { Question, QuestionOption } from '../tipe';
 
 interface QuestionRendererProps {
@@ -144,22 +145,25 @@ export function QuestionRenderer({
                 value={answer as string}
                 onValueChange={onAnswerChange}
                 disabled={disabled}
-                className="space-y-3"
+                className="grid gap-3"
             >
                 {options.map((option) => (
                     <div
                         key={option.key}
-                        className={`flex items-center space-x-3 p-3 rounded-sm border transition-colors ${showCorrectAnswer && option.benar
-                            ? 'bg-emerald-50 border-emerald-500'
+                        className={`group flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${showCorrectAnswer && option.benar
+                            ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 shadow-sm'
                             : showCorrectAnswer && answer === option.key && !option.benar
-                                ? 'bg-rose-50 border-rose-500'
-                                : 'hover:bg-muted'
+                                ? 'bg-rose-50 dark:bg-rose-900/20 border-rose-500 shadow-sm'
+                                : answer === option.key
+                                    ? 'bg-primary/5 border-primary shadow-sm'
+                                    : 'border-transparent bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                             }`}
+                        onClick={() => !disabled && onAnswerChange(option.key)}
                     >
-                        <RadioGroupItem value={option.key} id={`option-${option.key}`} />
+                        <RadioGroupItem value={option.key} id={`option-${option.key}`} className="shrink-0" />
                         <Label
                             htmlFor={`option-${option.key}`}
-                            className="flex-1 cursor-pointer font-normal text-base leading-relaxed"
+                            className="flex-1 cursor-pointer font-bold text-sm leading-relaxed text-gray-700 dark:text-zinc-200"
                         >
                             {option.value}
                         </Label>
@@ -186,26 +190,30 @@ export function QuestionRenderer({
         };
 
         return (
-            <div className="space-y-3">
+            <div className="grid gap-3">
                 {options.map((option) => (
                     <div
                         key={option.key}
-                        className={`flex items-center space-x-3 p-3 rounded-sm border transition-colors ${showCorrectAnswer && option.benar
-                            ? 'bg-emerald-50 border-emerald-500'
+                        className={`group flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${showCorrectAnswer && option.benar
+                            ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 shadow-sm'
                             : showCorrectAnswer && selectedAnswers.includes(option.key) && !option.benar
-                                ? 'bg-rose-50 border-rose-500'
-                                : 'hover:bg-muted'
+                                ? 'bg-rose-50 dark:bg-rose-900/20 border-rose-500 shadow-sm'
+                                : selectedAnswers.includes(option.key)
+                                    ? 'bg-primary/5 border-primary shadow-sm'
+                                    : 'border-transparent bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                             }`}
+                        onClick={() => !disabled && handleCheckboxChange(option.key, !selectedAnswers.includes(option.key))}
                     >
                         <Checkbox
                             id={`option-${option.key}`}
                             checked={selectedAnswers.includes(option.key)}
                             onCheckedChange={(checked) => handleCheckboxChange(option.key, checked as boolean)}
                             disabled={disabled}
+                            className="shrink-0"
                         />
                         <Label
                             htmlFor={`option-${option.key}`}
-                            className="flex-1 cursor-pointer font-normal text-base leading-relaxed"
+                            className="flex-1 cursor-pointer font-bold text-sm leading-relaxed text-gray-700 dark:text-zinc-200"
                         >
                             {option.value}
                         </Label>
@@ -221,31 +229,37 @@ export function QuestionRenderer({
                 value={answer as string}
                 onValueChange={onAnswerChange}
                 disabled={disabled}
-                className="space-y-3"
+                className="grid gap-3"
             >
                 <div
-                    className={`flex items-center space-x-3 p-3 rounded-sm border transition-colors ${showCorrectAnswer && question.jawaban_benar === 'benar'
-                        ? 'bg-emerald-50 border-emerald-500'
+                    className={`group flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${showCorrectAnswer && question.jawaban_benar === 'benar'
+                        ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 shadow-sm'
                         : showCorrectAnswer && answer === 'benar' && question.jawaban_benar !== 'benar'
-                            ? 'bg-rose-50 border-rose-500'
-                            : 'hover:bg-muted'
+                            ? 'bg-rose-50 dark:bg-rose-900/20 border-rose-500 shadow-sm'
+                            : answer === 'benar'
+                                ? 'bg-primary/5 border-primary shadow-sm'
+                                : 'border-transparent bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                         }`}
+                    onClick={() => !disabled && onAnswerChange('benar')}
                 >
-                    <RadioGroupItem value="benar" id="option-benar" />
-                    <Label htmlFor="option-benar" className="flex-1 cursor-pointer font-normal text-base">
+                    <RadioGroupItem value="benar" id="option-benar" className="shrink-0" />
+                    <Label htmlFor="option-benar" className="flex-1 cursor-pointer font-bold text-sm text-gray-700 dark:text-zinc-200">
                         Benar
                     </Label>
                 </div>
                 <div
-                    className={`flex items-center space-x-3 p-3 rounded-sm border transition-colors ${showCorrectAnswer && question.jawaban_benar === 'salah'
-                        ? 'bg-emerald-50 border-emerald-500'
+                    className={`group flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${showCorrectAnswer && question.jawaban_benar === 'salah'
+                        ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 shadow-sm'
                         : showCorrectAnswer && answer === 'salah' && question.jawaban_benar !== 'salah'
-                            ? 'bg-rose-50 border-rose-500'
-                            : 'hover:bg-muted'
+                            ? 'bg-rose-50 dark:bg-rose-900/20 border-rose-500 shadow-sm'
+                            : answer === 'salah'
+                                ? 'bg-primary/5 border-primary shadow-sm'
+                                : 'border-transparent bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                         }`}
+                    onClick={() => !disabled && onAnswerChange('salah')}
                 >
-                    <RadioGroupItem value="salah" id="option-salah" />
-                    <Label htmlFor="option-salah" className="flex-1 cursor-pointer font-normal text-base">
+                    <RadioGroupItem value="salah" id="option-salah" className="shrink-0" />
+                    <Label htmlFor="option-salah" className="flex-1 cursor-pointer font-bold text-sm text-gray-700 dark:text-zinc-200">
                         Salah
                     </Label>
                 </div>
@@ -259,14 +273,13 @@ export function QuestionRenderer({
                 value={answer as string || ''}
                 onChange={(e) => onAnswerChange(e.target.value)}
                 disabled={disabled}
-                placeholder="Ketik jawaban Anda..."
-                className={
-                    showCorrectAnswer
-                        ? answer === question.jawaban_benar
-                            ? 'border-emerald-500'
-                            : 'border-rose-500'
-                        : ''
-                }
+                placeholder="Ketik jawaban Anda di sini..."
+                className={`h-12 rounded-xl focus-visible:ring-primary/20 ${showCorrectAnswer
+                    ? answer === question.jawaban_benar
+                        ? 'border-emerald-500 bg-emerald-50/50'
+                        : 'border-rose-500 bg-rose-50/50'
+                    : 'border-border/60 bg-zinc-50/50'
+                    }`}
             />
         );
     };
@@ -277,26 +290,31 @@ export function QuestionRenderer({
                 value={answer as string || ''}
                 onChange={(e) => onAnswerChange(e.target.value)}
                 disabled={disabled}
-                placeholder="Tulis jawaban Anda di sini..."
-                rows={6}
-                className="resize-none"
+                placeholder="Tuliskan analisis atau jawaban esai Anda secara lengkap..."
+                rows={8}
+                className="resize-none rounded-2xl border-border/60 bg-zinc-50/50 focus-visible:ring-primary/20 p-6 leading-relaxed"
             />
         );
     };
 
     return (
-        <Card className="rounded-sm shadow-sm">
-            <CardContent className="pt-6 space-y-4">
-                <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                        <p className="text-lg font-medium whitespace-pre-wrap">{question.pertanyaan}</p>
+        <Card className="rounded-2xl shadow-none border-border/60 overflow-hidden bg-white dark:bg-zinc-950">
+            <CardContent className="p-8 space-y-6">
+                <div className="flex items-start justify-between gap-6">
+                    <div className="flex-1 space-y-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full">Pertanyaan</span>
+                        </div>
+                        <p className="text-xl font-bold text-gray-900 dark:text-zinc-100 leading-tight whitespace-pre-wrap">{question.pertanyaan}</p>
                     </div>
-                    <div className="text-sm text-muted-foreground shrink-0">
-                        {question.poin} poin
+                    <div className="shrink-0 pt-1">
+                        <div className="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground shadow-sm">
+                            {question.poin} Poin
+                        </div>
                     </div>
                 </div>
 
-                <div className="mt-4">
+                <div className="mt-8">
                     {question.tipe === 'pilihan_ganda' && renderPilihanGanda()}
                     {question.tipe === 'pilihan_ganda_multiple' && renderPilihanGandaMultiple()}
                     {question.tipe === 'benar_salah' && renderBenarSalah()}
@@ -305,11 +323,15 @@ export function QuestionRenderer({
                 </div>
 
                 {showCorrectAnswer && question.penjelasan && (
-                    <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200">
-                        <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
-                            Penjelasan:
-                        </p>
-                        <p className="text-sm text-blue-800 dark:text-blue-200 whitespace-pre-wrap">
+                    <div className="mt-8 p-6 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/30 relative overflow-hidden group">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-blue-400" />
+                        <div className="flex items-center gap-2 mb-2">
+                            <AlertCircle className="h-4 w-4 text-blue-500" />
+                            <p className="text-[10px] font-bold text-blue-800 dark:text-blue-300 uppercase tracking-widest">
+                                Penjelasan Pembahasan
+                            </p>
+                        </div>
+                        <p className="text-sm font-medium text-blue-900/80 dark:text-blue-200/80 leading-relaxed italic">
                             {question.penjelasan}
                         </p>
                     </div>

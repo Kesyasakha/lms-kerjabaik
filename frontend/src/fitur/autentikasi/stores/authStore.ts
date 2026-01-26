@@ -37,7 +37,11 @@ export const useAuthStore = create<AuthState>()(
       setLoading: (loading) => set({ isLoading: loading }),
 
       initialize: async () => {
+        // Jika sudah diinisialisasi, jangan lakukan apa-apa
+        if (useAuthStore.getState().isInitialized) return;
+
         try {
+          // Hanya set loading jika belum loading
           set({ isLoading: true });
 
           // Check current session
@@ -58,15 +62,11 @@ export const useAuthStore = create<AuthState>()(
             set({
               session: session.user,
               user: pengguna as AuthUser,
-              isLoading: false,
-              isInitialized: true,
             });
           } else {
             set({
               session: null,
               user: null,
-              isLoading: false,
-              isInitialized: true,
             });
           }
 
@@ -83,17 +83,27 @@ export const useAuthStore = create<AuthState>()(
                 session: session.user,
                 user: pengguna || null,
               });
-            } else if (event === "SIGNED_OUT") {
-              // Clear React Query cache saat logout
-              queryClient.clear();
-
-              set({
-                session: null,
-                user: null,
-              });
+            } else if (event === "SIGNED_OUT" || event === "USER_UPDATED") {
+              if (event === "SIGNED_OUT") {
+                queryClient.clear();
+                set({
+                  session: null,
+                  user: null,
+                });
+              }
             }
           });
+
+          set({ isInitialized: true, isLoading: false });
         } catch (error) {
+          // Tangani AbortError (lock competition di Supabase)
+          if (error instanceof Error && error.name === "AbortError") {
+            // Jika ini call pertama yang gagal karena lock, 
+            // setInitialized agar tidak dipanggil lagi dan matikan loading
+            set({ isInitialized: true, isLoading: false });
+            return;
+          }
+
           console.error("Error initializing auth:", error);
           set({
             session: null,

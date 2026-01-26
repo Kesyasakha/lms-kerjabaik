@@ -46,90 +46,87 @@ export function CourseCard({ enrollment, onContinue }: CourseCardProps) {
     };
 
     return (
-        <Card className="rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border-border group">
+        <Card className="rounded-2xl shadow-none hover:shadow-lg transition-all duration-300 overflow-hidden border-border/60 hover:border-primary/50 group hover:-translate-y-1 bg-white dark:bg-zinc-950 flex flex-col h-full">
             {/* Thumbnail */}
-            <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600">
+            <div className="relative h-44 bg-muted overflow-hidden">
                 {kursus.url_gambar_mini ? (
                     <img
                         src={kursus.url_gambar_mini}
                         alt={kursus.judul}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                        <BookOpen className="h-16 w-16 text-white/50" />
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">
+                        <BookOpen className="h-12 w-12 text-primary/20" />
                     </div>
                 )}
+
+
+
                 {/* Status Badge */}
-                <div className="absolute top-3 right-3">
-                    <Badge variant={getBadgeVariant(status)} className="rounded-md shadow-sm">
-                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                <div className="absolute top-3 right-3 z-10">
+                    <Badge variant={getBadgeVariant(status)} className="rounded-full shadow-sm border-0 font-bold px-3">
+                        {status === 'aktif' ? 'Sedang Belajar' : status === 'selesai' ? 'Selesai' : status}
                     </Badge>
                 </div>
             </div>
 
-            <CardHeader className="pb-3">
-                <div className="space-y-2">
-                    {/* Kategori & Tingkat */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                        {kursus.kategori && (
-                            <Badge variant="outline" className="text-xs rounded-md bg-background">
-                                {kursus.kategori}
-                            </Badge>
-                        )}
-                        {kursus.tingkat && (
-                            <span className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${getTingkatColor(kursus.tingkat)}`}>
-                                {kursus.tingkat.charAt(0).toUpperCase() + kursus.tingkat.slice(1)}
-                            </span>
-                        )}
-                    </div>
-
-                    {/* Judul */}
-                    <h3 className="font-semibold text-lg line-clamp-2">
-                        {kursus.judul}
-                    </h3>
-
-
-                    {/* Deskripsi */}
-                    {kursus.deskripsi && (
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                            {kursus.deskripsi}
-                        </p>
+            <CardHeader className="p-5 pb-2 space-y-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                    {kursus.kategori && (
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary/60"></span>
+                            {kursus.kategori}
+                        </div>
+                    )}
+                    {kursus.tingkat && (
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${getTingkatColor(kursus.tingkat).replace('bg-emerald-50', 'bg-emerald-50/50').replace('bg-amber-50', 'bg-amber-50/50').replace('bg-rose-50', 'bg-rose-50/50')}`}>
+                            {kursus.tingkat}
+                        </span>
                     )}
                 </div>
+
+                <h3 className="font-bold text-lg leading-tight line-clamp-2 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                    {kursus.judul}
+                </h3>
             </CardHeader>
 
-            <CardContent className="pb-3">
-                {/* Instruktur */}
-                {kursus.instruktur && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                        <User className="h-4 w-4" />
-                        <span>{kursus.instruktur.nama_lengkap}</span>
-                    </div>
-                )}
+            <CardContent className="p-5 pt-0 space-y-4 flex-grow">
+                {/* Instruktur & Info */}
+                <div className="flex flex-col gap-2">
+                    {kursus.instruktur && (
+                        <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                            <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
+                                <User className="h-3 w-3 text-primary" />
+                            </div>
+                            <span>{kursus.instruktur.nama_lengkap}</span>
+                        </div>
+                    )}
 
-                {/* Durasi */}
-                {kursus.durasi_menit && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-                        <Clock className="h-4 w-4" />
-                        <span>{Math.floor(kursus.durasi_menit / 60)}j {kursus.durasi_menit % 60}m</span>
-                    </div>
-                )}
+                    {kursus.durasi_menit && (
+                        <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                            <div className="w-5 h-5 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-orange-600">
+                                <Clock className="h-3 w-3" />
+                            </div>
+                            <span>{Math.floor(kursus.durasi_menit / 60)}j {kursus.durasi_menit % 60}m</span>
+                        </div>
+                    )}
+                </div>
 
                 {/* Progress */}
-                <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Progress</span>
-                        <span className="font-medium">{Math.round(persentase_kemajuan)}%</span>
+                <div className="pt-2">
+                    <div className="flex items-center justify-between text-xs font-bold mb-2">
+                        <span className="text-muted-foreground uppercase tracking-tighter">Progres Belajar</span>
+                        <span className="text-primary">{Math.round(persentase_kemajuan)}%</span>
                     </div>
-                    <Progress value={persentase_kemajuan} className="h-2" />
+                    <Progress value={persentase_kemajuan} className="h-1.5 bg-muted rounded-full" />
                 </div>
             </CardContent>
 
-            <CardFooter>
+            <CardFooter className="p-5 pt-0">
                 {status === 'aktif' ? (
                     <Button
-                        className="w-full rounded-md shadow-sm"
+                        className="w-full rounded-xl font-bold shadow-sm h-11"
                         onClick={() => onContinue?.(enrollment.id)}
                         asChild
                     >
@@ -139,7 +136,7 @@ export function CourseCard({ enrollment, onContinue }: CourseCardProps) {
                     </Button>
                 ) : status === 'selesai' ? (
                     <Button
-                        className="w-full rounded-md"
+                        className="w-full rounded-xl font-bold h-11 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-200"
                         variant="outline"
                         asChild
                     >
@@ -149,7 +146,7 @@ export function CourseCard({ enrollment, onContinue }: CourseCardProps) {
                     </Button>
                 ) : (
                     <Button
-                        className="w-full"
+                        className="w-full rounded-xl font-bold h-11"
                         variant="secondary"
                         disabled
                     >

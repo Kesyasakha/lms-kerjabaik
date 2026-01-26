@@ -59,10 +59,10 @@ import { useToast } from "@/komponen/ui/use-toast";
 type CourseStatus = "draft" | "published" | "archived";
 
 const statusColors: Record<CourseStatus, string> = {
-  draft: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400 border-gray-200",
+  draft: "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-900/40 dark:text-zinc-400 dark:border-zinc-800",
   published:
-    "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 border-green-200",
-  archived: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400 border-red-200",
+    "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/50",
+  archived: "bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-800/50",
 };
 
 const statusLabels: Record<CourseStatus, string> = {

@@ -73,8 +73,8 @@ import {
 const statusColors = {
   draft: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
   published:
-    "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
-  archived: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
+    "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/50",
+  archived: "bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-800/50",
 };
 
 const statusLabels = {
@@ -452,29 +452,33 @@ export function HalamanKursusAdmin() {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="bg-muted/30 p-3 flex gap-2">
+              <CardFooter className="bg-zinc-50/50 dark:bg-zinc-900/30 p-3 flex gap-2 border-t border-muted/50">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex-1 h-9 rounded-lg hover:bg-background shadow-none"
+                  className="flex-1 h-9 rounded-lg font-bold text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700"
                   onClick={() => handleOpenEditDialog(course)}
                 >
-                  <Pencil className="w-4 h-4 mr-1.5" />
+                  <Pencil className="w-3.5 h-3.5 mr-1.5" />
                   Ubah
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex-1 h-9 rounded-lg hover:bg-background shadow-none"
+                  className="flex-1 h-9 rounded-lg font-bold text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700"
                   onClick={() => handleOpenAssignDialog(course)}
                 >
-                  <Users className="w-4 h-4 mr-1.5" />
+                  <Users className="w-3.5 h-3.5 mr-1.5" />
                   Tugaskan
                 </Button>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg hover:bg-background shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700 shrink-0"
+                    >
                       <MoreVertical className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>

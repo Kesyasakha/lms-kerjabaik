@@ -219,29 +219,30 @@ export function TakeAssessmentPage() {
     return (
         <div className="min-h-screen bg-muted/30">
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-background border-b">
+            <div className="sticky top-0 z-10 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b shadow-sm">
                 <div className="container max-w-5xl mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-xl font-bold tracking-tight">{assessment.judul}</h1>
-                            <p className="text-sm text-muted-foreground mt-0.5">
-                                Soal {currentQuestionIndex + 1} dari {questions.length}
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="min-w-0">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Sedang Mengerjakan</span>
+                            <h1 className="text-lg font-bold truncate text-gray-900 dark:text-white leading-tight">{assessment.judul}</h1>
+                            <p className="text-[10px] font-bold text-muted-foreground mt-0.5 uppercase tracking-tighter">
+                                Butir Soal: {currentQuestionIndex + 1} / {questions.length}
                             </p>
                         </div>
 
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3 shrink-0">
                             {timeRemaining !== null && (
-                                <div className={`flex items-center gap-2 px-4 py-2 rounded-sm border ${timeRemaining < 300
-                                    ? 'bg-rose-50 border-rose-200 text-rose-700'
-                                    : 'bg-muted border-transparent'
+                                <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-colors shadow-sm ${timeRemaining < 300
+                                    ? 'bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400'
+                                    : 'bg-white dark:bg-zinc-900 border-muted-foreground/20'
                                     }`}>
-                                    <Clock className="h-4 w-4" />
-                                    <span className="font-mono font-bold tracking-tight">{formatTime(timeRemaining)}</span>
+                                    <Clock className={`h-4 w-4 ${timeRemaining < 300 ? 'animate-pulse' : ''}`} />
+                                    <span className="font-mono font-black tracking-widest text-sm">{formatTime(timeRemaining)}</span>
                                 </div>
                             )}
 
                             <Button
-                                variant="default"
+                                className="rounded-xl font-bold h-10 px-6 shadow-sm shadow-primary/20"
                                 onClick={() => setShowSubmitDialog(true)}
                             >
                                 Kumpulkan
@@ -251,13 +252,13 @@ export function TakeAssessmentPage() {
 
                     {/* Progress bar */}
                     <div className="mt-4">
-                        <div className="flex justify-between text-sm text-muted-foreground mb-2">
-                            <span>{answeredCount} dari {questions.length} soal terjawab</span>
-                            <span>{Math.round(progress)}%</span>
+                        <div className="flex justify-between items-end text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5 px-0.5">
+                            <span>{answeredCount} / {questions.length} Terjawab</span>
+                            <span>{Math.round(progress)}% Selesai</span>
                         </div>
-                        <div className="h-2 bg-muted rounded-sm overflow-hidden">
+                        <div className="h-1.5 bg-muted/50 rounded-full overflow-hidden border border-black/5 dark:border-white/5">
                             <div
-                                className="h-full bg-primary transition-all duration-300 rounded-sm"
+                                className="h-full bg-primary transition-all duration-500 ease-out rounded-full shadow-[0_0_10px_rgba(var(--primary),0.3)]"
                                 style={{ width: `${progress}%` }}
                             />
                         </div>
@@ -276,9 +277,10 @@ export function TakeAssessmentPage() {
                 )}
 
                 {/* Navigation */}
-                <div className="flex items-center justify-between mt-6">
+                <div className="flex items-center justify-between mt-12 pt-8 border-t border-muted/50 gap-6">
                     <Button
                         variant="outline"
+                        className="rounded-xl font-bold h-11 px-6 border-muted-foreground/20 hover:bg-muted"
                         onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
                         disabled={currentQuestionIndex === 0}
                     >
@@ -286,16 +288,16 @@ export function TakeAssessmentPage() {
                         Sebelumnya
                     </Button>
 
-                    <div className="flex gap-2 flex-wrap justify-center">
+                    <div className="hidden md:flex gap-2 flex-wrap justify-center flex-1 max-w-md">
                         {questions.map((_, index) => (
                             <button
                                 key={index}
                                 onClick={() => setCurrentQuestionIndex(index)}
-                                className={`w-10 h-10 rounded-sm border transition-colors ${index === currentQuestionIndex
-                                    ? 'border-primary bg-primary text-primary-foreground font-medium shadow-sm'
+                                className={`w-9 h-9 rounded-full border-2 transition-all duration-200 text-xs font-bold flex items-center justify-center ${index === currentQuestionIndex
+                                    ? 'border-primary bg-primary text-primary-foreground shadow-md scale-110'
                                     : answers[questions[index].id]
-                                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-medium'
-                                        : 'border-border hover:border-primary/50 text-muted-foreground'
+                                        ? 'border-emerald-500/50 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
+                                        : 'border-muted text-muted-foreground hover:border-primary/30'
                                     }`}
                             >
                                 {index + 1}
@@ -305,6 +307,7 @@ export function TakeAssessmentPage() {
 
                     <Button
                         variant="outline"
+                        className="rounded-xl font-bold h-11 px-6 border-muted-foreground/20 hover:bg-muted"
                         onClick={() => setCurrentQuestionIndex(prev => Math.min(questions.length - 1, prev + 1))}
                         disabled={currentQuestionIndex === questions.length - 1}
                     >
@@ -316,25 +319,28 @@ export function TakeAssessmentPage() {
 
             {/* Submit Confirmation Dialog */}
             <Dialog open={showSubmitDialog} onOpenChange={setShowSubmitDialog}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Kumpulkan Ujian?</DialogTitle>
-                        <DialogDescription>
-                            Anda telah menjawab {answeredCount} dari {questions.length} soal.
+                <DialogContent className="rounded-2xl max-w-sm">
+                    <DialogHeader className="space-y-3">
+                        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2 text-primary">
+                            <AlertCircle className="h-6 w-6" />
+                        </div>
+                        <DialogTitle className="text-center text-xl font-bold">Kumpulkan Ujian?</DialogTitle>
+                        <DialogDescription className="text-center font-medium">
+                            Anda telah menjawab <span className="text-primary font-bold">{answeredCount} dari {questions.length}</span> soal.
                             {answeredCount < questions.length && (
-                                <span className="block mt-2 text-yellow-600">
-                                    <AlertCircle className="inline h-4 w-4 mr-1" />
-                                    Masih ada {questions.length - answeredCount} soal yang belum dijawab.
+                                <span className="block mt-4 p-3 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 rounded-xl text-xs font-bold leading-relaxed">
+                                    <AlertCircle className="inline h-3 w-3 mr-1 mb-0.5" />
+                                    Peringatan: Masih ada {questions.length - answeredCount} soal yang belum Anda jawab.
                                 </span>
                             )}
                         </DialogDescription>
                     </DialogHeader>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowSubmitDialog(false)}>
+                    <DialogFooter className="grid grid-cols-2 gap-3 sm:justify-center mt-6">
+                        <Button variant="outline" className="rounded-xl font-bold h-11" onClick={() => setShowSubmitDialog(false)}>
                             Batal
                         </Button>
-                        <Button onClick={handleSubmit}>
-                            Ya, Kumpulkan
+                        <Button className="rounded-xl font-bold h-11 shadow-sm shadow-primary/20" onClick={handleSubmit}>
+                            Selesaikan
                         </Button>
                     </DialogFooter>
                 </DialogContent>

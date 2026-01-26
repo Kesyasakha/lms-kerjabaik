@@ -97,7 +97,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         judul,
         status,
         created_at,
-        instruktur:pengguna!id_kursus_instruktur_fkey(nama_lengkap)
+        instruktur:pengguna!id_instruktur(nama_lengkap)
       `,
       )
       .eq("id_lembaga", tenantId)

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Filter, BookOpen } from 'lucide-react';
+import { Search, BookOpen } from 'lucide-react';
 import { Input } from '@/komponen/ui/input';
 import { Button } from '@/komponen/ui/button';
 import {
@@ -72,32 +72,32 @@ export function CoursesPage() {
       </div>
 
       {/* Search & Filters */}
-      <Card>
+      <Card className="rounded-2xl border-border/60 shadow-none">
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
             {/* Search */}
-            <div className="md:col-span-5">
+            <div className="md:col-span-6 lg:col-span-8">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Cari kursus..."
+                  placeholder="Cari kursus berdasarkan judul atau deskripsi..."
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="pl-10"
+                  className="pl-10 h-10 rounded-xl border-zinc-200 dark:border-zinc-800"
                 />
               </div>
             </div>
 
             {/* Kategori Filter */}
-            <div className="md:col-span-3">
+            <div className="md:col-span-4 lg:col-span-3">
               <Select
                 value={courseFilters.kategori || 'all'}
                 onValueChange={(value) =>
                   setCourseFilters({ kategori: value === 'all' ? null : value })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-10 rounded-xl border-zinc-200 dark:border-zinc-800">
                   <SelectValue placeholder="Semua Kategori" />
                 </SelectTrigger>
                 <SelectContent>
@@ -111,33 +111,14 @@ export function CoursesPage() {
               </Select>
             </div>
 
-            {/* Tingkat Filter */}
-            <div className="md:col-span-2">
-              <Select
-                value={courseFilters.tingkat || 'all'}
-                onValueChange={(value) =>
-                  setCourseFilters({ tingkat: value === 'all' ? null : value })
-                }
+            {/* Reset Button */}
+            <div className="md:col-span-2 lg:col-span-1">
+              <Button
+                onClick={handleResetFilters}
+                variant="outline"
+                className="w-full rounded-xl h-10 font-bold shrink-0 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-200"
+                title="Reset Filter"
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Semua Tingkat" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Tingkat</SelectItem>
-                  <SelectItem value="pemula">Pemula</SelectItem>
-                  <SelectItem value="menengah">Menengah</SelectItem>
-                  <SelectItem value="lanjutan">Lanjutan</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* aksi Buttons */}
-            <div className="md:col-span-2 flex gap-2">
-              <Button onClick={handleSearch} className="flex-1">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
-              <Button onClick={handleResetFilters} variant="outline">
                 Reset
               </Button>
             </div>

@@ -18,6 +18,7 @@ import {
   ClipboardList,
   Search,
   Filter,
+  Clock,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useInstructorCourses } from "../hooks/useInstructorCourses";
@@ -66,58 +67,68 @@ export default function InstructorCoursesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Kursus Saya
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Kelola kursus yang Anda ajarkan
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Kursus Saya
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
+            Kelola kursus yang Anda ajarkan
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="px-3 py-1 bg-white/50 backdrop-blur-sm shadow-sm border-gray-200">
+            <Clock className="w-3.5 h-3.5 mr-2 text-primary" />
+            {new Date().toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </Badge>
+        </div>
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col gap-4 md:flex-row">
-            <div className="relative flex-1">
+      <Card className="rounded-2xl shadow-sm border-muted/60">
+        <CardContent className="p-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between">
+            <div className="relative flex-1 md:max-w-md">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Cari kursus..."
                 value={filters.search || ""}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                className="pl-9"
+                className="pl-10 h-10 rounded-xl border-muted-foreground/20 focus:border-primary/50 transition-all"
               />
             </div>
-            <Select
-              value={filters.kategori || "all"}
-              onValueChange={handleKategoriChange}
-            >
-              <SelectTrigger className="w-full md:w-[200px]">
-                <Filter className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Kategori" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Kategori</SelectItem>
-                <SelectItem value="programming">Programming</SelectItem>
-                <SelectItem value="design">Design</SelectItem>
-                <SelectItem value="business">Business</SelectItem>
-                <SelectItem value="marketing">Marketing</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select
-              value={filters.status || "all"}
-              onValueChange={handleStatusChange}
-            >
-              <SelectTrigger className="w-full md:w-[200px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Status</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-                <SelectItem value="archived">Archived</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex gap-3 w-full md:w-auto">
+              <Select
+                value={filters.kategori || "all"}
+                onValueChange={handleKategoriChange}
+              >
+                <SelectTrigger className="w-full md:w-[180px] h-10 rounded-xl border-muted-foreground/20">
+                  <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <SelectValue placeholder="Kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Kategori</SelectItem>
+                  <SelectItem value="programming">Programming</SelectItem>
+                  <SelectItem value="design">Design</SelectItem>
+                  <SelectItem value="business">Business</SelectItem>
+                  <SelectItem value="marketing">Marketing</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select
+                value={filters.status || "all"}
+                onValueChange={handleStatusChange}
+              >
+                <SelectTrigger className="w-full md:w-[180px] h-10 rounded-xl border-muted-foreground/20">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Status</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="published">Published</SelectItem>
+                  <SelectItem value="archived">Archived</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -138,88 +149,81 @@ export default function InstructorCoursesPage() {
                 to={`/instruktur/kursus/${course.id}`}
                 className="group"
               >
-                <Card className="h-full overflow-hidden transition-shadow hover:shadow-lg">
+                <Card className={`h-full overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-muted/60 hover:border-${course.status === 'published' ? 'green' : course.status === 'draft' ? 'amber' : 'slate'}-500/50`}>
                   {course.url_gambar_mini ? (
-                    <div className="aspect-video overflow-hidden bg-muted">
+                    <div className="aspect-video overflow-hidden bg-muted relative">
                       <img
                         src={course.url_gambar_mini}
                         alt={course.judul}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
+                      <div className="absolute top-2 right-2">
+                        <Badge variant={statusColors[course.status]} className="shadow-sm">
+                          {statusLabels[course.status]}
+                        </Badge>
+                      </div>
                     </div>
                   ) : (
-                    <div className="flex aspect-video items-center justify-center bg-muted">
-                      <BookOpen className="h-12 w-12 text-muted-foreground/50" />
+                    <div className="flex aspect-video items-center justify-center bg-muted relative">
+                      <BookOpen className="h-12 w-12 text-muted-foreground/30" />
+                      <div className="absolute top-2 right-2">
+                        <Badge variant={statusColors[course.status]} className="shadow-sm">
+                          {statusLabels[course.status]}
+                        </Badge>
+                      </div>
                     </div>
                   )}
-                  <CardContent className="p-4">
-                    <div className="mb-2 flex items-start justify-between gap-2">
-                      <h3 className="flex-1 font-semibold line-clamp-2 group-hover:text-primary">
+                  <CardContent className="p-5">
+                    <div className="mb-3 space-y-2">
+                      {course.kategori && (
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary/60"></span>
+                          {course.kategori}
+                        </div>
+                      )}
+                      <h3 className="font-bold text-lg line-clamp-2 text-gray-900 dark:text-white group-hover:text-primary transition-colors leading-tight">
                         {course.judul}
                       </h3>
-                      <Badge variant={statusColors[course.status]}>
-                        {statusLabels[course.status]}
-                      </Badge>
                     </div>
 
                     {course.deskripsi && (
-                      <p className="mb-4 text-sm text-muted-foreground line-clamp-2">
+                      <p className="mb-5 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                         {course.deskripsi}
                       </p>
                     )}
 
-                    {course.kategori && (
-                      <Badge variant="outline" className="mb-3">
-                        {course.kategori}
-                      </Badge>
-                    )}
-
-                    <div className="grid grid-cols-2 gap-3 border-t pt-3 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium">
-                            {course.total_peserta || 0}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Peserta
-                          </p>
+                    <div className="grid grid-cols-2 gap-3 pt-4 border-t border-dashed">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center text-muted-foreground text-xs font-medium mb-1">
+                          <Users className="h-3.5 w-3.5 mr-1.5" />
+                          Peserta
                         </div>
+                        <p className="font-bold text-lg text-foreground">{course.total_peserta || 0}</p>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <ClipboardList className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium">
-                            {course.pending_submissions || 0}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Tertunda
-                          </p>
+                      <div className="space-y-0.5">
+                        <div className="flex items-center text-muted-foreground text-xs font-medium mb-1">
+                          <ClipboardList className="h-3.5 w-3.5 mr-1.5" />
+                          Tertunda
                         </div>
+                        <p className="font-bold text-lg text-foreground">{course.pending_submissions || 0}</p>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium">
-                            {course.completion_rate || 0}%
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Penyelesaian
-                          </p>
+                      <div className="space-y-0.5">
+                        <div className="flex items-center text-muted-foreground text-xs font-medium mb-1">
+                          <TrendingUp className="h-3.5 w-3.5 mr-1.5" />
+                          Penyelesaian
                         </div>
+                        <p className="font-bold text-lg text-foreground">{course.completion_rate || 0}%</p>
                       </div>
 
                       {course.avg_score !== null && (
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="font-medium">{course.avg_score}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Rata-rata Nilai
-                            </p>
+                        <div className="space-y-0.5">
+                          <div className="flex items-center text-muted-foreground text-xs font-medium mb-1">
+                            <TrendingUp className="h-3.5 w-3.5 mr-1.5" />
+                            Rata-rata
                           </div>
+                          <p className="font-bold text-lg text-foreground">{course.avg_score}</p>
                         </div>
                       )}
                     </div>
