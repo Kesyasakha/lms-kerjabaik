@@ -172,7 +172,7 @@ export async function getProgressReport(
 
   // Transform data
   const reportData: ProgressReportData[] = (data || []).map((item: any) => {
-    const progress = item.persentase_kemajuan || 0;
+    const progress = Number(item.persentase_kemajuan) || 0;
     const totalModul = 10; // TODO: Get from kursus.total_modul when available
     const modulSelesai = Math.floor((progress / 100) * totalModul);
 
@@ -509,7 +509,7 @@ export async function getEngagementReport(
           jumlahLogin * 2 +
           interaksiForum * 3 +
           interaksiDiskusi * 2) /
-          10,
+        10,
       ),
     );
 

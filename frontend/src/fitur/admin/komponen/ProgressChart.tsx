@@ -56,7 +56,7 @@ export function ProgressChart({ data }: ProgressChartProps) {
             <YAxis domain={[0, 100]} />
             <Tooltip />
             <Legend />
-            <Bar dataKey="kemajuan_belajar" fill="#3b82f6" name="Progress (%)" />
+            <Bar dataKey="progress" fill="#3b82f6" name="Progress (%)" />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
