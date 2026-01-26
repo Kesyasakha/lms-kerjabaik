@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   DndContext,
   closestCenter,
@@ -326,7 +327,17 @@ export function ModuleContentEditor({
   };
 
   const handleSave = async () => {
-    if (!title || isSaving) return;
+    if (!title) {
+      toast.error("Judul materi wajib diisi");
+      return;
+    }
+
+    if (contentType === "video" && !body) {
+      toast.error("Link video wajib diisi");
+      return;
+    }
+
+    if (isSaving) return;
 
     setIsSaving(true);
     try {
@@ -342,10 +353,12 @@ export function ModuleContentEditor({
       } else {
         await createContent.mutateAsync({ moduleId, data });
       }
+
       setIsDialogOpen(false);
       resetForm();
-    } catch (error) {
-      console.error("Failed to save content:", error);
+    } catch (error: any) {
+      console.error("Failed to save content in handleSave:", error);
+      toast.error(error?.message || "Terjadi kesalahan saat menyimpan materi");
     } finally {
       setIsSaving(false);
     }
@@ -534,10 +547,14 @@ export function ModuleContentEditor({
                   onChange={(e) => setBody(e.target.value)}
                   placeholder="https://youtube.com/watch?v=..."
                 />
-                {body && (
+                {body && (body.includes("youtube.com") || body.includes("youtu.be") || body.includes("vimeo.com")) && (
                   <div className="aspect-video mt-4 rounded-lg overflow-hidden bg-black/10">
                     <iframe
-                      src={body.replace("watch?v=", "embed/")}
+                      src={body.includes("watch?v=")
+                        ? body.replace("watch?v=", "embed/")
+                        : body.includes("youtu.be/")
+                          ? `https://www.youtube.com/embed/${body.split("youtu.be/")[1]}`
+                          : body}
                       className="w-full h-full"
                       allowFullScreen
                     />

@@ -194,13 +194,25 @@ export function LearningRoomPage() {
                         {currentMaterial ? (
                             <>
                                 {currentMaterial.tipe === 'video' && currentMaterial.url_berkas ? (
-                                    <div className="rounded-2xl overflow-hidden shadow-2xl shadow-primary/5 bg-black ring-1 ring-white/10">
-                                        <VideoPlayer
-                                            url={currentMaterial.url_berkas}
-                                            onComplete={handleComplete}
-                                            onProgress={handleProgressUpdate}
-                                            autoPlay
-                                        />
+                                    <div className="rounded-2xl overflow-hidden shadow-2xl shadow-primary/5 bg-black ring-1 ring-white/10 aspect-video">
+                                        {(currentMaterial.url_berkas.includes('youtube.com') || currentMaterial.url_berkas.includes('youtu.be')) ? (
+                                            <iframe
+                                                src={currentMaterial.url_berkas.includes('watch?v=')
+                                                    ? currentMaterial.url_berkas.replace('watch?v=', 'embed/')
+                                                    : currentMaterial.url_berkas.includes('youtu.be/')
+                                                        ? `https://www.youtube.com/embed/${currentMaterial.url_berkas.split('youtu.be/')[1]}`
+                                                        : currentMaterial.url_berkas}
+                                                className="w-full h-full"
+                                                allowFullScreen
+                                            />
+                                        ) : (
+                                            <VideoPlayer
+                                                url={currentMaterial.url_berkas}
+                                                onComplete={handleComplete}
+                                                onProgress={handleProgressUpdate}
+                                                autoPlay
+                                            />
+                                        )}
                                     </div>
                                 ) : currentMaterial.tipe === 'teks' && currentMaterial.konten ? (
                                     <Card className="rounded-2xl p-8 md:p-12 shadow-none border-border/60 bg-white dark:bg-zinc-900 overflow-hidden relative">

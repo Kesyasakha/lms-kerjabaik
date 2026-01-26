@@ -124,6 +124,8 @@ export function useCourseDetail(courseId: string) {
               id,
               judul,
               tipe,
+              konten,
+              url_berkas,
               urutan,
               durasi_menit,
               wajib
