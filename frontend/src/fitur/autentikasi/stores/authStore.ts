@@ -151,19 +151,31 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true });
 
-          // Clear React Query cache sebelum logout
+          // Clear React Query cache
           queryClient.clear();
 
-          await supabase.auth.signOut();
-
+          // Buat promise race antara signOut dan timeout 3 detik
+          // Ini mencegah UI stuck loading jika Supabase tidak merespon
+          await Promise.race([
+            supabase.auth.signOut(),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("Logout timeout")), 3000)
+            )
+          ]).catch((err) => {
+            console.warn("Logout process timed out or failed, forcing local cleanup:", err);
+          });
+        } catch (error) {
+          console.error("Error asking supabase to sign out:", error);
+        } finally {
+          // Selalu bersihkan state lokal apapun yang terjadi
           set({
             session: null,
             user: null,
             isLoading: false,
           });
-        } catch (error) {
-          set({ isLoading: false });
-          throw error;
+
+          // Paksa reload halaman jika perlu untuk memastikan bersih total
+          // window.location.href = '/login'; // Optional: jika state bandel
         }
       },
     }),
