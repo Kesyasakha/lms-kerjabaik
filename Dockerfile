@@ -1,6 +1,7 @@
 # ============================================
 # Dockerfile dengan Build Arguments Support
 # Untuk inject environment variables saat build
+# Updated: 2026-01-27 - Fixed devDependencies installation
 # ============================================
 
 # STAGE 1: BUILD
@@ -21,9 +22,10 @@ ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 COPY frontend/package*.json ./
 
 # Install ALL dependencies including devDependencies (vite is in devDependencies)
-# CRITICAL: Must use npm install (not npm ci) and set NODE_ENV=development
-# to ensure devDependencies are installed
-RUN NODE_ENV=development npm install
+# CRITICAL: Must use npm install (NOT npm ci) and set NODE_ENV=development
+# npm ci will skip devDependencies if NODE_ENV=production is set anywhere
+# This ensures vite and other devDependencies are installed
+RUN NODE_ENV=development npm install --legacy-peer-deps
 
 # Verify that vite is installed (exit with error if not found)
 RUN test -f node_modules/.bin/vite || (echo "ERROR: vite not found in node_modules!" && exit 1)
