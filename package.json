@@ -1,0 +1,14 @@
+{
+  "name": "lms-kerjabaik",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "install": "cd frontend && npm ci",
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm run serve"
+  }
+}
