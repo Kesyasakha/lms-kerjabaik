@@ -163,18 +163,18 @@ export function TenantTable({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px] p-2">
-                  <DropdownMenuItem onClick={() => onViewDetail(tenant)} className="cursor-pointer rounded-md py-2.5 px-3 focus:bg-blue-50 dark:focus:bg-blue-900/10">
+                  <DropdownMenuItem onClick={() => onViewDetail(tenant)} className="cursor-pointer rounded-md py-2.5 px-3 focus:bg-blue-50 dark:focus:bg-blue-900/20 focus:text-blue-700 dark:focus:text-blue-400">
                     <Eye className="w-4 h-4 mr-3 text-blue-600" />
                     <span className="font-medium text-sm">Lihat Detail</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onEdit(tenant)} className="cursor-pointer rounded-md py-2.5 px-3 focus:bg-amber-50 dark:focus:bg-amber-900/10">
+                  <DropdownMenuItem onClick={() => onEdit(tenant)} className="cursor-pointer rounded-md py-2.5 px-3 focus:bg-amber-50 dark:focus:bg-amber-900/20 focus:text-amber-700 dark:focus:text-amber-400">
                     <Edit className="w-4 h-4 mr-3 text-amber-600" />
                     <span className="font-medium text-sm">Ubah Data</span>
                   </DropdownMenuItem>
                   <div className="h-px bg-muted my-2" />
                   <DropdownMenuItem
                     onClick={() => onDelete(tenant)}
-                    className="text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-900/10 cursor-pointer rounded-md py-2.5 px-3"
+                    className="text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-900/20 focus:text-red-700 dark:focus:text-red-300 cursor-pointer rounded-md py-2.5 px-3"
                   >
                     <Trash2 className="w-4 h-4 mr-3" />
                     <span className="font-bold text-sm">Hapus Tenant</span>
