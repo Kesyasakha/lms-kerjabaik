@@ -125,7 +125,7 @@ export default function Sidebar() {
                                     className="whitespace-nowrap overflow-hidden"
                                 >
                                     <h1 className='text-sm font-bold text-gray-800 tracking-wide'>Akademi</h1>
-                                    <p className='text-[10px] text-gray-500 font-medium tracking-wider uppercase'>LMS System</p>
+                                    <p className='text-[10px] text-gray-500 font-medium tracking-wider uppercase'>KerjaBaik.ai</p>
                                 </motion.div>
                             )}
                         </AnimatePresence>
