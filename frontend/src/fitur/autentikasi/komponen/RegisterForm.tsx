@@ -10,17 +10,17 @@ import { Input } from "@/komponen/ui/input";
 import { Label } from "@/komponen/ui/label";
 import { useToast } from "@/komponen/ui/use-toast";
 
-import { authApi } from "../api/authApi";
+import { AuthFormError } from "./AuthFormError";
 
 const registerSchema = z
   .object({
-    fullName: z.string().min(3, "Nama lengkap minimal 3 karakter"),
-    email: z.string().email("Email tidak valid"),
-    password: z.string().min(8, "Password minimal 8 karakter"),
+    fullName: z.string().min(3, "Nama lengkap minimal terdiri dari 3 karakter"),
+    email: z.string().email("Alamat email tidak valid"),
+    password: z.string().min(8, "Kata sandi minimal terdiri dari 8 karakter"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Password tidak cocok",
+    message: "Konfirmasi kata sandi tidak cocok",
     path: ["confirmPassword"],
   });
 
@@ -29,6 +29,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -40,9 +41,14 @@ export const RegisterForm = () => {
     resolver: zodResolver(registerSchema),
   });
 
+  const clearServerError = () => {
+    if (serverError) setServerError(null);
+  };
+
   const onSubmit = async (data: RegisterFormData) => {
     try {
       setIsLoading(true);
+      setServerError(null);
 
       await authApi.register({
         email: data.email,
@@ -50,19 +56,13 @@ export const RegisterForm = () => {
         fullName: data.fullName,
       });
 
-      // console.log("Register data:", data);
-
       toast({
         title: "Registrasi Berhasil",
         description: "Silakan cek email Anda untuk verifikasi.",
       });
       navigate("/login");
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Registrasi Gagal",
-        description: error.message || "Terjadi kesalahan saat mendaftar",
-      });
+      setServerError(error.message || "Terjadi kesalahan saat mendaftar. Silakan coba lagi.");
     } finally {
       setIsLoading(false);
     }
@@ -70,6 +70,8 @@ export const RegisterForm = () => {
 
   return (
     <div className="space-y-4">
+      <AuthFormError message={serverError} />
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="fullName" className="text-sm">
@@ -78,8 +80,8 @@ export const RegisterForm = () => {
           <Input
             id="fullName"
             placeholder="John Doe"
-            {...register("fullName")}
-            className={`${errors.fullName ? "border-destructive" : ""}`}
+            {...register("fullName", { onChange: clearServerError })}
+            className={`${errors.fullName || serverError ? "border-destructive/50 focus-visible:ring-destructive/20" : ""}`}
           />
           {errors.fullName && (
             <p className="text-xs text-destructive font-medium">
@@ -96,8 +98,8 @@ export const RegisterForm = () => {
             id="email"
             type="email"
             placeholder="contoh@email.com"
-            {...register("email")}
-            className={`${errors.email ? "border-destructive" : ""}`}
+            {...register("email", { onChange: clearServerError })}
+            className={`${errors.email || serverError ? "border-destructive/50 focus-visible:ring-destructive/20" : ""}`}
           />
           {errors.email && (
             <p className="text-xs text-destructive font-medium">
@@ -116,8 +118,8 @@ export const RegisterForm = () => {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
-                {...register("password")}
-                className={`pr-8 ${errors.password ? "border-destructive" : ""}`}
+                {...register("password", { onChange: clearServerError })}
+                className={`pr-8 ${errors.password || serverError ? "border-destructive/50 focus-visible:ring-destructive/20" : ""}`}
               />
               <button
                 type="button"
@@ -146,8 +148,8 @@ export const RegisterForm = () => {
               id="confirmPassword"
               type="password"
               placeholder="••••••••"
-              {...register("confirmPassword")}
-              className={`${errors.confirmPassword ? "border-destructive" : ""}`}
+              {...register("confirmPassword", { onChange: clearServerError })}
+              className={`${errors.confirmPassword || serverError ? "border-destructive/50 focus-visible:ring-destructive/20" : ""}`}
             />
             {errors.confirmPassword && (
               <p className="text-xs text-destructive font-medium">

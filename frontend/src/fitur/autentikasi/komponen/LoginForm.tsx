@@ -11,15 +11,18 @@ import { Label } from "@/komponen/ui/label";
 import { useAuthStore } from "@/fitur/autentikasi/stores/authStore";
 import { useToast } from "@/komponen/ui/use-toast";
 
+import { AuthFormError } from "./AuthFormError";
+
 const loginSchema = z.object({
-  email: z.string().email("Email tidak valid"),
-  password: z.string().min(1, "Password harus diisi"),
+  email: z.string().email("Alamat email tidak valid"),
+  password: z.string().min(1, "Kata sandi harus diisi"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
   const { login, isLoading } = useAuthStore();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -28,29 +31,37 @@ export const LoginForm = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
   const onSubmit = async (data: LoginFormData) => {
     try {
+      setServerError(null);
       await login(data.email, data.password);
       toast({
         title: "Login Berhasil",
         description: "Selamat datang kembali!",
       });
-      navigate("/dashboard"); // Redirect to dashboard which handles role routing
+      navigate("/dashboard");
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Login Gagal",
-        description: error.message || "Email atau password salah",
-      });
+      const errorMessage = error.message === "Invalid login credentials"
+        ? "Email atau kata sandi Anda salah. Silakan periksa kembali."
+        : error.message || "Terjadi kesalahan saat masuk. Silakan coba lagi.";
+
+      setServerError(errorMessage);
     }
+  };
+
+  const clearServerError = () => {
+    if (serverError) setServerError(null);
   };
 
   return (
     <div className="space-y-4">
+      <AuthFormError message={serverError} />
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email" className="text-sm">
@@ -61,8 +72,8 @@ export const LoginForm = () => {
               id="email"
               type="email"
               placeholder="contoh@email.com"
-              {...register("email")}
-              className={`${errors.email ? "border-destructive" : ""}`}
+              {...register("email", { onChange: clearServerError })}
+              className={`${errors.email || serverError ? "border-destructive/50 focus-visible:ring-destructive/20" : ""}`}
             />
           </div>
           {errors.email && (
@@ -89,8 +100,8 @@ export const LoginForm = () => {
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
-              {...register("password")}
-              className={`pr-8 ${errors.password ? "border-destructive" : ""}`}
+              {...register("password", { onChange: clearServerError })}
+              className={`pr-8 ${errors.password || serverError ? "border-destructive/50 focus-visible:ring-destructive/20" : ""}`}
             />
             <button
               type="button"
