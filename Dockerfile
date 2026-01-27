@@ -9,14 +9,15 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Accept build arguments dari Dokploy
+# Accept build arguments dari Dokploy (optional, bisa juga dari Runtime ENV)
 ARG VITE_SUPABASE_URL
 ARG VITE_SUPABASE_ANON_KEY
 
 # Set as environment variables untuk tersedia saat build
 # JANGAN set NODE_ENV=production di sini karena akan membuat npm ci skip devDependencies
-ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
-ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+# Jika Build Args tidak tersedia, gunakan Runtime ENV dari Dokploy
+ENV VITE_SUPABASE_URL=${VITE_SUPABASE_URL:-}
+ENV VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY:-}
 
 # Copy package files dari frontend folder
 COPY frontend/package*.json ./
@@ -33,15 +34,22 @@ RUN test -f node_modules/.bin/vite || (echo "ERROR: vite not found in node_modul
 # Copy source code
 COPY frontend/ ./
 
-# Verify environment variables are set before build
-RUN if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_ANON_KEY" ]; then \
-    echo "ERROR: VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not set!" && \
-    echo "VITE_SUPABASE_URL: $VITE_SUPABASE_URL" && \
-    echo "VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:0:20}..." && \
+# Create .env.production from Build Arguments or Environment Variables
+# Priority: Build Args > Runtime ENV > Existing file
+RUN if [ -n "$VITE_SUPABASE_URL" ] && [ -n "$VITE_SUPABASE_ANON_KEY" ]; then \
+    echo "Creating .env.production from Build Arguments/Environment Variables" && \
+    echo "VITE_SUPABASE_URL=$VITE_SUPABASE_URL" > .env.production && \
+    echo "VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY" >> .env.production; \
+elif [ -f .env.production ]; then \
+    echo "Using existing .env.production file"; \
+else \
+    echo "ERROR: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set as Build Arguments or Environment Variables!" && \
     exit 1; \
-fi
+fi && \
+echo "Verifying .env.production:" && \
+cat .env.production
 
-# Build aplikasi - environment variables tersedia di sini!
+# Build aplikasi - Vite akan membaca .env.production otomatis
 RUN npm run build
 
 # Verify build output
