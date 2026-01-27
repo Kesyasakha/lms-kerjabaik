@@ -126,12 +126,12 @@ export function TenantsPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Kelola Tenant</h1>
-          <p className="text-muted-foreground text-sm">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-xl font-bold tracking-tight text-foreground">Kelola Tenant</h1>
+          <p className="text-muted-foreground text-xs">
             Kelola data organisasi dan lembaga yang terdaftar dalam sistem secara global.
           </p>
         </div>
@@ -209,7 +209,7 @@ export function TenantsPage() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Cari nama atau slug..."
-              className="pl-10 bg-background border-muted-foreground/20 focus:border-primary transition-all"
+              className="pl-10 bg-background border-muted-foreground/20 focus:border-primary transition-all h-10"
               value={filters.search || ""}
               onChange={(e) => handleSearchChange(e.target.value)}
             />
@@ -219,7 +219,7 @@ export function TenantsPage() {
               value={filters.status || "all"}
               onValueChange={handleStatusFilter}
             >
-              <SelectTrigger className="w-[160px] bg-background">
+              <SelectTrigger className="w-[160px] bg-background h-10">
                 <SelectValue placeholder="Semua Status" />
               </SelectTrigger>
               <SelectContent>
@@ -233,7 +233,7 @@ export function TenantsPage() {
               value={filters.tipe || "all"}
               onValueChange={handleTipeFilter}
             >
-              <SelectTrigger className="w-[160px] bg-background">
+              <SelectTrigger className="w-[160px] bg-background h-10">
                 <SelectValue placeholder="Semua Tipe" />
               </SelectTrigger>
               <SelectContent>

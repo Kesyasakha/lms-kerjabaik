@@ -210,20 +210,20 @@ export function GlobalUsersPage() {
     <div className="space-y-8">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Kelola Pengguna Global</h1>
-          <p className="text-muted-foreground text-sm">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-xl font-bold tracking-tight text-foreground">Kelola Pengguna Global</h1>
+          <p className="text-muted-foreground text-xs">
             Kelola data seluruh pengguna dari berbagai tenant dalam platform secara terpusat.
           </p>
         </div>
-        <Button onClick={handleOpenCreateDialog} className="shadow-sm">
+        <Button onClick={handleOpenCreateDialog} size="sm" className="shadow-sm">
           <Plus className="w-4 h-4 mr-2" />
           Tambah Pengguna Baru
         </Button>
       </div>
 
       {/* Stats Overview */}
-      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-blue-500/50 group">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total Pengguna</CardTitle>
@@ -351,11 +351,11 @@ export function GlobalUsersPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
-                  <TableHead className="font-semibold text-foreground py-4 px-6 w-[350px]">Identitas Pengguna</TableHead>
-                  <TableHead className="font-semibold text-foreground py-4">Peran</TableHead>
-                  <TableHead className="font-semibold text-foreground py-4">Tenant / Lembaga</TableHead>
-                  <TableHead className="font-semibold text-foreground py-4">Status</TableHead>
-                  <TableHead className="font-semibold text-foreground text-center py-4">Aksi</TableHead>
+                  <TableHead className="font-semibold text-foreground py-3 px-6 w-[350px]">Identitas Pengguna</TableHead>
+                  <TableHead className="font-semibold text-foreground py-3">Peran</TableHead>
+                  <TableHead className="font-semibold text-foreground py-3">Tenant / Lembaga</TableHead>
+                  <TableHead className="font-semibold text-foreground py-3">Status</TableHead>
+                  <TableHead className="font-semibold text-foreground text-center py-3">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -398,15 +398,15 @@ export function GlobalUsersPage() {
                 ) : (
                   usersData?.data.map((user) => (
                     <TableRow key={user.id} className="group transition-all hover:bg-muted/20 border-b last:border-0">
-                      <TableCell className="px-6 py-4">
+                      <TableCell className="px-6 py-2.5">
                         <div className="flex flex-col">
-                          <span className="font-bold text-foreground group-hover:text-primary transition-colors cursor-pointer" onClick={() => handleEditUser(user)}>
+                          <span className="font-bold text-sm text-foreground group-hover:text-primary transition-colors cursor-pointer" onClick={() => handleEditUser(user)}>
                             {user.nama_lengkap}
                           </span>
                           <span className="text-xs text-muted-foreground font-medium">{user.email}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="py-4">
+                      <TableCell className="py-2.5">
                         <Badge
                           variant="outline"
                           className={cn(
@@ -417,10 +417,10 @@ export function GlobalUsersPage() {
                           {user.role}
                         </Badge>
                       </TableCell>
-                      <TableCell className="py-4 font-medium text-sm text-foreground/80">
+                      <TableCell className="py-2.5 font-medium text-sm text-foreground/80">
                         {user.tenant_name || "-"}
                       </TableCell>
-                      <TableCell className="py-4">
+                      <TableCell className="py-2.5">
                         <Badge
                           variant="outline"
                           className={cn(
@@ -431,7 +431,7 @@ export function GlobalUsersPage() {
                           {user.status === 'suspended' ? 'Ditangguhkan' : user.status === 'nonaktif' ? 'Non-Aktif' : 'Aktif'}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-center py-4">
+                      <TableCell className="text-center py-2.5">
                         <div className="flex items-center justify-center gap-3">
                           <div className="flex items-center gap-2">
                             <Switch

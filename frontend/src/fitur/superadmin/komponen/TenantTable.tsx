@@ -95,21 +95,21 @@ export function TenantTable({
     <Table>
       <TableHeader>
         <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
-          <TableHead className="w-[380px] font-semibold text-foreground py-4">Organisasi / Lembaga</TableHead>
-          <TableHead className="font-semibold text-foreground py-4">Tipe</TableHead>
-          <TableHead className="font-semibold text-foreground py-4">Status</TableHead>
-          <TableHead className="font-semibold text-foreground text-center py-4">Pengguna</TableHead>
-          <TableHead className="font-semibold text-foreground text-center py-4">Kursus</TableHead>
-          <TableHead className="font-semibold text-foreground py-4">Tgl Terdaftar</TableHead>
-          <TableHead className="text-right font-semibold text-foreground py-4 pr-6">Aksi</TableHead>
+          <TableHead className="w-[380px] font-semibold text-foreground py-3">Organisasi / Lembaga</TableHead>
+          <TableHead className="font-semibold text-foreground py-3">Tipe</TableHead>
+          <TableHead className="font-semibold text-foreground py-3">Status</TableHead>
+          <TableHead className="font-semibold text-foreground text-center py-3">Pengguna</TableHead>
+          <TableHead className="font-semibold text-foreground text-center py-3">Kursus</TableHead>
+          <TableHead className="font-semibold text-foreground py-3">Tgl Terdaftar</TableHead>
+          <TableHead className="text-right font-semibold text-foreground py-3 pr-6">Aksi</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {tenants.map((tenant) => (
           <TableRow key={tenant.id} className="group transition-all hover:bg-muted/20 border-b last:border-0">
-            <TableCell className="py-4">
+            <TableCell className="py-2.5">
               <div className="flex flex-col gap-0.5">
-                <span className="font-bold text-foreground group-hover:text-primary transition-colors cursor-pointer" onClick={() => onViewDetail(tenant)}>
+                <span className="font-bold text-sm text-foreground group-hover:text-primary transition-colors cursor-pointer" onClick={() => onViewDetail(tenant)}>
                   {tenant.nama}
                 </span>
                 <span className="text-xs text-muted-foreground font-medium">/{tenant.slug}</span>
@@ -123,7 +123,7 @@ export function TenantTable({
                 {tenant.tipe}
               </Badge>
             </TableCell>
-            <TableCell className="py-4">
+            <TableCell className="py-2.5">
               <Badge
                 variant="outline"
                 className={cn("font-bold rounded-full px-3 py-1 text-[11px] tracking-wide border shadow-sm", statusColors[tenant.status])}
@@ -131,7 +131,7 @@ export function TenantTable({
                 {tenant.status === 'suspended' ? 'Ditangguhkan' : tenant.status === 'nonaktif' ? 'Non-Aktif' : 'Aktif'}
               </Badge>
             </TableCell>
-            <TableCell className="text-center py-4">
+            <TableCell className="text-center py-2.5">
               <div className="flex flex-col items-center gap-1">
                 <div className="flex items-center justify-center gap-1.5 font-bold text-blue-600 dark:text-blue-400">
                   <Users className="w-4 h-4" />
@@ -140,7 +140,7 @@ export function TenantTable({
 
               </div>
             </TableCell>
-            <TableCell className="text-center py-4">
+            <TableCell className="text-center py-2.5">
               <div className="flex flex-col items-center gap-1">
                 <div className="flex items-center justify-center gap-1.5 font-bold text-purple-600 dark:text-purple-400">
                   <BookOpen className="w-4 h-4" />
@@ -149,13 +149,13 @@ export function TenantTable({
 
               </div>
             </TableCell>
-            <TableCell className="py-4">
+            <TableCell className="py-2.5">
               <div className="flex items-center gap-2 text-sm text-foreground/80 font-medium">
                 <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
                 {formatTanggal(tenant.created_at, "short")}
               </div>
             </TableCell>
-            <TableCell className="text-right py-4 pr-6">
+            <TableCell className="text-right py-2.5 pr-6">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-background shadow-none border border-transparent hover:border-muted-foreground/10 transition-all">

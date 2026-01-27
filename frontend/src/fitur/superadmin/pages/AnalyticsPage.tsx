@@ -45,17 +45,17 @@ export function AnalyticsPage() {
   ) || { tenants: 0, users: 0, courses: 0, enrollments: 0 };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Analitik & Wawasan</h1>
-        <p className="text-muted-foreground text-sm">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-xl font-bold tracking-tight text-foreground">Analitik & Wawasan</h1>
+        <p className="text-muted-foreground text-xs">
           Pantau performa platform, pertumbuhan tenant, dan aktivitas pengguna secara real-time.
         </p>
       </div>
 
       {/* Platform Overview */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="relative overflow-hidden transition-all hover:shadow-md border-border/60">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total Tenant</CardTitle>
@@ -109,7 +109,7 @@ export function AnalyticsPage() {
         </Card>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         {/* Top Performers by Users */}
         <Card className="shadow-sm border-border/60 overflow-hidden">
           <CardHeader className="bg-muted/30 border-b py-4">
@@ -197,27 +197,27 @@ export function AnalyticsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/20 border-b">
-                  <TableHead className="font-bold text-foreground py-4 px-6">Nama Tenant</TableHead>
-                  <TableHead className="font-bold text-foreground py-4 text-center">Pengguna</TableHead>
-                  <TableHead className="font-bold text-foreground py-4 text-center">Kursus</TableHead>
-                  <TableHead className="font-bold text-foreground py-4 text-center">Pendaftaran</TableHead>
-                  <TableHead className="font-bold text-foreground py-4 text-center">Aktif (30hr)</TableHead>
-                  <TableHead className="font-bold text-foreground py-4 text-center">Rasio Daftar/Kursus</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 px-6">Nama Tenant</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 text-center">Pengguna</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 text-center">Kursus</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 text-center">Pendaftaran</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 text-center">Aktif (30hr)</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 text-center">Rasio Daftar/Kursus</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {analytics?.map((tenant) => (
                   <TableRow key={tenant.id_lembaga} className="group hover:bg-muted/10 transition-colors border-b last:border-0">
-                    <TableCell className="py-4 px-6">
-                      <span className="font-bold text-foreground group-hover:text-primary transition-colors">
+                    <TableCell className="py-2.5 px-6">
+                      <span className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
                         {tenant.tenant_name}
                       </span>
                     </TableCell>
-                    <TableCell className="text-center py-4 font-medium">{tenant.user_count}</TableCell>
-                    <TableCell className="text-center py-4 font-medium">{tenant.course_count}</TableCell>
-                    <TableCell className="text-center py-4 font-medium">{tenant.enrollment_count}</TableCell>
-                    <TableCell className="text-center py-4 font-medium text-green-600">{tenant.active_users_30d}</TableCell>
-                    <TableCell className="text-center py-4">
+                    <TableCell className="text-center py-2.5 font-medium text-sm">{tenant.user_count}</TableCell>
+                    <TableCell className="text-center py-2.5 font-medium text-sm">{tenant.course_count}</TableCell>
+                    <TableCell className="text-center py-2.5 font-medium text-sm">{tenant.enrollment_count}</TableCell>
+                    <TableCell className="text-center py-2.5 font-medium text-sm text-green-600">{tenant.active_users_30d}</TableCell>
+                    <TableCell className="text-center py-2.5">
                       <Badge variant="secondary" className="font-bold">
                         {tenant.course_count > 0 ? (tenant.enrollment_count / tenant.course_count).toFixed(1) : "0"}
                       </Badge>

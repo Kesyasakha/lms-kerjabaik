@@ -127,9 +127,9 @@ export function AuditLogsPage() {
   return (
     <div className="space-y-8">
       {/* Header Section */}
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Jejak Audit</h1>
-        <p className="text-muted-foreground text-sm">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-xl font-bold tracking-tight text-foreground">Jejak Audit</h1>
+        <p className="text-muted-foreground text-xs">
           Tinjau seluruh aktivitas sensitif dan perubahan sistem yang dilakukan oleh Superadmin.
         </p>
       </div>
@@ -212,7 +212,7 @@ export function AuditLogsPage() {
             <div className="flex items-end">
               <Button
                 variant="outline"
-                className="w-full text-xs font-bold uppercase tracking-tight h-10 hover:bg-muted"
+                className="w-full text-xs font-bold uppercase tracking-tight h-10 hover:bg-muted hover:text-foreground transition-all"
                 onClick={clearFilters}
               >
                 Atur Ulang Filter
@@ -227,11 +227,11 @@ export function AuditLogsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
-                  <TableHead className="font-bold text-foreground py-4 px-6 w-[200px]">Waktu & Tanggal</TableHead>
-                  <TableHead className="font-bold text-foreground py-4 w-[200px]">Pengguna</TableHead>
-                  <TableHead className="font-bold text-foreground py-4 w-[180px]">Tindakan</TableHead>
-                  <TableHead className="font-bold text-foreground py-4 w-[180px]">Sumber Daya</TableHead>
-                  <TableHead className="font-bold text-foreground py-4 pr-6">Rincian Perubahan</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 px-6 w-[200px]">Waktu & Tanggal</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 w-[200px]">Pengguna</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 w-[180px]">Tindakan</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 w-[180px]">Sumber Daya</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 pr-6">Rincian Perubahan</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -246,7 +246,7 @@ export function AuditLogsPage() {
                 ) : (
                   data?.data.map((log) => (
                     <TableRow key={log.id} className="group hover:bg-muted/10 transition-colors border-b last:border-0 border-border/60 align-top">
-                      <TableCell className="py-4 px-6 text-sm font-medium text-muted-foreground whitespace-nowrap">
+                      <TableCell className="py-2.5 px-6 text-sm font-medium text-muted-foreground whitespace-nowrap">
                         <div className="flex flex-col">
                           <span className="text-foreground font-semibold">
                             {new Date(log.created_at).toLocaleDateString("id-ID", {
@@ -260,7 +260,7 @@ export function AuditLogsPage() {
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="py-4">
+                      <TableCell className="py-2.5">
                         <div className="flex items-center gap-2">
                           <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary shrink-0">
                             <User className="w-4 h-4" />
@@ -275,7 +275,7 @@ export function AuditLogsPage() {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="py-4">
+                      <TableCell className="py-2.5">
                         <Badge
                           variant="outline"
                           className={cn(
@@ -286,14 +286,14 @@ export function AuditLogsPage() {
                           {ACTION_LABELS[log.aksi] || log.aksi}
                         </Badge>
                       </TableCell>
-                      <TableCell className="py-4">
+                      <TableCell className="py-2.5">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium text-foreground/80 capitalize">
                             {RESOURCE_LABELS[log.tipe_sumber_daya] || log.tipe_sumber_daya}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="py-4 pr-6 min-w-[350px]">
+                      <TableCell className="py-2.5 pr-6 min-w-[350px]">
                         <div className="bg-card/50 p-3 rounded-lg border border-border/40 hover:border-border/80 transition-colors">
                           <AuditLogDetailParser detail={log.detail} />
                         </div>

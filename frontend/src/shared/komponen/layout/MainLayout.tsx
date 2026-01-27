@@ -34,7 +34,7 @@ export function MainLayout() {
 
 
         {/* Page Content */}
-        <main className="flex-1 p-6 md:p-8 space-y-6">
+        <main className="flex-1 p-4 md:p-6 space-y-5">
           <Outlet />
         </main>
       </div>

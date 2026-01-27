@@ -59,16 +59,16 @@ export function SuperadminDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">
           Dashboard Superadmin
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
+        <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">
           Ringkasan platform dan aktivitas terkini
         </p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-blue-500/50 group">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Total Tenant</CardTitle>
@@ -142,7 +142,7 @@ export function SuperadminDashboard() {
           <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={350}>
+          <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={tenantGrowthData}>
               <defs>
                 <linearGradient id="colorTenants" x1="0" y1="0" x2="0" y2="1">
