@@ -118,19 +118,19 @@ export function TabelPenggunaAdmin({
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30">
-              <TableHead className="w-[35%] font-semibold text-foreground pl-6">Nama</TableHead>
-              <TableHead className="w-[15%] font-semibold text-foreground">Peran</TableHead>
-              <TableHead className="w-[15%] font-semibold text-foreground">Status</TableHead>
-              <TableHead className="w-[20%] font-semibold text-foreground">Terdaftar</TableHead>
-              <TableHead className="text-center font-semibold text-foreground w-[15%]">Aksi</TableHead>
+              <TableHead className="w-[35%] font-semibold text-foreground pl-6 py-3">Nama</TableHead>
+              <TableHead className="w-[15%] font-semibold text-foreground py-3">Peran</TableHead>
+              <TableHead className="w-[15%] font-semibold text-foreground py-3">Status</TableHead>
+              <TableHead className="w-[20%] font-semibold text-foreground py-3">Terdaftar</TableHead>
+              <TableHead className="text-center font-semibold text-foreground w-[15%] py-3">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {users.map((user) => (
               <TableRow key={user.id} className="group transition-colors hover:bg-muted/20">
-                <TableCell className="pl-6">
+                <TableCell className="pl-6 py-2.5">
                   <div className="flex flex-col">
-                    <span className="font-bold text-foreground group-hover:text-blue-600 transition-colors">
+                    <span className="font-bold text-sm text-foreground group-hover:text-blue-600 transition-colors">
                       {user.nama_lengkap}
                     </span>
                     <span className="text-xs text-muted-foreground">
@@ -138,7 +138,7 @@ export function TabelPenggunaAdmin({
                     </span>
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="py-2.5">
                   <Badge
                     variant="outline"
                     className={cn(
@@ -149,7 +149,7 @@ export function TabelPenggunaAdmin({
                     {user.role}
                   </Badge>
                 </TableCell>
-                <TableCell>
+                <TableCell className="py-2.5">
                   <Badge
                     variant="outline"
                     className={cn(
@@ -160,10 +160,10 @@ export function TabelPenggunaAdmin({
                     {user.status === 'suspended' ? 'Ditangguhkan' : user.status === 'nonaktif' ? 'Non-Aktif' : 'Aktif'}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                <TableCell className="text-sm text-muted-foreground whitespace-nowrap py-2.5">
                   {formatTanggal(user.created_at, "short")}
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="text-center py-2.5">
                   <div className="flex items-center justify-center gap-1">
                     <Button
                       variant="ghost"

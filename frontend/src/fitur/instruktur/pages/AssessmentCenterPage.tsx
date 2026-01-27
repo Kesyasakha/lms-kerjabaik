@@ -283,10 +283,10 @@ export default function AssessmentCenterPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
             Pusat Penilaian
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">
             Kelola dan nilai submission dari peserta
           </p>
         </div>
@@ -440,11 +440,11 @@ export default function AssessmentCenterPage() {
             </div>
           ) : sortedData.length > 0 ? (
             <>
-              <div className="rounded-md border">
+              <div className="rounded-md border border-border/60 overflow-hidden">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">
+                    <TableRow className="bg-muted/30 border-b hover:bg-muted/30">
+                      <TableHead className="w-12 py-3">
                         <button
                           onClick={toggleSelectAll}
                           className="flex items-center justify-center w-full h-full"
@@ -462,17 +462,19 @@ export default function AssessmentCenterPage() {
                         currentSortKey={sortConfig.key as string}
                         currentDirection={sortConfig.direction}
                         onSort={(key) => handleSort(key as keyof Submission)}
+                        className="py-3 font-bold text-foreground"
                       >
                         Peserta
                       </SortableTableHeader>
-                      <TableHead>Kursus</TableHead>
-                      <TableHead>Assignment</TableHead>
-                      <TableHead>File</TableHead>
+                      <TableHead className="py-3 font-bold text-foreground">Kursus</TableHead>
+                      <TableHead className="py-3 font-bold text-foreground">Assignment</TableHead>
+                      <TableHead className="py-3 font-bold text-foreground">File</TableHead>
                       <SortableTableHeader
                         sortKey="submitted_at"
                         currentSortKey={sortConfig.key as string}
                         currentDirection={sortConfig.direction}
                         onSort={(key) => handleSort(key as keyof Submission)}
+                        className="py-3 font-bold text-foreground"
                       >
                         Submitted
                       </SortableTableHeader>
@@ -481,6 +483,7 @@ export default function AssessmentCenterPage() {
                         currentSortKey={sortConfig.key as string}
                         currentDirection={sortConfig.direction}
                         onSort={(key) => handleSort(key as keyof Submission)}
+                        className="py-3 font-bold text-foreground"
                       >
                         Status
                       </SortableTableHeader>
@@ -489,10 +492,11 @@ export default function AssessmentCenterPage() {
                         currentSortKey={sortConfig.key as string}
                         currentDirection={sortConfig.direction}
                         onSort={(key) => handleSort(key as keyof Submission)}
+                        className="py-3 font-bold text-foreground"
                       >
                         Nilai
                       </SortableTableHeader>
-                      <TableHead className="text-right">Aksi</TableHead>
+                      <TableHead className="text-right py-3 font-bold text-foreground px-4">Aksi</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -500,8 +504,8 @@ export default function AssessmentCenterPage() {
                       const StatusIcon = statusIcons[submission.status];
                       const isEditing = editingGradeId === submission.id;
                       return (
-                        <TableRow key={submission.id}>
-                          <TableCell>
+                        <TableRow key={submission.id} className="group hover:bg-muted/10 transition-colors border-b last:border-0">
+                          <TableCell className="py-2.5">
                             <button
                               onClick={() => toggleSelect(submission.id)}
                               className="flex items-center justify-center w-full h-full"
@@ -514,32 +518,32 @@ export default function AssessmentCenterPage() {
                               )}
                             </button>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="py-2.5">
                             <div>
-                              <p className="font-medium">
+                              <p className="font-bold text-sm text-foreground">
                                 {submission.student_name}
                               </p>
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-[10px] text-muted-foreground">
                                 {submission.student_email}
                               </p>
                             </div>
                           </TableCell>
-                          <TableCell className="max-w-[200px]">
-                            <p className="truncate">
+                          <TableCell className="max-w-[180px] py-2.5">
+                            <p className="truncate text-sm font-medium">
                               {submission.kursus_judul}
                             </p>
                           </TableCell>
-                          <TableCell className="max-w-[200px]">
-                            <p className="truncate">
+                          <TableCell className="max-w-[180px] py-2.5">
+                            <p className="truncate text-sm text-muted-foreground">
                               {submission.assignment_title}
                             </p>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="py-2.5">
                             {submission.url_berkas ? (
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-8 text-xs"
+                                className="h-7 text-xs px-2 bg-muted/50 hover:bg-muted text-primary"
                                 asChild
                               >
                                 <a
@@ -553,13 +557,13 @@ export default function AssessmentCenterPage() {
                                 </a>
                               </Button>
                             ) : (
-                              <span className="text-xs text-muted-foreground">
+                              <span className="text-xs text-muted-foreground italic">
                                 No file
                               </span>
                             )}
                           </TableCell>
-                          <TableCell>
-                            <p className="text-sm">
+                          <TableCell className="py-2.5">
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                               {formatDistanceToNow(
                                 new Date(submission.submitted_at),
                                 {
@@ -567,15 +571,15 @@ export default function AssessmentCenterPage() {
                                   locale: idLocale,
                                 },
                               )}
-                            </p>
+                            </div>
                           </TableCell>
-                          <TableCell>
-                            <Badge variant={statusColors[submission.status]}>
+                          <TableCell className="py-2.5">
+                            <Badge variant={statusColors[submission.status]} className="text-[10px] uppercase px-2 py-0.5 h-auto font-bold shadow-none">
                               <StatusIcon className="mr-1 h-3 w-3" />
                               {statusLabels[submission.status]}
                             </Badge>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="py-2.5">
                             {isEditing ? (
                               <InlineGradeInput
                                 submissionId={submission.id}
@@ -587,44 +591,44 @@ export default function AssessmentCenterPage() {
                                 onCancel={() => setEditingGradeId(null)}
                               />
                             ) : submission.grade !== null ? (
-                              <span className="font-medium">
+                              <span className="font-bold text-sm">
                                 {submission.grade}
                               </span>
                             ) : (
-                              <span className="text-muted-foreground">-</span>
+                              <span className="text-muted-foreground text-xs">-</span>
                             )}
                           </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-2">
+                          <TableCell className="text-right py-2.5 px-4">
+                            <div className="flex items-center justify-end gap-1">
                               {submission.status === "pending" &&
                                 !isEditing && (
                                   <>
                                     <Button
                                       size="sm"
                                       variant="ghost"
-                                      className="h-8 text-xs text-green-600 hover:text-green-700 hover:bg-green-50"
+                                      className="h-7 w-7 p-0 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-full"
                                       onClick={() =>
                                         handleQuickApprove(submission)
                                       }
                                       title="Quick Approve (Max Score)"
                                     >
-                                      <ThumbsUp className="h-4 w-4" />
+                                      <ThumbsUp className="h-3.5 w-3.5" />
                                     </Button>
                                     <Button
                                       size="sm"
                                       variant="ghost"
-                                      className="h-8 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                                      className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full"
                                       onClick={() =>
                                         handleQuickReject(submission.id)
                                       }
                                       title="Quick Reject"
                                     >
-                                      <ThumbsDown className="h-4 w-4" />
+                                      <ThumbsDown className="h-3.5 w-3.5" />
                                     </Button>
                                     <Button
                                       size="sm"
                                       variant="ghost"
-                                      className="h-8 text-xs"
+                                      className="h-7 px-2 text-xs font-medium"
                                       onClick={() =>
                                         setEditingGradeId(submission.id)
                                       }
@@ -637,14 +641,15 @@ export default function AssessmentCenterPage() {
                               <Button
                                 size="sm"
                                 variant="ghost"
+                                className="h-7 px-2 text-xs text-muted-foreground hover:text-primary"
                                 onClick={() =>
                                   setSelectedSubmissionId(submission.id)
                                 }
                               >
-                                <Eye className="mr-2 h-4 w-4" />
+                                <Eye className="mr-1.5 h-3.5 w-3.5" />
                                 {submission.status === "pending"
                                   ? "Detail"
-                                  : "Lihat"}
+                                  : "Detail"}
                               </Button>
                             </div>
                           </TableCell>

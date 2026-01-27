@@ -37,6 +37,7 @@ import {
   Award,
   AlertTriangle,
   CheckCircle2,
+  Calendar,
 } from "lucide-react";
 import { useInstructorCourses } from "../hooks/useInstructorCourses";
 import {
@@ -127,13 +128,22 @@ export default function StudentProgressPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Progress Peserta
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          Tracking progress dan engagement peserta
-        </p>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+            Progress Peserta
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">
+            Tracking progress dan engagement peserta
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="px-3 py-1 bg-white/50 backdrop-blur-sm shadow-sm border-gray-200">
+            <Calendar className="w-3.5 h-3.5 mr-2 text-primary" />
+            {new Date().toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </Badge>
+        </div>
       </div>
 
       {/* Course Selector */}

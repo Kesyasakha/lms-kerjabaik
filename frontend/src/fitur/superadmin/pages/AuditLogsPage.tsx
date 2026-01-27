@@ -172,7 +172,7 @@ export function AuditLogsPage() {
                   }))
                 }
               >
-                <SelectTrigger className="bg-background border-muted-foreground/20">
+                <SelectTrigger className="bg-background border-muted-foreground/20 h-10">
                   <SelectValue placeholder="Semua Tindakan" />
                 </SelectTrigger>
                 <SelectContent>
@@ -189,7 +189,7 @@ export function AuditLogsPage() {
               <label className="text-[11px] font-bold uppercase text-muted-foreground ml-1">Tgl Mulai</label>
               <Input
                 type="date"
-                className="bg-background border-muted-foreground/20 text-xs"
+                className="bg-background border-muted-foreground/20 text-xs h-10"
                 value={filters.date_from || ""}
                 onChange={(e) =>
                   setFilters((prev) => ({ ...prev, date_from: e.target.value }))
@@ -201,7 +201,7 @@ export function AuditLogsPage() {
               <label className="text-[11px] font-bold uppercase text-muted-foreground ml-1">Tgl Selesai</label>
               <Input
                 type="date"
-                className="bg-background border-muted-foreground/20 text-xs"
+                className="bg-background border-muted-foreground/20 text-xs h-10"
                 value={filters.date_to || ""}
                 onChange={(e) =>
                   setFilters((prev) => ({ ...prev, date_to: e.target.value }))

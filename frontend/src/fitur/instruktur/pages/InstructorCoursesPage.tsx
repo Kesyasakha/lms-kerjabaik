@@ -1,5 +1,13 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/komponen/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/komponen/ui/table";
 import { Button } from "@/komponen/ui/button";
 import { Input } from "@/komponen/ui/input";
 import {
@@ -15,10 +23,9 @@ import {
   BookOpen,
   Users,
   TrendingUp,
-  ClipboardList,
   Search,
   Filter,
-  Clock,
+  Calendar,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useInstructorCourses } from "../hooks/useInstructorCourses";
@@ -69,16 +76,16 @@ export default function InstructorCoursesPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
             Kursus Saya
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">
             Kelola kursus yang Anda ajarkan
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="px-3 py-1 bg-white/50 backdrop-blur-sm shadow-sm border-gray-200">
-            <Clock className="w-3.5 h-3.5 mr-2 text-primary" />
+            <Calendar className="w-3.5 h-3.5 mr-2 text-primary" />
             {new Date().toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </Badge>
         </div>
@@ -142,95 +149,97 @@ export default function InstructorCoursesPage() {
         </div>
       ) : data && data.data.length > 0 ? (
         <>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {data.data.map((course) => (
-              <Link
-                key={course.id}
-                to={`/instruktur/kursus/${course.id}`}
-                className="group"
-              >
-                <Card className={`h-full overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-muted/60 hover:border-${course.status === 'published' ? 'green' : course.status === 'draft' ? 'amber' : 'slate'}-500/50`}>
-                  {course.url_gambar_mini ? (
-                    <div className="aspect-video overflow-hidden bg-muted relative">
-                      <img
-                        src={course.url_gambar_mini}
-                        alt={course.judul}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute top-2 right-2">
-                        <Badge variant={statusColors[course.status]} className="shadow-sm">
-                          {statusLabels[course.status]}
-                        </Badge>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex aspect-video items-center justify-center bg-muted relative">
-                      <BookOpen className="h-12 w-12 text-muted-foreground/30" />
-                      <div className="absolute top-2 right-2">
-                        <Badge variant={statusColors[course.status]} className="shadow-sm">
-                          {statusLabels[course.status]}
-                        </Badge>
-                      </div>
-                    </div>
-                  )}
-                  <CardContent className="p-5">
-                    <div className="mb-3 space-y-2">
-                      {course.kategori && (
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary/60"></span>
-                          {course.kategori}
-                        </div>
-                      )}
-                      <h3 className="font-bold text-lg line-clamp-2 text-gray-900 dark:text-white group-hover:text-primary transition-colors leading-tight">
-                        {course.judul}
-                      </h3>
-                    </div>
-
-                    {course.deskripsi && (
-                      <p className="mb-5 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                        {course.deskripsi}
-                      </p>
-                    )}
-
-                    <div className="grid grid-cols-2 gap-3 pt-4 border-t border-dashed">
-                      <div className="space-y-0.5">
-                        <div className="flex items-center text-muted-foreground text-xs font-medium mb-1">
-                          <Users className="h-3.5 w-3.5 mr-1.5" />
-                          Peserta
-                        </div>
-                        <p className="font-bold text-lg text-foreground">{course.total_peserta || 0}</p>
-                      </div>
-
-                      <div className="space-y-0.5">
-                        <div className="flex items-center text-muted-foreground text-xs font-medium mb-1">
-                          <ClipboardList className="h-3.5 w-3.5 mr-1.5" />
-                          Tertunda
-                        </div>
-                        <p className="font-bold text-lg text-foreground">{course.pending_submissions || 0}</p>
-                      </div>
-
-                      <div className="space-y-0.5">
-                        <div className="flex items-center text-muted-foreground text-xs font-medium mb-1">
-                          <TrendingUp className="h-3.5 w-3.5 mr-1.5" />
-                          Penyelesaian
-                        </div>
-                        <p className="font-bold text-lg text-foreground">{course.completion_rate || 0}%</p>
-                      </div>
-
-                      {course.avg_score !== null && (
-                        <div className="space-y-0.5">
-                          <div className="flex items-center text-muted-foreground text-xs font-medium mb-1">
-                            <TrendingUp className="h-3.5 w-3.5 mr-1.5" />
-                            Rata-rata
+          <div className="rounded-md border border-border/60 overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/30 border-b hover:bg-muted/30">
+                  <TableHead className="w-[350px] font-bold text-foreground py-3 px-4">Kursus</TableHead>
+                  <TableHead className="font-bold text-foreground py-3">Kategori</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 text-center">Status</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 text-center">Peserta</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 text-center">Tertunda</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 text-center">Selesai</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 text-center">Rata-rata</TableHead>
+                  <TableHead className="font-bold text-foreground py-3 text-right px-4">Aksi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.data.map((course) => (
+                  <TableRow key={course.id} className="group hover:bg-muted/10 transition-colors border-b last:border-0">
+                    <TableCell className="py-2.5 px-4">
+                      <Link to={`/instruktur/kursus/${course.id}`} className="group-hover:text-primary transition-colors">
+                        <div className="flex items-center gap-3">
+                          {course.url_gambar_mini ? (
+                            <img
+                              src={course.url_gambar_mini}
+                              alt=""
+                              className="h-10 w-16 object-cover rounded-md border border-border/50"
+                            />
+                          ) : (
+                            <div className="h-10 w-16 bg-muted rounded-md border border-border/50 flex items-center justify-center">
+                              <BookOpen className="h-4 w-4 text-muted-foreground/30" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-sm truncate max-w-[250px]">{course.judul}</h3>
+                            {course.deskripsi && (
+                              <p className="text-[10px] text-muted-foreground truncate max-w-[250px]">{course.deskripsi}</p>
+                            )}
                           </div>
-                          <p className="font-bold text-lg text-foreground">{course.avg_score}</p>
                         </div>
+                      </Link>
+                    </TableCell>
+                    <TableCell className="py-2.5">
+                      {course.kategori ? (
+                        <Badge variant="outline" className="font-normal text-xs text-muted-foreground">
+                          {course.kategori}
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">-</span>
                       )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+                    </TableCell>
+                    <TableCell className="py-2.5 text-center">
+                      <Badge variant={statusColors[course.status]} className="text-[10px] uppercase font-bold px-2 py-0.5 h-auto shadow-none">
+                        {statusLabels[course.status]}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-2.5 text-center">
+                      <div className="flex items-center justify-center gap-1 text-sm font-medium">
+                        <Users className="w-3.5 h-3.5 text-muted-foreground" />
+                        {course.total_peserta || 0}
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-2.5 text-center">
+                      {(course.pending_submissions || 0) > 0 ? (
+                        <Badge variant="secondary" className="font-bold text-orange-600 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-400 border-orange-200 dark:border-orange-800">
+                          {course.pending_submissions}
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="py-2.5 text-center">
+                      <span className="text-sm font-medium text-green-600 dark:text-green-500">
+                        {course.completion_rate || 0}%
+                      </span>
+                    </TableCell>
+                    <TableCell className="py-2.5 text-center">
+                      <span className="text-sm font-bold">
+                        {course.avg_score || "-"}
+                      </span>
+                    </TableCell>
+                    <TableCell className="py-2.5 text-right px-4">
+                      <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0">
+                        <Link to={`/instruktur/kursus/${course.id}`}>
+                          <span className="sr-only">Detail</span>
+                          <TrendingUp className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
 
           {/* Pagination */}

@@ -65,71 +65,71 @@ export function TabelLaporanKeterlibatan({
     <div className="rounded-md border">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead>Peserta</TableHead>
-            <TableHead>Kursus</TableHead>
-            <TableHead>Waktu Belajar</TableHead>
-            <TableHead>Login</TableHead>
-            <TableHead>Interaksi</TableHead>
-            <TableHead>Engagement Score</TableHead>
-            <TableHead>Aktivitas Terakhir</TableHead>
+          <TableRow className="bg-muted/30">
+            <TableHead className="py-3 px-4">Peserta</TableHead>
+            <TableHead className="py-3">Kursus</TableHead>
+            <TableHead className="py-3">Waktu Belajar</TableHead>
+            <TableHead className="py-3 text-center">Login</TableHead>
+            <TableHead className="py-3">Interaksi</TableHead>
+            <TableHead className="py-3">Engagement Score</TableHead>
+            <TableHead className="py-3 pr-4">Aktivitas Terakhir</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell>
+            <TableRow key={item.id} className="hover:bg-muted/5 transition-colors">
+              <TableCell className="py-2.5 px-4">
                 <div>
-                  <div className="font-medium">{item.peserta_nama}</div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="font-bold text-sm text-foreground">{item.peserta_nama}</div>
+                  <div className="text-[10px] text-muted-foreground">
                     {item.peserta_email}
                   </div>
                 </div>
               </TableCell>
-              <TableCell>
-                <div className="max-w-[200px] truncate">
+              <TableCell className="py-2.5">
+                <div className="max-w-[200px] truncate text-sm">
                   {item.kursus_judul}
                 </div>
               </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-1 text-sm">
+              <TableCell className="py-2.5">
+                <div className="flex items-center gap-1 text-sm font-medium">
                   <Clock className="h-3 w-3 text-muted-foreground" />
                   {formatWaktu(item.total_waktu_belajar_menit)}
                 </div>
               </TableCell>
-              <TableCell>
-                <div className="text-center font-medium">
+              <TableCell className="py-2.5">
+                <div className="text-center font-bold text-sm">
                   {item.jumlah_login}x
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="py-2.5">
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 text-xs">
+                  <div className="flex items-center gap-1 text-[10px] font-bold">
                     <MessageSquare className="h-3 w-3 text-blue-600" />
                     <span>{item.interaksi_forum}</span>
                   </div>
-                  <div className="flex items-center gap-1 text-xs">
+                  <div className="flex items-center gap-1 text-[10px] font-bold">
                     <MessageSquare className="h-3 w-3 text-green-600" />
                     <span>{item.interaksi_diskusi}</span>
                   </div>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="py-2.5">
                 <div className="w-32 space-y-1">
                   <div className="flex items-center justify-between">
                     <Progress
                       value={item.engagement_score}
-                      className="h-2 flex-1"
+                      className="h-1.5 flex-1"
                     />
-                    <span className="ml-2 text-xs font-medium">
+                    <span className="ml-2 text-[10px] font-bold">
                       {item.engagement_score}
                     </span>
                   </div>
                   {getEngagementBadge(item.engagement_score)}
                 </div>
               </TableCell>
-              <TableCell>
-                <div className="text-xs text-muted-foreground">
+              <TableCell className="py-2.5 pr-4">
+                <div className="text-[10px] text-muted-foreground font-medium">
                   {formatDistanceToNow(new Date(item.aktivitas_terakhir), {
                     addSuffix: true,
                     locale: localeId,

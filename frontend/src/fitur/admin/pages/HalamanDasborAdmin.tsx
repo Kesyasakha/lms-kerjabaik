@@ -73,10 +73,10 @@ export function HalamanDasborAdmin() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
             Dasbor Admin
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">
             Selamat datang kembali! Berikut ringkasan aktivitas organisasi Anda hari ini.
           </p>
         </div>
@@ -89,7 +89,7 @@ export function HalamanDasborAdmin() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-blue-500/50 group">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-semibold text-muted-foreground">Total Pengguna</CardTitle>
@@ -98,8 +98,8 @@ export function HalamanDasborAdmin() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold tracking-tight">{stats?.totalUsers || 0}</div>
-            <p className="text-xs text-muted-foreground mt-1 font-medium">
+            <div className="text-2xl font-bold tracking-tight">{stats?.totalUsers || 0}</div>
+            <p className="text-[10px] text-muted-foreground mt-0.5 font-medium uppercase">
               Pengguna terdaftar
             </p>
           </CardContent>
@@ -113,8 +113,8 @@ export function HalamanDasborAdmin() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold tracking-tight">{stats?.totalCourses || 0}</div>
-            <p className="text-xs text-muted-foreground mt-1 font-medium">
+            <div className="text-2xl font-bold tracking-tight">{stats?.totalCourses || 0}</div>
+            <p className="text-[10px] text-muted-foreground mt-0.5 font-medium uppercase">
               Aktif & Draft
             </p>
           </CardContent>
@@ -128,8 +128,8 @@ export function HalamanDasborAdmin() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold tracking-tight" style={{ color: "rgb(16, 185, 129)" }}>{stats?.activeEnrollments || 0}</div>
-            <p className="text-xs text-muted-foreground mt-1 font-medium">
+            <div className="text-2xl font-bold tracking-tight" style={{ color: "rgb(16, 185, 129)" }}>{stats?.activeEnrollments || 0}</div>
+            <p className="text-[10px] text-muted-foreground mt-0.5 font-medium uppercase">
               Sedang belajar
             </p>
           </CardContent>
@@ -143,8 +143,8 @@ export function HalamanDasborAdmin() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold tracking-tight" style={{ color: "rgb(245, 158, 11)" }}>{stats?.completedEnrollments || 0}</div>
-            <p className="text-xs text-muted-foreground mt-1 font-medium">
+            <div className="text-2xl font-bold tracking-tight" style={{ color: "rgb(245, 158, 11)" }}>{stats?.completedEnrollments || 0}</div>
+            <p className="text-[10px] text-muted-foreground mt-0.5 font-medium uppercase">
               Selesai kurikulum
             </p>
           </CardContent>
@@ -153,10 +153,10 @@ export function HalamanDasborAdmin() {
 
       {/* Quick Actions */}
       <Card className="rounded-2xl border shadow-none bg-muted/20">
-        <CardHeader className="flex flex-row items-center justify-between pb-4">
+        <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div className="space-y-1">
-            <CardTitle className="text-xl font-bold">Aksi Cepat</CardTitle>
-            <p className="text-sm text-muted-foreground font-medium">
+            <CardTitle className="text-lg font-bold">Aksi Cepat</CardTitle>
+            <p className="text-xs text-muted-foreground font-medium">
               Tugas administratif utama yang sering diakses
             </p>
           </div>
@@ -164,25 +164,25 @@ export function HalamanDasborAdmin() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
-            <Button asChild className="rounded-xl shadow-sm px-6">
+            <Button asChild size="sm" className="rounded-xl shadow-sm px-5">
               <Link to="/admin/users">
                 <UserPlus className="w-4 h-4 mr-2" />
                 Tambah Pengguna
               </Link>
             </Button>
-            <Button asChild variant="secondary" className="rounded-xl shadow-none px-6 bg-white dark:bg-muted border border-muted-foreground/10">
+            <Button asChild size="sm" variant="secondary" className="rounded-xl shadow-none px-5 bg-white dark:bg-muted border border-muted-foreground/10">
               <Link to="/admin/courses">
                 <Plus className="w-4 h-4 mr-2" />
                 Tambah Kursus
               </Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-xl shadow-none px-6 border-muted-foreground/20">
+            <Button asChild size="sm" variant="outline" className="rounded-xl shadow-none px-5 border-muted-foreground/20">
               <Link to="/admin/reports">
                 <BarChart3 className="w-4 h-4 mr-2" />
                 Laporan Analitik
               </Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-xl shadow-none px-6 border-muted-foreground/20">
+            <Button asChild size="sm" variant="outline" className="rounded-xl shadow-none px-5 border-muted-foreground/20">
               <Link to="/admin/settings">
                 <Settings className="w-4 h-4 mr-2" />
                 Pengaturan
@@ -193,13 +193,13 @@ export function HalamanDasborAdmin() {
       </Card>
 
       {/* Recent Activity Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Users */}
         <Card className="rounded-2xl shadow-none border-muted/60 overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between bg-muted/10 border-b p-6">
-            <div className="space-y-1">
-              <CardTitle className="text-xl font-bold">Pengguna Terbaru</CardTitle>
-              <p className="text-sm text-muted-foreground font-medium">Registrasi pengguna bulan ini</p>
+          <CardHeader className="flex flex-row items-center justify-between bg-muted/10 border-b p-4">
+            <div className="space-y-0.5">
+              <CardTitle className="text-lg font-bold">Pengguna Terbaru</CardTitle>
+              <p className="text-xs text-muted-foreground font-medium">Registrasi pengguna bulan ini</p>
             </div>
             <Button asChild variant="ghost" size="sm" className="font-bold text-primary hover:text-primary/80 hover:bg-transparent">
               <Link to="/admin/users">Lihat Semua</Link>
@@ -262,10 +262,10 @@ export function HalamanDasborAdmin() {
 
         {/* Recent Courses */}
         <Card className="rounded-2xl shadow-none border-muted/60 overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between bg-muted/10 border-b p-6">
-            <div className="space-y-1">
-              <CardTitle className="text-xl font-bold">Kursus Terbaru</CardTitle>
-              <p className="text-sm text-muted-foreground font-medium">Kurikulum pembelajaran terkini</p>
+          <CardHeader className="flex flex-row items-center justify-between bg-muted/10 border-b p-4">
+            <div className="space-y-0.5">
+              <CardTitle className="text-lg font-bold">Kursus Terbaru</CardTitle>
+              <p className="text-xs text-muted-foreground font-medium">Kurikulum pembelajaran terkini</p>
             </div>
             <Button asChild variant="ghost" size="sm" className="font-bold text-primary hover:text-primary/80 hover:bg-transparent">
               <Link to="/admin/courses">Lihat Semua</Link>
@@ -331,10 +331,10 @@ export function HalamanDasborAdmin() {
       {/* Enrollment Overview */}
       {stats?.enrollmentsByStatus && stats.enrollmentsByStatus.length > 0 && (
         <Card className="rounded-2xl shadow-none border-muted/60 overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between bg-muted/5 border-b p-6">
-            <div className="space-y-1">
-              <CardTitle className="text-xl font-bold">Ringkasan Pendaftaran</CardTitle>
-              <p className="text-sm text-muted-foreground font-medium">Distribusi status belajar siswa secara keseluruhan</p>
+          <CardHeader className="flex flex-row items-center justify-between bg-muted/5 border-b p-4">
+            <div className="space-y-0.5">
+              <CardTitle className="text-lg font-bold">Ringkasan Pendaftaran</CardTitle>
+              <p className="text-xs text-muted-foreground font-medium">Distribusi status belajar siswa secara keseluruhan</p>
             </div>
             <div className="p-2 bg-muted rounded-lg">
               <BarChart3 className="w-5 h-5 text-muted-foreground" />
@@ -345,12 +345,12 @@ export function HalamanDasborAdmin() {
               {stats.enrollmentsByStatus.map((item) => (
                 <div
                   key={item.status}
-                  className="p-6 rounded-2xl border border-muted/40 bg-card hover:border-primary/30 transition-colors"
+                  className="p-4 rounded-xl border border-muted/40 bg-card hover:border-primary/30 transition-colors"
                 >
-                  <p className="text-3xl font-extrabold text-foreground">
+                  <p className="text-2xl font-extrabold text-foreground">
                     {item.count}
                   </p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.1em] mt-2">
+                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.05em] mt-1">
                     {item.status === 'enrolled' ? 'Terdaftar' : item.status === 'active' ? 'Aktif' : item.status === 'completed' ? 'Selesai' : 'Batal'}
                   </p>
                 </div>

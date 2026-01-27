@@ -127,19 +127,17 @@ export function HalamanPenggunaAdmin() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Manajemen Pengguna
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Kelola akses, peran, dan status pengguna dalam organisasi Anda
+        <div className="flex flex-col gap-1">
+          <h1 className="text-xl font-bold tracking-tight text-foreground">Kelola Pengguna</h1>
+          <p className="text-muted-foreground text-xs">
+            Manajemen data pengguna organisasi Anda, termasuk instruktur dan pembelajar.
           </p>
         </div>
-        <Button onClick={handleOpenCreateDialog} className="shadow-sm">
+        <Button onClick={handleOpenCreateDialog} size="sm" className="shadow-sm">
           <Plus className="w-4 h-4 mr-2" />
-          Tambah Pengguna Baru
+          Tambah Pengguna
         </Button>
       </div>
 

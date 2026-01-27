@@ -66,46 +66,46 @@ export function TabelLaporanKehadiran({
     <div className="rounded-md border">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead>Peserta</TableHead>
-            <TableHead>Kursus</TableHead>
-            <TableHead>Total Sesi</TableHead>
-            <TableHead>Sesi Hadir</TableHead>
-            <TableHead>Persentase Kehadiran</TableHead>
-            <TableHead>Status</TableHead>
+          <TableRow className="bg-muted/30">
+            <TableHead className="py-3 px-4">Peserta</TableHead>
+            <TableHead className="py-3">Kursus</TableHead>
+            <TableHead className="py-3 text-center">Total Sesi</TableHead>
+            <TableHead className="py-3 text-center">Sesi Hadir</TableHead>
+            <TableHead className="py-3">Persentase Kehadiran</TableHead>
+            <TableHead className="py-3 pr-4">Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell>
+            <TableRow key={item.id} className="hover:bg-muted/5 transition-colors">
+              <TableCell className="py-2.5 px-4">
                 <div>
-                  <div className="font-medium">{item.peserta_nama}</div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="font-bold text-sm text-foreground">{item.peserta_nama}</div>
+                  <div className="text-[10px] text-muted-foreground">
                     {item.peserta_email}
                   </div>
                 </div>
               </TableCell>
-              <TableCell>
-                <div className="max-w-[250px] truncate">
+              <TableCell className="py-2.5">
+                <div className="max-w-[250px] truncate text-sm">
                   {item.kursus_judul}
                 </div>
               </TableCell>
-              <TableCell>
-                <div className="text-center font-medium">{item.total_sesi}</div>
+              <TableCell className="py-2.5">
+                <div className="text-center font-bold text-sm">{item.total_sesi}</div>
               </TableCell>
-              <TableCell>
-                <div className="text-center font-medium">{item.sesi_hadir}</div>
+              <TableCell className="py-2.5">
+                <div className="text-center font-bold text-sm">{item.sesi_hadir}</div>
               </TableCell>
-              <TableCell>
+              <TableCell className="py-2.5">
                 <div className="w-32 space-y-1">
-                  <Progress value={item.persentase_kehadiran} className="h-2" />
-                  <div className="text-xs text-muted-foreground">
+                  <Progress value={item.persentase_kehadiran} className="h-1.5" />
+                  <div className="text-[10px] text-muted-foreground font-medium">
                     {item.persentase_kehadiran}%
                   </div>
                 </div>
               </TableCell>
-              <TableCell>{getStatusBadge(item.status_kehadiran)}</TableCell>
+              <TableCell className="py-2.5 pr-4">{getStatusBadge(item.status_kehadiran)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -294,27 +294,27 @@ export function HalamanDetailKursusAdmin() {
       </div>
 
       {/* Hero Section */}
-      <div className="border-b pb-8">
+      <div className="border-b pb-6">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className={cn("px-3 py-1 font-semibold uppercase tracking-wider text-[10px]", statusColors[course.status as CourseStatus])}>
+            <Badge variant="outline" className={cn("px-2.5 py-0.5 font-semibold uppercase tracking-wider text-[9px]", statusColors[course.status as CourseStatus])}>
               {statusLabels[course.status as CourseStatus]}
             </Badge>
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+            <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
               {course.kategori || "Tanpa Kategori"}
             </span>
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             {course.judul}
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">
+          <p className="text-sm text-muted-foreground max-w-3xl leading-relaxed">
             {course.deskripsi || "Informasi deskripsi kursus belum ditambahkan."}
           </p>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="rounded-2xl border-none shadow-sm bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/20 dark:to-background border border-blue-100 dark:border-blue-900/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-400">
@@ -325,10 +325,10 @@ export function HalamanDetailKursusAdmin() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">
+            <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
               {course.stats.totalEnrollments}
             </div>
-            <p className="text-xs text-blue-600/70 dark:text-blue-400/70 mt-1.5 font-medium">Terdaftar dalam kursus</p>
+            <p className="text-[10px] text-blue-600/70 dark:text-blue-400/70 mt-1 font-medium uppercase">Terdaftar dalam kursus</p>
           </CardContent>
         </Card>
 
@@ -342,10 +342,10 @@ export function HalamanDetailKursusAdmin() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-emerald-900 dark:text-emerald-100">
+            <div className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
               {course.stats.activeEnrollments}
             </div>
-            <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70 mt-1.5 font-medium">Sedang menempuh materi</p>
+            <p className="text-[10px] text-emerald-600/70 dark:text-emerald-400/70 mt-1 font-medium uppercase">Sedang menempuh materi</p>
           </CardContent>
         </Card>
 
@@ -359,10 +359,10 @@ export function HalamanDetailKursusAdmin() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-purple-900 dark:text-purple-100">
+            <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
               {course.stats.completedEnrollments}
             </div>
-            <p className="text-xs text-purple-600/70 dark:text-purple-400/70 mt-1.5 font-medium">Telah menyelesaikan modul</p>
+            <p className="text-[10px] text-purple-600/70 dark:text-purple-400/70 mt-1 font-medium uppercase">Telah menyelesaikan modul</p>
           </CardContent>
         </Card>
       </div>

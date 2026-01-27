@@ -163,58 +163,58 @@ export function TabelLaporanAsesmen({
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Peserta</TableHead>
-              <TableHead>Kursus</TableHead>
-              <TableHead>Jenis</TableHead>
-              <TableHead>Asesmen</TableHead>
-              <TableHead>Nilai</TableHead>
-              <TableHead>Persentase</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Tanggal</TableHead>
+            <TableRow className="bg-muted/30">
+              <TableHead className="py-3 px-4">Peserta</TableHead>
+              <TableHead className="py-3">Kursus</TableHead>
+              <TableHead className="py-3">Jenis</TableHead>
+              <TableHead className="py-3">Asesmen</TableHead>
+              <TableHead className="py-3">Nilai</TableHead>
+              <TableHead className="py-3">Persentase</TableHead>
+              <TableHead className="py-3">Status</TableHead>
+              <TableHead className="py-3 pr-4">Tanggal</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>
+              <TableRow key={item.id} className="hover:bg-muted/5 transition-colors">
+                <TableCell className="py-2.5 px-4">
                   <div>
-                    <div className="font-medium">{item.peserta_nama}</div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="font-bold text-sm text-foreground">{item.peserta_nama}</div>
+                    <div className="text-[10px] text-muted-foreground">
                       {item.peserta_email}
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>
-                  <div className="max-w-[150px] truncate">
+                <TableCell className="py-2.5">
+                  <div className="max-w-[150px] truncate text-sm">
                     {item.kursus_judul}
                   </div>
                 </TableCell>
-                <TableCell>{getJenisBadge(item.jenis_asesmen)}</TableCell>
-                <TableCell>
-                  <div className="max-w-[150px] truncate">
+                <TableCell className="py-2.5">{getJenisBadge(item.jenis_asesmen)}</TableCell>
+                <TableCell className="py-2.5">
+                  <div className="max-w-[150px] truncate text-sm">
                     {item.judul_asesmen}
                   </div>
                 </TableCell>
-                <TableCell>
-                  <div className="font-medium">
+                <TableCell className="py-2.5">
+                  <div className="font-bold text-sm">
                     {item.nilai} / {item.nilai_maksimal}
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="py-2.5">
                   <div
-                    className={`font-medium ${item.persentase >= 70
-                        ? "text-green-600"
-                        : item.persentase >= 50
-                          ? "text-yellow-600"
-                          : "text-red-600"
+                    className={`font-bold text-sm ${item.persentase >= 70
+                      ? "text-green-600"
+                      : item.persentase >= 50
+                        ? "text-yellow-600"
+                        : "text-red-600"
                       }`}
                   >
                     {item.persentase}%
                   </div>
                 </TableCell>
-                <TableCell>{getStatusBadge(item.status)}</TableCell>
-                <TableCell>
+                <TableCell className="py-2.5">{getStatusBadge(item.status)}</TableCell>
+                <TableCell className="py-2.5 pr-4 text-sm text-muted-foreground">
                   {format(new Date(item.tanggal_pengerjaan), "dd MMM yyyy", {
                     locale: localeId,
                   })}

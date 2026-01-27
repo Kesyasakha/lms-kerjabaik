@@ -7,7 +7,7 @@ import {
   Users,
   ClipboardList,
   TrendingUp,
-  Clock,
+  Calendar,
   AlertCircle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -34,28 +34,28 @@ export default function InstructorDashboard() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
             Dasbor Instruktur
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">
             Selamat datang kembali! Berikut ringkasan aktivitas pengajaran Anda hari ini.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="px-3 py-1 bg-white/50 backdrop-blur-sm shadow-sm border-gray-200">
-            <Clock className="w-3.5 h-3.5 mr-2 text-primary" />
+            <Calendar className="w-3.5 h-3.5 mr-2 text-primary" />
             {new Date().toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </Badge>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-blue-500/50 group">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="relative overflow-hidden transition-all hover:shadow-md border-border/60">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-semibold text-muted-foreground">Total Kursus</CardTitle>
-            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
-              <BookOpen className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total Kursus</CardTitle>
+            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
+              <BookOpen className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent>
@@ -63,22 +63,22 @@ export default function InstructorDashboard() {
               <Skeleton className="h-8 w-20" />
             ) : (
               <>
-                <div className="text-3xl font-bold tracking-tight text-blue-900 dark:text-blue-100">
+                <div className="text-2xl font-bold tracking-tight text-foreground">
                   {stats?.total_courses || 0}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1 font-medium">
-                  Kursus yang Anda ajarkan
+                <p className="text-[10px] font-medium text-muted-foreground mt-1 uppercase">
+                  Kursus diajarkan
                 </p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-green-500/50 group">
+        <Card className="relative overflow-hidden transition-all hover:shadow-md border-border/60">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-semibold text-muted-foreground">Total Peserta</CardTitle>
-            <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg group-hover:bg-green-100 dark:group-hover:bg-green-900/40 transition-colors">
-              <Users className="w-4 h-4 text-green-600 dark:text-green-400" />
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total Peserta</CardTitle>
+            <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg text-green-600 dark:text-green-400">
+              <Users className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent>
@@ -86,22 +86,22 @@ export default function InstructorDashboard() {
               <Skeleton className="h-8 w-20" />
             ) : (
               <>
-                <div className="text-3xl font-bold tracking-tight text-green-900 dark:text-green-100">
+                <div className="text-2xl font-bold tracking-tight text-foreground">
                   {stats?.total_students || 0}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1 font-medium">Peserta aktif</p>
+                <p className="text-[10px] font-medium text-muted-foreground mt-1 uppercase">Peserta aktif</p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-orange-500/50 group">
+        <Card className="relative overflow-hidden transition-all hover:shadow-md border-border/60">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-semibold text-muted-foreground">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Tugas Tertunda
             </CardTitle>
-            <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg group-hover:bg-orange-100 dark:group-hover:bg-orange-900/40 transition-colors">
-              <ClipboardList className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+            <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 dark:text-orange-400">
+              <ClipboardList className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent>
@@ -109,22 +109,22 @@ export default function InstructorDashboard() {
               <Skeleton className="h-8 w-20" />
             ) : (
               <>
-                <div className="text-3xl font-bold tracking-tight text-orange-900 dark:text-orange-100">
+                <div className="text-2xl font-bold tracking-tight text-foreground">
                   {stats?.pending_submissions || 0}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1 font-medium">Perlu dinilai</p>
+                <p className="text-[10px] font-medium text-muted-foreground mt-1 uppercase">Perlu dinilai</p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-purple-500/50 group">
+        <Card className="relative overflow-hidden transition-all hover:shadow-md border-border/60">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-semibold text-muted-foreground">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Rata-rata Nilai
             </CardTitle>
-            <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg group-hover:bg-purple-100 dark:group-hover:bg-purple-900/40 transition-colors">
-              <TrendingUp className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600 dark:text-purple-400">
+              <TrendingUp className="w-4 h-4" />
             </div>
           </CardHeader>
           <CardContent>
@@ -132,11 +132,11 @@ export default function InstructorDashboard() {
               <Skeleton className="h-8 w-20" />
             ) : (
               <>
-                <div className="text-3xl font-bold tracking-tight text-purple-900 dark:text-purple-100">
+                <div className="text-2xl font-bold tracking-tight text-foreground">
                   {stats?.avg_class_score || 0}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1 font-medium">
-                  Dari semua kursus
+                <p className="text-[10px] font-medium text-muted-foreground mt-1 uppercase">
+                  Skor keseluruhan
                 </p>
               </>
             )}
@@ -146,55 +146,51 @@ export default function InstructorDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Pending Submissions */}
-        <Card className="rounded-2xl shadow-none border-muted/60 overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between bg-muted/10 border-b p-6">
-            <div className="space-y-1">
-              <CardTitle className="text-xl font-bold">Tugas Tertunda</CardTitle>
-              <p className="text-sm text-muted-foreground font-medium">Jawaban siswa yang belum dinilai</p>
+        <Card className="shadow-sm border-border/60 overflow-hidden">
+          <CardHeader className="bg-muted/30 border-b py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg font-bold">Tugas Tertunda</CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Jawaban siswa yang belum dinilai
+                </p>
+              </div>
+              <Button variant="ghost" size="sm" asChild className="h-8 text-xs font-bold text-primary hover:text-primary/80 hover:bg-primary/5">
+                <Link to="/instruktur/assessments">
+                  Lihat Semua
+                </Link>
+              </Button>
             </div>
-            <Button variant="ghost" size="sm" asChild className="font-bold text-primary hover:text-primary/80 hover:bg-transparent">
-              <Link to="/instruktur/assessments">
-                Lihat Semua
-              </Link>
-            </Button>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="p-0">
             {pendingLoading ? (
-              <div className="space-y-3">
+              <div className="space-y-3 p-6">
                 {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-16 w-full" />
+                  <Skeleton key={i} className="h-12 w-full" />
                 ))}
               </div>
             ) : pendingSubmissions && pendingSubmissions.length > 0 ? (
-              <div className="space-y-3">
+              <div className="divide-y divide-border/50">
                 {pendingSubmissions.map((submission) => (
                   <div
                     key={submission.id}
-                    className="flex items-start justify-between rounded-xl border border-muted/40 p-4 hover:bg-muted/30 transition-colors group"
+                    className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
                   >
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white">
-                        {submission.student_name}
-                      </p>
-                      <p className="text-xs text-muted-foreground font-medium">
-                        {submission.kursus_judul} •{" "}
-                        <span className="text-foreground">{submission.assignment_title}</span>
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Clock className="h-3 w-3 text-muted-foreground" />
-                        <p className="text-[10px] text-muted-foreground">
-                          {formatDistanceToNow(
-                            new Date(submission.submitted_at),
-                            {
-                              addSuffix: true,
-                              locale: idLocale,
-                            },
-                          )}
+                    <div className="flex-1 min-w-0 pr-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-sm font-bold text-foreground truncate">
+                          {submission.student_name}
                         </p>
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-2">
+                          {formatDistanceToNow(new Date(submission.submitted_at), { addSuffix: true, locale: idLocale })}
+                        </span>
                       </div>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {submission.kursus_judul} • <span className="font-medium text-foreground/80">{submission.assignment_title}</span>
+                      </p>
                     </div>
                     {submission.days_pending > 3 && (
-                      <Badge variant="destructive" className="shrink-0 text-[10px] px-2 py-0.5">
+                      <Badge variant="destructive" className="shrink-0 text-[10px] px-2 py-0.5 h-auto">
                         <AlertCircle className="mr-1 h-3 w-3" />
                         {submission.days_pending} hari
                       </Badge>
@@ -204,11 +200,11 @@ export default function InstructorDashboard() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-16 h-16 bg-green-50 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-4">
-                  <ClipboardList className="h-8 w-8 text-green-600 dark:text-green-400" />
+                <div className="w-12 h-12 bg-green-50 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-3">
+                  <ClipboardList className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
-                <p className="text-foreground font-bold">Semua tugas telah dinilai!</p>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="text-sm font-bold text-foreground">Semua tugas telah dinilai!</p>
+                <p className="mt-1 text-xs text-muted-foreground">
                   Tidak ada antrean tugas saat ini
                 </p>
               </div>
@@ -217,54 +213,60 @@ export default function InstructorDashboard() {
         </Card>
 
         {/* Recent Activities */}
-        <Card className="rounded-2xl shadow-none border-muted/60 overflow-hidden">
-          <CardHeader className="bg-muted/10 border-b p-6">
-            <div className="space-y-1">
-              <CardTitle className="text-xl font-bold">Aktivitas Terbaru</CardTitle>
-              <p className="text-sm text-muted-foreground font-medium">Interaksi terkini dalam kursus Anda</p>
+        <Card className="shadow-sm border-border/60 overflow-hidden">
+          <CardHeader className="bg-muted/30 border-b py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg font-bold">Aktivitas Terbaru</CardTitle>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Interaksi terkini dalam kursus Anda
+                </p>
+              </div>
             </div>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="p-0">
             {activitiesLoading ? (
-              <div className="space-y-3">
+              <div className="space-y-3 p-6">
                 {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-16 w-full" />
+                  <Skeleton key={i} className="h-12 w-full" />
                 ))}
               </div>
             ) : activities && activities.length > 0 ? (
-              <div className="space-y-4">
+              <div className="divide-y divide-border/50">
                 {activities.map((activity) => (
                   <div
                     key={activity.id}
-                    className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0"
+                    className="flex items-start gap-3 p-4 hover:bg-muted/30 transition-colors"
                   >
                     <div className={`
-                      w-8 h-8 rounded-full flex items-center justify-center shrink-0
-                      ${activity.type === 'submission' ? 'bg-orange-100 text-orange-600' :
-                        activity.type === 'pendaftaran_kursus' ? 'bg-blue-100 text-blue-600' :
-                          'bg-slate-100 text-slate-600'}
+                      w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5
+                      ${activity.type === 'submission' ? 'bg-orange-100 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400' :
+                        activity.type === 'pendaftaran_kursus' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' :
+                          'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}
                     `}>
                       {activity.type === 'submission' ? <ClipboardList className="w-4 h-4" /> :
                         activity.type === 'pendaftaran_kursus' ? <Users className="w-4 h-4" /> :
                           <TrendingUp className="w-4 h-4" />}
                     </div>
-                    <div className="flex-1 space-y-0.5">
-                      <p className="text-sm text-gray-900 dark:text-white">
-                        <span className="font-bold">
-                          {activity.student_name}
-                        </span>{" "}
-                        <span className="text-muted-foreground">
-                          {activity.description.toLowerCase()}
+                    <div className="flex-1 min-w-0 space-y-0.5">
+                      <div className="flex justify-between items-start gap-2">
+                        <p className="text-sm text-foreground">
+                          <span className="font-bold">
+                            {activity.student_name}
+                          </span>{" "}
+                          <span className="text-muted-foreground">
+                            {activity.description.toLowerCase()}
+                          </span>
+                        </p>
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                          {formatDistanceToNow(new Date(activity.timestamp), {
+                            addSuffix: true,
+                            locale: idLocale,
+                          })}
                         </span>
-                      </p>
-                      <p className="text-xs font-medium text-primary/80">
+                      </div>
+                      <p className="text-xs font-medium text-primary">
                         {activity.kursus_judul}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground pt-1">
-                        {formatDistanceToNow(new Date(activity.timestamp), {
-                          addSuffix: true,
-                          locale: idLocale,
-                        })}
                       </p>
                     </div>
                   </div>
@@ -272,8 +274,8 @@ export default function InstructorDashboard() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <Users className="h-12 w-12 text-muted-foreground/50" />
-                <p className="mt-2 text-sm text-muted-foreground">
+                <Users className="h-10 w-10 text-muted-foreground/30 mb-3" />
+                <p className="text-sm text-muted-foreground">
                   Belum ada aktivitas
                 </p>
               </div>

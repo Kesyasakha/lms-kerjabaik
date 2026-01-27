@@ -65,58 +65,58 @@ export function TabelLaporanKemajuan({
     <div className="rounded-md border">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead>Peserta</TableHead>
-            <TableHead>Kursus</TableHead>
-            <TableHead>Kategori</TableHead>
-            <TableHead>Progress</TableHead>
-            <TableHead>Modul</TableHead>
-            <TableHead>Waktu Belajar</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Tanggal Mulai</TableHead>
+          <TableRow className="bg-muted/30">
+            <TableHead className="py-3 px-4">Peserta</TableHead>
+            <TableHead className="py-3">Kursus</TableHead>
+            <TableHead className="py-3">Kategori</TableHead>
+            <TableHead className="py-3">Progress</TableHead>
+            <TableHead className="py-3">Modul</TableHead>
+            <TableHead className="py-3">Waktu Belajar</TableHead>
+            <TableHead className="py-3">Status</TableHead>
+            <TableHead className="py-3 pr-4">Tanggal Mulai</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell>
+            <TableRow key={item.id} className="hover:bg-muted/5 transition-colors">
+              <TableCell className="py-2.5 px-4">
                 <div>
-                  <div className="font-medium">{item.peserta_nama}</div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="font-bold text-sm text-foreground">{item.peserta_nama}</div>
+                  <div className="text-[10px] text-muted-foreground">
                     {item.peserta_email}
                   </div>
                 </div>
               </TableCell>
-              <TableCell>
-                <div className="max-w-[200px] truncate">
+              <TableCell className="py-2.5">
+                <div className="max-w-[200px] truncate text-sm">
                   {item.kursus_judul}
                 </div>
               </TableCell>
-              <TableCell>
-                <Badge variant="outline">{item.kursus_kategori}</Badge>
+              <TableCell className="py-2.5">
+                <Badge variant="outline" className="text-[10px] font-bold">{item.kursus_kategori}</Badge>
               </TableCell>
-              <TableCell>
+              <TableCell className="py-2.5">
                 <div className="w-24 space-y-1">
-                  <Progress value={item.persentase_kemajuan} className="h-2" />
-                  <div className="text-xs text-muted-foreground">
+                  <Progress value={item.persentase_kemajuan} className="h-1.5" />
+                  <div className="text-[10px] text-muted-foreground font-medium">
                     {item.persentase_kemajuan}%
                   </div>
                 </div>
               </TableCell>
-              <TableCell>
-                <div className="text-sm">
+              <TableCell className="py-2.5">
+                <div className="text-sm font-medium">
                   {item.modul_selesai} / {item.total_modul}
                 </div>
               </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-1 text-sm">
+              <TableCell className="py-2.5">
+                <div className="flex items-center gap-1 text-sm font-medium">
                   <Clock className="h-3 w-3 text-muted-foreground" />
                   {Math.floor(item.waktu_belajar_menit / 60)}j{" "}
                   {item.waktu_belajar_menit % 60}m
                 </div>
               </TableCell>
-              <TableCell>{getStatusBadge(item.status)}</TableCell>
-              <TableCell>
+              <TableCell className="py-2.5">{getStatusBadge(item.status)}</TableCell>
+              <TableCell className="py-2.5 pr-4 text-sm text-muted-foreground">
                 {item.tanggal_mulai
                   ? format(new Date(item.tanggal_mulai), "dd MMM yyyy", {
                     locale: localeId,

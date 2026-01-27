@@ -51,20 +51,12 @@ import {
   AdminCourseFilters,
   KursusWithInstructor,
 } from "../tipe/courses.types";
-import { cn } from "@/pustaka/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/komponen/ui/dropdown-menu";
-
-const statusColors = {
-  draft: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
-  published:
-    "bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/50 dark:hover:bg-emerald-900/20",
-  archived: "bg-rose-50 text-rose-700 border-rose-100 hover:bg-rose-50 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-800/50 dark:hover:bg-rose-900/20",
-};
 
 const statusLabels = {
   draft: "Draft",
@@ -252,19 +244,17 @@ export function HalamanKursusAdmin() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Manajemen Kursus
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Kelola kurikulum, instruktur, dan ketersediaan pelatihan
+        <div className="flex flex-col gap-1">
+          <h1 className="text-xl font-bold tracking-tight text-foreground">Katalog Kursus</h1>
+          <p className="text-muted-foreground text-xs">
+            Kelola kurikulum, materi pembelajaran, dan penugasan instruktur.
           </p>
         </div>
-        <Button onClick={handleOpenCreateDialog} className="shadow-sm">
+        <Button onClick={handleOpenCreateDialog} size="sm" className="shadow-sm">
           <Plus className="w-4 h-4 mr-2" />
-          Tambah Kursus Baru
+          Buat Kursus Baru
         </Button>
       </div>
 

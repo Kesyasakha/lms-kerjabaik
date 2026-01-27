@@ -63,14 +63,14 @@ export function HalamanLaporanAdmin() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
             Laporan & Analitik
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-gray-600 dark:text-gray-400 mt-1 text-xs">
             Wawasan berbasis data untuk evaluasi performa pembelajaran
           </p>
         </div>
@@ -92,7 +92,7 @@ export function HalamanLaporanAdmin() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="mt-8 space-y-8">
+        <div className="mt-6 space-y-6">
           <div className="bg-card text-card-foreground rounded-xl border shadow-sm p-4">
             <FilterLaporan
               filters={filters}
@@ -115,9 +115,9 @@ export function HalamanLaporanAdmin() {
             </div>
 
             <Card className="rounded-xl border shadow-sm overflow-hidden">
-              <CardHeader className="bg-muted/30 border-b">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <BarChart3 className="h-5 w-5 text-primary" />
+              <CardHeader className="bg-muted/30 border-b py-3">
+                <CardTitle className="flex items-center gap-2 text-md">
+                  <BarChart3 className="h-4 w-4 text-primary" />
                   Data Progress Pembelajaran
                 </CardTitle>
               </CardHeader>
@@ -139,9 +139,9 @@ export function HalamanLaporanAdmin() {
             </Suspense>
 
             <Card className="rounded-xl border shadow-sm overflow-hidden">
-              <CardHeader className="bg-muted/30 border-b">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Activity className="h-5 w-5 text-primary" />
+              <CardHeader className="bg-muted/30 border-b py-3">
+                <CardTitle className="flex items-center gap-2 text-md">
+                  <Activity className="h-4 w-4 text-primary" />
                   Data Keterlibatan
                 </CardTitle>
               </CardHeader>
