@@ -49,6 +49,12 @@ const HalamanDetailKursusAdmin = lazy(() => import("@/fitur/admin/pages/HalamanD
 const HalamanDasborAdmin = lazy(() => import("@/fitur/admin/pages/HalamanDasborAdmin").then(m => ({ default: m.HalamanDasborAdmin })));
 const HalamanLaporanAdmin = lazy(() => import("@/fitur/admin/pages/HalamanLaporanAdmin").then(m => ({ default: m.HalamanLaporanAdmin })));
 
+// Template Preview - Lazy loaded
+const PreviewLayout = lazy(() => import("@/fitur/template-preview/layouts/PreviewLayout"));
+const DashboardPreview = lazy(() => import("@/fitur/template-preview/pages/DashboardPreview").then(m => ({ default: m.DashboardPreview })));
+const SuperadminDashboardPreview = lazy(() => import("@/fitur/template-preview/pages/SuperadminDashboardPreview").then(m => ({ default: m.SuperadminDashboardPreview })));
+const TenantListPreview = lazy(() => import("@/fitur/template-preview/pages/TenantListPreview").then(m => ({ default: m.TenantListPreview })));
+
 // Instructor pages - Lazy loaded (default exports)
 const InstructorDashboard = lazy(() => import("@/fitur/instruktur/pages/InstructorDashboard"));
 const InstructorCoursesPage = lazy(() => import("@/fitur/instruktur/pages/InstructorCoursesPage"));
@@ -392,6 +398,22 @@ export function AppRouter() {
           }
         />
       </Route>
+
+      <Route
+        path="/template-preview/*"
+        element={
+          <Suspense fallback={<PageLoader />}>
+            <PreviewLayout>
+              <Routes>
+                <Route path="dashboard" element={<DashboardPreview />} />
+                <Route path="superadmin" element={<SuperadminDashboardPreview />} />
+                <Route path="tenants" element={<TenantListPreview />} />
+                <Route path="*" element={<Navigate to="dashboard" replace />} />
+              </Routes>
+            </PreviewLayout>
+          </Suspense>
+        }
+      />
 
       {/* Fallback */}
       <Route path="/unauthorized" element={<div>Unauthorized</div>} />

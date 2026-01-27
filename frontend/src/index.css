@@ -1,62 +1,41 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {
-    /* Brand Palette - Deep & Sharp */
-    --background: 210 40% 98%;
-    /* #f8fafc */
-    --foreground: 215 28% 17%;
-    /* #1f2937 */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
-    /* #ffffff */
-    --card-foreground: 215 28% 17%;
+    --card-foreground: 222.2 84% 4.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 28% 17%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 210 76% 16%;
-    /* #0a2a4a */
-    --primary-foreground: 0 0% 100%;
+    --primary: 247 82% 68%;
+    /* #7B6CF0 converted to HSL approx 247, 82%, 68% */
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96%;
-    /* #f1f5f9 */
-    --secondary-foreground: 210 76% 16%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    /* #64748b */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 190 100% 43%;
-    /* #00b5d9 */
-    --accent-foreground: 0 0% 100%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 72% 51%;
-    /* #dc2626 */
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 214 32% 91%;
-    /* #e2e8f0 */
-    --input: 214 32% 91%;
-    --ring: 190 100% 43%;
-    /* Focus ring uses accent */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 247 82% 68%;
 
-    --radius: 0.25rem;
-    /* 4px Sharp */
+    --radius: 0.5rem;
 
-    /* Chart Colors */
-    --chart-1: 190 100% 43%;
-    /* Accent */
-    --chart-2: 210 76% 16%;
-    /* Primary */
-    --chart-3: 142 76% 36%;
-    /* Success */
-    --chart-4: 45 93% 47%;
-    /* Warning */
-    --chart-5: 0 72% 51%;
-    /* Danger */
+    --h-nav: 90px;
   }
 
   .dark {
@@ -69,7 +48,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 247 82% 68%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -78,28 +57,49 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 190 100% 43%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-
-    --chart-1: 190 100% 43%;
-    --chart-2: 210 76% 60%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --ring: 247 70% 50%;
+    /* Adjusted for dark mode visibility if needed */
   }
+}
 
+@layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-sans;
   }
+}
+
+/* Template Specific Globals */
+@layer utilities {
+  .all-center {
+    @apply flex items-center justify-center;
+  }
+
+  .primary-gradient {
+    @apply bg-gradient-to-br from-violet-500 to-violet-400;
+  }
+}
+
+/* Scrollbar customization from template */
+::-webkit-scrollbar {
+  @apply h-1 w-1;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-200 rounded-md;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-md hover:bg-gray-400;
 }

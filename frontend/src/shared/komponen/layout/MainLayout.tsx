@@ -1,37 +1,21 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/fitur/autentikasi/stores/authStore";
 import { useState } from "react";
-import { AppSidebarContent } from "./Sidebar";
-import { Sidebar } from "@/komponen/ui/sidebar";
+import Sidebar from "./Sidebar";
 import { cn } from "@/pustaka/utils";
 
 export function MainLayout() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  // Initialize handled by App.tsx root level
-
-
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login");
-  };
-
   return (
     <div className={cn(
-      "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
-      "h-screen"
+      "flex flex-col md:flex-row bg-gray-50 dark:bg-neutral-900 w-full min-h-screen",
     )}>
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
-        <AppSidebarContent user={user} handleLogout={handleLogout} />
-      </Sidebar>
+      <Sidebar />
 
-      <div className="flex flex-1 flex-col h-full overflow-y-auto">
-
-
+      <div className="flex flex-1 flex-col h-screen overflow-hidden">
         {/* Page Content */}
-        <main className="flex-1 p-4 md:p-6 space-y-5">
+        <main className="flex-1 p-4 md:p-6 space-y-5 overflow-y-auto custom-scrollbar">
           <Outlet />
         </main>
       </div>
