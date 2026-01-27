@@ -21,8 +21,8 @@ ENV NODE_ENV=$NODE_ENV
 # Copy package files dari frontend folder
 COPY frontend/package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (including devDependencies needed for Vite build)
+RUN npm ci
 
 # Copy source code
 COPY frontend/ ./
