@@ -20,10 +20,13 @@ ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 # Copy package files dari frontend folder
 COPY frontend/package*.json ./
 
-# Install dependencies (including devDependencies needed for Vite build)
-# Memastikan NODE_ENV tidak diset ke production agar devDependencies terinstall
-# Menggunakan npm install yang lebih fleksibel daripada npm ci
+# Install ALL dependencies including devDependencies (vite is in devDependencies)
+# CRITICAL: Must use npm install (not npm ci) and set NODE_ENV=development
+# to ensure devDependencies are installed
 RUN NODE_ENV=development npm install
+
+# Verify that vite is installed (exit with error if not found)
+RUN test -f node_modules/.bin/vite || (echo "ERROR: vite not found in node_modules!" && exit 1)
 
 # Copy source code
 COPY frontend/ ./
