@@ -45,8 +45,16 @@ FROM nginx:alpine
 # Copy hasil build dari builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+# Set proper permissions untuk nginx
+RUN chmod -R 755 /usr/share/nginx/html && \
+    chown -R nginx:nginx /usr/share/nginx/html
+
 # Copy custom nginx config untuk SPA routing
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Verify files exist
+RUN ls -la /usr/share/nginx/html/ && \
+    test -f /usr/share/nginx/html/index.html || (echo "ERROR: index.html not found!" && exit 1)
 
 # Expose port 80
 EXPOSE 80
