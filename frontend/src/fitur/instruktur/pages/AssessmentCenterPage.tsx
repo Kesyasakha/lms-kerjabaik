@@ -42,8 +42,7 @@ import { formatDistanceToNow } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { GradingDialog } from "@/fitur/instruktur/komponen/GradingDialog";
 import { InlineGradeInput } from "@/fitur/instruktur/komponen/InlineGradeInput";
-import { ConfirmDialog } from "@/komponen/ui/ConfirmDialog";
-import { toast } from "sonner";
+import { pemberitahuan } from "@/pustaka/pemberitahuan";
 
 export default function AssessmentCenterPage() {
   const [filters, setFilters] = useState<SubmissionFilters>({
@@ -56,15 +55,7 @@ export default function AssessmentCenterPage() {
   >(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [editingGradeId, setEditingGradeId] = useState<string | null>(null);
-  const [confirmReject, setConfirmReject] = useState<{
-    open: boolean;
-    submissionId: string | null;
-  }>({ open: false, submissionId: null });
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [confirmBulkAction, setConfirmBulkAction] = useState<{
-    open: boolean;
-    aksi: "approve" | "reject" | null;
-  }>({ open: false, aksi: null });
 
   // Debounce search to avoid excessive API calls
   const debouncedSearch = useDebounce(searchQuery, 300);
@@ -166,49 +157,68 @@ export default function AssessmentCenterPage() {
 
   // Quick aksi handlers
   const handleQuickGrade = async (submissionId: string, grade: number) => {
-    await gradeSubmissionMutation.mutateAsync({
-      submissionId,
-      gradeData: {
-        grade,
-        status: "graded",
-      },
-    });
-    toast.success(`Nilai ${grade} berhasil disimpan`);
-    setEditingGradeId(null);
+    try {
+      pemberitahuan.tampilkanPemuatan("Menyimpan nilai...");
+      await gradeSubmissionMutation.mutateAsync({
+        submissionId,
+        gradeData: {
+          grade,
+          status: "graded",
+        },
+      });
+      pemberitahuan.sukses(`Nilai ${grade} berhasil disimpan.`);
+      setEditingGradeId(null);
+    } catch (error) {
+      pemberitahuan.gagal("Gagal menyimpan nilai.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
+    }
   };
 
   const handleQuickApprove = async (submission: Submission) => {
-    await gradeSubmissionMutation.mutateAsync({
-      submissionId: submission.id,
-      gradeData: {
-        grade: submission.assignment_max_score || 100,
-        status: "graded",
-        feedback: "Approved",
-      },
-    });
-    toast.success("Submission approved", {
-      description: `${submission.student_name} - ${submission.assignment_max_score || 100} points`
-    });
+    try {
+      pemberitahuan.tampilkanPemuatan("Menyetujui submission...");
+      await gradeSubmissionMutation.mutateAsync({
+        submissionId: submission.id,
+        gradeData: {
+          grade: submission.assignment_max_score || 100,
+          status: "graded",
+          feedback: "Approved",
+        },
+      });
+      pemberitahuan.sukses(`Submission dari ${submission.student_name} telah disetujui.`);
+    } catch (error) {
+      pemberitahuan.gagal("Gagal menyetujui submission.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
+    }
   };
 
   const handleQuickReject = async (submissionId: string) => {
-    setConfirmReject({ open: true, submissionId });
-  };
-
-  const confirmQuickReject = async () => {
-    if (!confirmReject.submissionId) return;
-
-    await gradeSubmissionMutation.mutateAsync({
-      submissionId: confirmReject.submissionId,
-      gradeData: {
-        grade: 0,
-        status: "rejected",
-        feedback: "Rejected",
+    pemberitahuan.konfirmasi(
+      "Reject Submission?",
+      "Peserta akan menerima notifikasi bahwa submission mereka ditolak. Anda masih bisa mengubah status ini nanti.",
+      async () => {
+        try {
+          pemberitahuan.tampilkanPemuatan("Menolak submission...");
+          await gradeSubmissionMutation.mutateAsync({
+            submissionId,
+            gradeData: {
+              grade: 0,
+              status: "rejected",
+              feedback: "Rejected",
+            },
+          });
+          pemberitahuan.sukses("Submission telah ditolak.");
+        } catch (error) {
+          pemberitahuan.gagal("Gagal menolak submission.");
+        } finally {
+          pemberitahuan.hilangkanPemuatan();
+        }
       },
-    });
-
-    toast.success("Submission rejected");
-    setConfirmReject({ open: false, submissionId: null });
+      undefined,
+      "Ya, Reject"
+    );
   };
 
   // Bulk selection handlers
@@ -230,43 +240,43 @@ export default function AssessmentCenterPage() {
     setSelectedIds(newSelected);
   };
 
-  const handleBulkApprove = () => {
-    setConfirmBulkAction({ open: true, aksi: "approve" });
-  };
-
-  const handleBulkReject = () => {
-    setConfirmBulkAction({ open: true, aksi: "reject" });
-  };
-
-  const confirmBulkActionHandler = async () => {
-    if (!confirmBulkAction.aksi || selectedIds.size === 0) return;
+  const handleBulkAction = async (aksi: "approve" | "reject") => {
+    if (selectedIds.size === 0) return;
 
     const ids = Array.from(selectedIds);
-    const status = confirmBulkAction.aksi === "approve" ? "graded" : "rejected";
-    const grade = confirmBulkAction.aksi === "approve" ? 100 : 0;
-    const feedback =
-      confirmBulkAction.aksi === "approve" ? "Bulk Approved" : "Bulk Rejected";
+    const label = aksi === "approve" ? "menyetujui" : "menolak";
 
-    try {
-      await Promise.all(
-        ids.map((id) =>
-          gradeSubmissionMutation.mutateAsync({
-            submissionId: id,
-            gradeData: { grade, status, feedback },
-          }),
-        ),
-      );
-      toast.success(
-        `Berhasil ${confirmBulkAction.aksi === "approve" ? "menyetujui" : "menolak"
-        } ${ids.length} submission`,
-      );
-      setSelectedIds(new Set());
-    } catch (error) {
-      toast.error("Gagal melakukan aksi massal");
-    } finally {
-      setConfirmBulkAction({ open: false, aksi: null });
-    }
+    pemberitahuan.konfirmasi(
+      `${aksi === "approve" ? "Approve" : "Reject"} ${ids.length} Submissions?`,
+      `Anda akan ${label} **${ids.length}** submission secara massal. Aksi ini tidak dapat dibatalkan.`,
+      async () => {
+        try {
+          pemberitahuan.tampilkanPemuatan(`Sedang ${label} ${ids.length} data...`);
+          const status = aksi === "approve" ? "graded" : "rejected";
+          const grade = aksi === "approve" ? 100 : 0;
+          const feedback = aksi === "approve" ? "Bulk Approved" : "Bulk Rejected";
+
+          await Promise.all(
+            ids.map((id) =>
+              gradeSubmissionMutation.mutateAsync({
+                submissionId: id,
+                gradeData: { grade, status, feedback },
+              }),
+            ),
+          );
+          pemberitahuan.sukses(`Berhasil ${label} ${ids.length} submission.`);
+          setSelectedIds(new Set());
+        } catch (error) {
+          pemberitahuan.gagal("Gagal melakukan aksi massal.");
+        } finally {
+          pemberitahuan.hilangkanPemuatan();
+        }
+      }
+    );
   };
+
+  const handleBulkApprove = () => handleBulkAction("approve");
+  const handleBulkReject = () => handleBulkAction("reject");
 
   return (
     <div className="space-y-6">
@@ -708,36 +718,7 @@ export default function AssessmentCenterPage() {
         />
       )}
 
-      {/* Confirm Reject Dialog */}
-      <ConfirmDialog
-        open={confirmReject.open}
-        onOpenChange={(open) =>
-          setConfirmReject({ open, submissionId: null })
-        }
-        title="Reject Submission?"
-        description="Peserta akan menerima notifikasi bahwa submission mereka ditolak. Anda masih bisa mengubah status ini nanti."
-        confirmText="Ya, Reject"
-        cancelText="Batal"
-        onConfirm={confirmQuickReject}
-        variant="destructive"
-      />
-
-      <ConfirmDialog
-        open={confirmBulkAction.open}
-        onOpenChange={(open) =>
-          setConfirmBulkAction({ open, aksi: null })
-        }
-        title={`${confirmBulkAction.aksi === "approve" ? "Approve" : "Reject"
-          } ${selectedIds.size} Submissions?`}
-        description={`Anda akan ${confirmBulkAction.aksi === "approve" ? "menyetujui" : "menolak"
-          } ${selectedIds.size} submission sekaligus. Aksi ini tidak dapat dibatalkan.`}
-        confirmText="Ya, Lanjutkan"
-        cancelText="Batal"
-        onConfirm={confirmBulkActionHandler}
-        variant={
-          confirmBulkAction.aksi === "approve" ? "default" : "destructive"
-        }
-      />
+      {/* Konfirmasi menggunakan Notiflix */}
     </div>
   );
 }

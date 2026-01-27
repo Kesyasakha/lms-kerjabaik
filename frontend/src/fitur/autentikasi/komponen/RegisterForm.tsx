@@ -11,6 +11,7 @@ import { Label } from "@/komponen/ui/label";
 import { useToast } from "@/komponen/ui/use-toast";
 
 import { AuthFormError } from "./AuthFormError";
+import { authApi } from "@/fitur/autentikasi/api/authApi";
 
 const registerSchema = z
   .object({

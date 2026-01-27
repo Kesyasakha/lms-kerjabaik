@@ -15,21 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/komponen/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/komponen/ui/alert-dialog";
 import { Search, Plus } from "lucide-react";
 import { TabelPenggunaAdmin } from "../komponen/TabelPenggunaAdmin";
 import type { AdminUserFilters, AdminUserData } from "../tipe/admin.types";
 import type { Database } from "@/shared/tipe/database.types";
-import { useToast } from "@/komponen/ui/use-toast";
+import { pemberitahuan } from "@/pustaka/pemberitahuan";
 
 type Pengguna = Database["public"]["Tables"]["pengguna"]["Row"];
 
@@ -40,17 +30,12 @@ export function HalamanPenggunaAdmin() {
   });
   const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<Pengguna | null>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<{
-    id: string;
-    nama: string;
-  } | null>(null);
 
   const { data: usersData, isLoading } = useAdminUsers(filters);
   const createUserMutation = useCreateAdminUser();
   const updateUserMutation = useUpdateAdminUser();
   const deleteUserMutation = useDeleteAdminUser();
-  const { toast } = useToast();
+  // useToast dihapus
 
   const handleSearchChange = (value: string) => {
     setFilters((prev) => ({ ...prev, search: value, page: 1 }));
@@ -74,18 +59,14 @@ export function HalamanPenggunaAdmin() {
 
   const handleCreateUser = async (data: AdminUserData) => {
     try {
+      pemberitahuan.tampilkanPemuatan("Menambahkan pengguna...");
       await createUserMutation.mutateAsync(data);
+      pemberitahuan.sukses(`Pengguna ${data.nama_lengkap} berhasil ditambahkan.`);
       setUserDialogOpen(false);
-      toast({
-        title: "User berhasil dibuat",
-        description: `${data.nama_lengkap} telah ditambahkan ke sistem.`,
-      });
     } catch (error: any) {
-      toast({
-        title: "Gagal membuat user",
-        description: error.message || "Terjadi kesalahan",
-        variant: "destructive",
-      });
+      pemberitahuan.gagal(error.message || "Gagal membuat pengguna.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
     }
   };
 
@@ -93,22 +74,18 @@ export function HalamanPenggunaAdmin() {
     if (!editingUser) return;
 
     try {
+      pemberitahuan.tampilkanPemuatan("Memperbarui pengguna...");
       await updateUserMutation.mutateAsync({
         userId: editingUser.id,
         data,
       });
+      pemberitahuan.sukses(`Perubahan pada ${data.nama_lengkap} berhasil disimpan.`);
       setUserDialogOpen(false);
       setEditingUser(null);
-      toast({
-        title: "User berhasil diupdate",
-        description: `Perubahan pada ${data.nama_lengkap} telah disimpan.`,
-      });
     } catch (error: any) {
-      toast({
-        title: "Gagal update user",
-        description: error.message || "Terjadi kesalahan",
-        variant: "destructive",
-      });
+      pemberitahuan.gagal(error.message || "Gagal memperbarui pengguna.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
     }
   };
 
@@ -131,28 +108,21 @@ export function HalamanPenggunaAdmin() {
   };
 
   const confirmDeleteUser = (user: { id: string; nama: string }) => {
-    setUserToDelete(user);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleDeleteUser = async () => {
-    if (!userToDelete) return;
-
-    try {
-      await deleteUserMutation.mutateAsync(userToDelete.id);
-      setDeleteDialogOpen(false);
-      setUserToDelete(null);
-      toast({
-        title: "User berhasil dihapus",
-        description: `${userToDelete.nama} telah dihapus dari sistem.`,
-      });
-    } catch (error: any) {
-      toast({
-        title: "Gagal menghapus user",
-        description: error.message || "Terjadi kesalahan",
-        variant: "destructive",
-      });
-    }
+    pemberitahuan.konfirmasi(
+      "Konfirmasi Hapus",
+      `Apakah Anda yakin ingin menghapus pengguna **${user.nama}** secara permanen?`,
+      async () => {
+        try {
+          pemberitahuan.tampilkanPemuatan("Menghapus pengguna...");
+          await deleteUserMutation.mutateAsync(user.id);
+          pemberitahuan.sukses("Pengguna berhasil dihapus.");
+        } catch (error: any) {
+          pemberitahuan.gagal(error.message || "Gagal menghapus pengguna.");
+        } finally {
+          pemberitahuan.hilangkanPemuatan();
+        }
+      }
+    );
   };
 
   return (
@@ -294,29 +264,7 @@ export function HalamanPenggunaAdmin() {
         user={editingUser}
       />
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={(open: boolean) => setDeleteDialogOpen(open)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tindakan ini tidak dapat dibatalkan. Ini akan menghapus pengguna{" "}
-              <span className="font-bold text-foreground">{userToDelete?.nama}</span> secara
-              permanen dari sistem.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteUser}
-              className="bg-red-600 hover:bg-red-700 text-white"
-              disabled={deleteUserMutation.isPending}
-            >
-              {deleteUserMutation.isPending ? "Menghapus..." : "Hapus"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Konfirmasi hapus menggunakan Notiflix */}
     </div>
   );
 }

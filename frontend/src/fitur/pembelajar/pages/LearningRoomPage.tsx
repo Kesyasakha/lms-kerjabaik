@@ -24,7 +24,7 @@ import { VideoPlayer } from '../komponen/VideoPlayer';
 import { TextContent } from '../komponen/TextContent';
 import { LearningSidebar } from '../komponen/LearningSidebar';
 
-import { toast } from 'sonner';
+import { pemberitahuan } from '@/pustaka/pemberitahuan';
 
 export function LearningRoomPage() {
     const { enrollmentId } = useParams<{ enrollmentId: string }>();
@@ -70,6 +70,7 @@ export function LearningRoomPage() {
         if (!enrollmentId || !currentMaterialId) return;
 
         try {
+            pemberitahuan.tampilkanPemuatan("Menyimpan progress...");
             await updateProgressMutation.mutateAsync({
                 enrollmentId,
                 materiId: currentMaterialId,
@@ -77,9 +78,11 @@ export function LearningRoomPage() {
                 waktubelajarDetik: 0, // TODO: track actual time
                 status: 'selesai'
             });
-            toast.success('Materi diselesaikan!');
+            pemberitahuan.sukses('Materi berhasil diselesaikan!');
         } catch (error) {
-            toast.error('Gagal menyimpan progress');
+            pemberitahuan.gagal('Gagal menyimpan progress belajar.');
+        } finally {
+            pemberitahuan.hilangkanPemuatan();
         }
     };
 

@@ -4,16 +4,8 @@ import { useParams, Link } from "react-router-dom";
 import { Button } from "@/komponen/ui/button";
 import { Badge } from "@/komponen/ui/badge";
 import { Skeleton } from "@/komponen/ui/skeleton";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/komponen/ui/alert-dialog";
+// AlertDialog dihapus karena menggunakan Notiflix
+import { pemberitahuan } from "@/pustaka/pemberitahuan";
 import {
   ArrowLeft,
   Plus,
@@ -151,8 +143,6 @@ export default function CourseContentEditorPage() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [selectedModule, setSelectedModule] = useState<Module | null>(null); // For editing metadata
   const [activeModule, setActiveModule] = useState<Module | null>(null); // For content editing
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [moduleToDelete, setModuleToDelete] = useState<Module | null>(null);
 
   // Queries & Mutations
   const { data: course, isLoading: courseLoading } = useInstructorCourseDetail(
@@ -190,43 +180,56 @@ export default function CourseContentEditorPage() {
   };
 
   const handleDeleteModule = (module: Module) => {
-    setModuleToDelete(module);
-    setDeleteDialogOpen(true);
+    pemberitahuan.konfirmasi(
+      "Hapus Modul?",
+      `Apakah Anda yakin ingin menghapus modul **${module.judul}**? Aksi ini akan menghapus semua konten di dalamnya secara permanen.`,
+      async () => {
+        try {
+          pemberitahuan.tampilkanPemuatan("Menghapus modul...");
+          await deleteModuleMutation.mutateAsync({
+            moduleId: module.id,
+            kursusId: kursusId!,
+          });
+          pemberitahuan.sukses("Modul berhasil dihapus.");
+          if (activeModule?.id === module.id) {
+            setActiveModule(null);
+          }
+        } catch (error) {
+          pemberitahuan.gagal("Gagal menghapus modul.");
+        } finally {
+          pemberitahuan.hilangkanPemuatan();
+        }
+      }
+    );
   };
 
   const handleSaveModule = async (data: CreateModuleData) => {
     try {
+      pemberitahuan.tampilkanPemuatan(selectedModule ? "Memperbarui modul..." : "Menambahkan modul...");
       if (selectedModule) {
         await updateModuleMutation.mutateAsync({
           moduleId: selectedModule.id,
           data,
         });
+        pemberitahuan.sukses("Modul berhasil diperbarui.");
       } else {
         await createModuleMutation.mutateAsync({
           kursusId: kursusId!,
           data,
         });
+        pemberitahuan.sukses("Modul baru berhasil ditambahkan.");
       }
       setEditorOpen(false);
       setSelectedModule(null);
     } catch (error) {
       console.error("Failed to save module", error);
+      pemberitahuan.gagal("Gagal menyimpan modul.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
     }
   };
 
-  const handleConfirmDelete = async () => {
-    if (moduleToDelete) {
-      await deleteModuleMutation.mutateAsync({
-        moduleId: moduleToDelete.id,
-        kursusId: kursusId!,
-      });
-      setDeleteDialogOpen(false);
-      setModuleToDelete(null);
-      if (activeModule?.id === moduleToDelete.id) {
-        setActiveModule(null);
-      }
-    }
-  };
+  // handleConfirmDelete dihapus karena logika dipindah ke handleDeleteModule
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -238,6 +241,7 @@ export default function CourseContentEditorPage() {
         kursusId: kursusId!,
         moduleIds: newOrder.map((m) => m.id),
       });
+      pemberitahuan.sukses("Urutan modul berhasil diperbarui.");
     }
   };
 
@@ -382,26 +386,7 @@ export default function CourseContentEditorPage() {
         }
       />
 
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Hapus Modul?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Apakah Anda yakin ingin menghapus modul "{moduleToDelete?.judul}"?
-              Aksi ini akan menghapus semua konten di dalamnya secara permanen.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {deleteModuleMutation.isPending ? "Menghapus..." : "Hapus Modul"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Konfirmasi hapus menggunakan Notiflix */}
     </div>
   );
 }

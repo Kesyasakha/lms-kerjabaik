@@ -27,17 +27,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/komponen/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/komponen/ui/alert-dialog";
 import { Label } from "@/komponen/ui/label";
+import { pemberitahuan } from "@/pustaka/pemberitahuan";
 import {
   Card,
   CardContent,
@@ -56,11 +47,10 @@ import {
   MoreVertical,
   BookOpen,
 } from "lucide-react";
-import type {
+import {
   AdminCourseFilters,
   KursusWithInstructor,
 } from "../tipe/courses.types";
-import { useToast } from "@/komponen/ui/use-toast";
 import { cn } from "@/pustaka/utils";
 import {
   DropdownMenu,
@@ -106,9 +96,6 @@ export function HalamanKursusAdmin() {
   const [selectedCourse, setSelectedCourse] =
     useState<KursusWithInstructor | null>(null);
   const [selectedInstructor, setSelectedInstructor] = useState<string>("");
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [courseToDelete, setCourseToDelete] =
-    useState<KursusWithInstructor | null>(null);
 
   const { data: coursesData, isLoading } = useAdminCourses(filters);
   const { data: instructors } = useInstructors();
@@ -117,7 +104,7 @@ export function HalamanKursusAdmin() {
   const createCourseMutation = useCreateAdminCourse();
   const updateCourseMutation = useUpdateAdminCourse();
   const deleteMutation = useDeleteAdminCourse();
-  const { toast } = useToast();
+  // useToast dihapus
 
   const handleSearchChange = (value: string) => {
     setFilters((prev) => ({ ...prev, search: value, page: 1 }));
@@ -152,40 +139,32 @@ export function HalamanKursusAdmin() {
 
   const handleCreateCourse = async (data: any) => {
     try {
+      pemberitahuan.tampilkanPemuatan("Menambahkan kursus...");
       await createCourseMutation.mutateAsync(data);
+      pemberitahuan.sukses(`Kursus "${data.judul}" berhasil ditambahkan.`);
       setCourseDialogOpen(false);
-      toast({
-        title: "Kursus berhasil dibuat",
-        description: `Kursus "${data.judul}" telah ditambahkan.`,
-      });
     } catch (error: any) {
-      toast({
-        title: "Gagal membuat kursus",
-        description: error.message || "Terjadi kesalahan",
-        variant: "destructive",
-      });
+      pemberitahuan.gagal(error.message || "Gagal membuat kursus.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
     }
   };
 
   const handleUpdateCourse = async (data: any) => {
     if (!editingCourse) return;
     try {
+      pemberitahuan.tampilkanPemuatan("Memperbarui kursus...");
       await updateCourseMutation.mutateAsync({
         kursusId: editingCourse.id,
         data,
       });
+      pemberitahuan.sukses("Perubahan pada kursus berhasil disimpan.");
       setCourseDialogOpen(false);
       setEditingCourse(null);
-      toast({
-        title: "Kursus berhasil diupdate",
-        description: `Perubahan pada kursus tersebut telah disimpan.`,
-      });
     } catch (error: any) {
-      toast({
-        title: "Gagal update kursus",
-        description: error.message || "Terjadi kesalahan",
-        variant: "destructive",
-      });
+      pemberitahuan.gagal(error.message || "Gagal memperbarui kursus.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
     }
   };
 
@@ -207,21 +186,17 @@ export function HalamanKursusAdmin() {
     if (!selectedCourse || !selectedInstructor) return;
 
     try {
+      pemberitahuan.tampilkanPemuatan("Menugaskan instruktur...");
       await assignMutation.mutateAsync({
         id_kursus: selectedCourse.id,
         id_instruktur: selectedInstructor,
       });
+      pemberitahuan.sukses(`Instruktur berhasil ditugaskan ke kursus "${selectedCourse.judul}".`);
       setAssignDialogOpen(false);
-      toast({
-        title: "Instruktur berhasil ditugaskan",
-        description: `Instruktur telah ditugaskan ke kursus "${selectedCourse.judul}".`,
-      });
     } catch (error: any) {
-      toast({
-        title: "Gagal menugaskan instruktur",
-        description: error.message || "Terjadi kesalahan",
-        variant: "destructive",
-      });
+      pemberitahuan.gagal(error.message || "Gagal menugaskan instruktur.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
     }
   };
 
@@ -229,65 +204,50 @@ export function HalamanKursusAdmin() {
     const newStatus = course.status === "published" ? "draft" : "published";
 
     try {
+      pemberitahuan.tampilkanPemuatan("Mengubah status...");
       await updateVisibilityMutation.mutateAsync({
         kursusId: course.id,
         status: newStatus,
       });
-      toast({
-        title: "Status berhasil diubah",
-        description: `Kursus "${course.judul}" sekarang ${statusLabels[newStatus]}.`,
-      });
+      pemberitahuan.sukses(`Status kursus "${course.judul}" sekarang ${statusLabels[newStatus]}.`);
     } catch (error: any) {
-      toast({
-        title: "Gagal mengubah status",
-        description: error.message || "Terjadi kesalahan",
-        variant: "destructive",
-      });
+      pemberitahuan.gagal(error.message || "Gagal mengubah status.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
     }
   };
 
   const handleArchiveCourse = async (course: KursusWithInstructor) => {
     try {
+      pemberitahuan.tampilkanPemuatan("Mengarsipkan kursus...");
       await updateVisibilityMutation.mutateAsync({
         kursusId: course.id,
         status: "archived",
       });
-      toast({
-        title: "Kursus berhasil diarsipkan",
-        description: `Kursus "${course.judul}" telah diarsipkan.`,
-      });
+      pemberitahuan.sukses(`Kursus "${course.judul}" telah diarsipkan.`);
     } catch (error: any) {
-      toast({
-        title: "Gagal mengarsipkan kursus",
-        description: error.message || "Terjadi kesalahan",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDeleteCourse = async () => {
-    if (!courseToDelete) return;
-
-    try {
-      await deleteMutation.mutateAsync(courseToDelete.id);
-      setDeleteConfirmOpen(false);
-      setCourseToDelete(null);
-      toast({
-        title: "Kursus berhasil dihapus",
-        description: `Kursus "${courseToDelete.judul}" telah dihapus dari sistem.`,
-      });
-    } catch (error: any) {
-      toast({
-        title: "Gagal menghapus kursus",
-        description: error.message || "Terjadi kesalahan",
-        variant: "destructive",
-      });
+      pemberitahuan.gagal(error.message || "Gagal mengarsipkan kursus.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
     }
   };
 
   const confirmDeleteCourse = (course: KursusWithInstructor) => {
-    setCourseToDelete(course);
-    setDeleteConfirmOpen(true);
+    pemberitahuan.konfirmasi(
+      "Konfirmasi Hapus",
+      `Apakah Anda yakin ingin menghapus kursus **${course.judul}**? Tindakan ini akan menghapus semua modul dan materi terkait secara permanen.`,
+      async () => {
+        try {
+          pemberitahuan.tampilkanPemuatan("Menghapus kursus...");
+          await deleteMutation.mutateAsync(course.id);
+          pemberitahuan.sukses("Kursus berhasil dihapus.");
+        } catch (error: any) {
+          pemberitahuan.gagal(error.message || "Gagal menghapus kursus.");
+        } finally {
+          pemberitahuan.hilangkanPemuatan();
+        }
+      }
+    );
   };
 
   return (
@@ -607,29 +567,7 @@ export function HalamanKursusAdmin() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteConfirmOpen} onOpenChange={(open: boolean) => setDeleteConfirmOpen(open)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tindakan ini tidak dapat dibatalkan. Ini akan menghapus kursus{" "}
-              <span className="font-bold text-foreground">{courseToDelete?.judul}</span> secara
-              permanen dari sistem, termasuk semua modul, materi, dan data yang terkait.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteCourse}
-              className="bg-red-600 hover:bg-red-700 text-white"
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? "Menghapus..." : "Hapus"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Konfirmasi hapus menggunakan Notiflix */}
     </div>
   );
 }

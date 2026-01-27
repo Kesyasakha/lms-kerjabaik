@@ -8,6 +8,7 @@ import {
 } from "../hooks/useGlobalUsers";
 import { useTenants } from "../hooks/useTenants";
 import { CreateUserDialog } from "../komponen/CreateUserDialog";
+import { pemberitahuan } from "@/pustaka/pemberitahuan";
 import { Input } from "@/komponen/ui/input";
 import {
   Select,
@@ -26,14 +27,7 @@ import {
 } from "@/komponen/ui/table";
 import { Badge } from "@/komponen/ui/badge";
 import { Switch } from "@/komponen/ui/switch";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogTitle,
-} from "@/komponen/ui/alert-dialog";
+// AlertDialog dihapus karena digantikan oleh Notiflix
 import { Button } from "@/komponen/ui/button";
 import {
   Card,
@@ -49,8 +43,7 @@ import {
   Users,
   UserCheck,
   UserX,
-  ShieldAlert,
-  AlertCircle
+  ShieldAlert
 } from "lucide-react";
 import { cn } from "@/pustaka/utils";
 import type {
@@ -85,11 +78,6 @@ export function GlobalUsersPage() {
   const [editingUser, setEditingUser] = useState<PenggunaWithTenant | null>(
     null,
   );
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<{
-    id: string;
-    nama: string;
-  } | null>(null);
 
   const { data: usersData, isLoading } = useGlobalUsers(filters);
   const { data: tenantsData } = useTenants({ limit: 100 });
@@ -127,26 +115,50 @@ export function GlobalUsersPage() {
   };
 
   const handleToggleStatus = async (userId: string, currentStatus: string) => {
-    const newStatus = currentStatus === "aktif" ? "nonaktif" : "aktif";
-    await updateStatusMutation.mutateAsync({
-      userId,
-      status: newStatus as any,
-    });
+    try {
+      const newStatus = currentStatus === "aktif" ? "nonaktif" : "aktif";
+      pemberitahuan.tampilkanPemuatan("Mengubah status...");
+      await updateStatusMutation.mutateAsync({
+        userId,
+        status: newStatus as any,
+      });
+      pemberitahuan.sukses(`Status pengguna berhasil diubah menjadi ${newStatus}.`);
+    } catch (error) {
+      pemberitahuan.gagal("Gagal mengubah status pengguna.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
+    }
   };
 
   const handleCreateUser = async (data: CreateUserData) => {
-    await createUserMutation.mutateAsync(data);
-    setUserDialogOpen(false);
+    try {
+      pemberitahuan.tampilkanPemuatan("Menambahkan pengguna...");
+      await createUserMutation.mutateAsync(data);
+      pemberitahuan.sukses("Pengguna baru berhasil ditambahkan.");
+      setUserDialogOpen(false);
+    } catch (error) {
+      pemberitahuan.gagal("Gagal menambahkan pengguna.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
+    }
   };
 
   const handleUpdateUser = async (data: UpdateUserData) => {
     if (!editingUser) return;
-    await updateUserMutation.mutateAsync({
-      userId: editingUser.id,
-      data,
-    });
-    setUserDialogOpen(false);
-    setEditingUser(null);
+    try {
+      pemberitahuan.tampilkanPemuatan("Memperbarui pengguna...");
+      await updateUserMutation.mutateAsync({
+        userId: editingUser.id,
+        data,
+      });
+      pemberitahuan.sukses("Data pengguna berhasil diperbarui.");
+      setUserDialogOpen(false);
+      setEditingUser(null);
+    } catch (error) {
+      pemberitahuan.gagal("Gagal memperbarui data pengguna.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
+    }
   };
 
   const handleSubmitUser = (data: any) => {
@@ -175,21 +187,24 @@ export function GlobalUsersPage() {
   };
 
   const confirmDeleteUser = (user: { id: string; nama: string }) => {
-    setUserToDelete(user);
-    setDeleteDialogOpen(true);
+    pemberitahuan.konfirmasi(
+      "Konfirmasi Hapus",
+      `Apakah Anda yakin ingin menghapus pengguna **${user.nama}** secara permanen?`,
+      async () => {
+        try {
+          pemberitahuan.tampilkanPemuatan("Menghapus pengguna...");
+          await deleteUserMutation.mutateAsync(user.id);
+          pemberitahuan.sukses("Pengguna berhasil dihapus.");
+        } catch (error) {
+          pemberitahuan.gagal("Gagal menghapus pengguna.");
+        } finally {
+          pemberitahuan.hilangkanPemuatan();
+        }
+      }
+    );
   };
 
-  const handleDeleteUser = async () => {
-    if (!userToDelete) return;
-
-    try {
-      await deleteUserMutation.mutateAsync(userToDelete.id);
-      setDeleteDialogOpen(false);
-      setUserToDelete(null);
-    } catch (error) {
-      console.error("Failed to delete user:", error);
-    }
-  };
+  // handleDeleteUser dihapus karena logika dipindah ke confirmDeleteUser
 
   return (
     <div className="space-y-8">
@@ -517,38 +532,7 @@ export function GlobalUsersPage() {
         user={editingUser}
       />
 
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="p-0 overflow-hidden border-none shadow-2xl rounded-xl">
-          <div className="bg-destructive/10 p-6 pb-2">
-            <div className="flex items-center gap-3 text-destructive mb-2">
-              <div className="p-2 bg-destructive/20 rounded-lg">
-                <ShieldAlert className="w-6 h-6" />
-              </div>
-              <AlertDialogTitle className="text-xl font-bold tracking-tight">Konfirmasi Hapus</AlertDialogTitle>
-            </div>
-          </div>
-          <div className="p-6 pt-2">
-            <AlertDialogDescription className="text-[15px] text-muted-foreground leading-relaxed mt-2 font-medium">
-              Apakah Anda yakin ingin menghapus pengguna <span className="font-bold text-foreground underline decoration-destructive/30 decoration-2 underline-offset-4">{userToDelete?.nama}</span> secara permanen?
-              <br /><br />
-              <span className="text-sm font-bold text-destructive/90 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4" />
-                Tindakan ini tidak dapat dibatalkan dan akan menghapus akses pengguna.
-              </span>
-            </AlertDialogDescription>
-            <div className="flex items-center justify-end gap-3 mt-8">
-              <AlertDialogCancel className="h-10 px-6 border-muted-foreground/20 hover:bg-muted/50 rounded-lg font-semibold">Batal</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDeleteUser}
-                className="h-10 px-6 bg-red-600 hover:bg-red-700 text-white shadow-lg transition-all active:scale-95 rounded-lg font-bold"
-                disabled={deleteUserMutation.isPending}
-              >
-                {deleteUserMutation.isPending ? "Menghapus..." : "Hapus Pengguna"}
-              </AlertDialogAction>
-            </div>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* AlertDialog dihapus karena menggunakan Notiflix */}
     </div>
   );
 }

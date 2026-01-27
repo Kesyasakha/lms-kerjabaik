@@ -8,6 +8,7 @@ import {
 } from "../hooks/useTenants";
 import { TenantTable } from "../komponen/TenantTable";
 import { TenantDialog } from "../komponen/TenantDialog";
+import { pemberitahuan } from "@/pustaka/pemberitahuan";
 import { Button } from "@/komponen/ui/button";
 import { Input } from "@/komponen/ui/input";
 import {
@@ -20,7 +21,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/komponen/ui/card";
@@ -44,10 +44,6 @@ export function TenantsPage() {
   const [selectedTenant, setSelectedTenant] = useState<TenantWithStats | null>(
     null,
   );
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [tenantToDelete, setTenantToDelete] = useState<TenantWithStats | null>(
-    null,
-  );
 
   const { data: tenantsData, isLoading } = useTenants(filters);
   const createMutation = useCreateTenant();
@@ -65,16 +61,21 @@ export function TenantsPage() {
   };
 
   const handleDelete = (tenant: TenantWithStats) => {
-    setTenantToDelete(tenant);
-    setDeleteConfirmOpen(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (tenantToDelete) {
-      await deleteMutation.mutateAsync(tenantToDelete.id);
-      setDeleteConfirmOpen(false);
-      setTenantToDelete(null);
-    }
+    pemberitahuan.konfirmasi(
+      "Konfirmasi Hapus",
+      `Apakah Anda yakin ingin menghapus tenant **${tenant.nama}**? Semua data terkait akan dihapus secara permanen.`,
+      async () => {
+        try {
+          pemberitahuan.tampilkanPemuatan("Menghapus tenant...");
+          await deleteMutation.mutateAsync(tenant.id);
+          pemberitahuan.sukses("Tenant berhasil dihapus.");
+        } catch (error) {
+          pemberitahuan.gagal("Gagal menghapus tenant.");
+        } finally {
+          pemberitahuan.hilangkanPemuatan();
+        }
+      }
+    );
   };
 
   const handleViewDetail = (tenant: TenantWithStats) => {
@@ -83,18 +84,24 @@ export function TenantsPage() {
 
   const handleSubmit = async (data: any) => {
     try {
+      pemberitahuan.tampilkanPemuatan(selectedTenant ? "Memperbarui tenant..." : "Menambah tenant...");
       if (selectedTenant) {
         await updateMutation.mutateAsync({
           id: selectedTenant.id,
           data,
         });
+        pemberitahuan.sukses("Data tenant berhasil diperbarui.");
       } else {
         await createMutation.mutateAsync(data);
+        pemberitahuan.sukses("Tenant baru berhasil ditambahkan.");
       }
       setDialogOpen(false);
       setSelectedTenant(null);
     } catch (error) {
       console.error("Failed to save tenant:", error);
+      pemberitahuan.gagal("Gagal menyimpan data tenant.");
+    } finally {
+      pemberitahuan.hilangkanPemuatan();
     }
   };
 
@@ -298,52 +305,7 @@ export function TenantsPage() {
         isSubmitting={createMutation.isPending || updateMutation.isPending}
       />
 
-      {/* Delete Confirmation Dialog */}
-      {deleteConfirmOpen && tenantToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <Card className="w-full max-w-md animate-in fade-in zoom-in-95 duration-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-destructive">
-                <AlertCircle className="w-5 h-5" />
-                Konfirmasi Hapus
-              </CardTitle>
-              <CardDescription>
-                Tindakan ini tidak dapat dibatalkan.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Apakah Anda yakin ingin menghapus tenant{" "}
-                <strong className="text-foreground font-semibold">
-                  {tenantToDelete.nama}
-                </strong>
-                ? Semua data pengguna, kursus, dan pendaftaran terkait akan dihapus
-                secara permanen dari sistem.
-              </p>
-            </CardContent>
-            <div className="flex items-center justify-end gap-3 p-6 pt-0">
-              <Button
-                variant="outline"
-                className="h-9 px-4"
-                onClick={() => {
-                  setDeleteConfirmOpen(false);
-                  setTenantToDelete(null);
-                }}
-              >
-                Batal
-              </Button>
-              <Button
-                variant="destructive"
-                className="h-9 px-4 shadow-sm"
-                onClick={handleConfirmDelete}
-                disabled={deleteMutation.isPending}
-              >
-                {deleteMutation.isPending ? "Menghapus..." : "Hapus Tenant"}
-              </Button>
-            </div>
-          </Card>
-        </div>
-      )}
+      {/* Delete Confirmation Dialog dihapus karena menggunakan pemberitahuan.konfirmasi */}
     </div>
   );
 }
