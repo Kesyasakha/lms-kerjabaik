@@ -11,18 +11,17 @@ WORKDIR /app
 # Accept build arguments dari Dokploy
 ARG VITE_SUPABASE_URL
 ARG VITE_SUPABASE_ANON_KEY
-ARG NODE_ENV=production
 
 # Set as environment variables untuk tersedia saat build
 ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
 ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
-ENV NODE_ENV=$NODE_ENV
 
 # Copy package files dari frontend folder
 COPY frontend/package*.json ./
 
 # Install dependencies (including devDependencies needed for Vite build)
-RUN npm ci
+# Jangan set NODE_ENV=production sebelum npm ci agar devDependencies terinstall
+RUN npm ci --include=dev
 
 # Copy source code
 COPY frontend/ ./
