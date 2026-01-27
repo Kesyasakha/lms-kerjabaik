@@ -14,6 +14,11 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  preview: {
+    port: 3000,     // Paksa jalan di port 3000
+    host: true,     // "true" artinya = 0.0.0.0 (Bisa diakses dari luar container)
+    strictPort: true,
+  },
   build: {
     rollupOptions: {
       output: {
