@@ -127,16 +127,16 @@ export function CreateUserDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[650px] p-0 overflow-hidden border-0 rounded-[2rem] shadow-2xl">
-        <DialogHeader className="p-8 bg-violet-50/50 border-b border-violet-100 flex flex-row items-center gap-4">
-          <div className="h-12 w-12 rounded-2xl bg-violet-500 flex items-center justify-center text-white shadow-lg shadow-violet-200 shrink-0">
-            <User size={24} variant="Bold" />
+      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden border-0 rounded-2xl shadow-2xl gap-0">
+        <DialogHeader className="p-6 bg-violet-50/50 border-b border-violet-100 flex flex-row items-center gap-4">
+          <div className="h-10 w-10 rounded-xl bg-violet-500 flex items-center justify-center text-white shadow-lg shadow-violet-200 shrink-0">
+            <User size={20} variant="Bold" />
           </div>
           <div className="text-left">
-            <DialogTitle className="text-xl font-bold text-gray-800">
+            <DialogTitle className="text-lg font-bold text-gray-800">
               {isEditMode ? "Ubah Profil Pengguna" : "Daftarkan Pengguna Baru"}
             </DialogTitle>
-            <DialogDescription className="text-gray-500 text-xs mt-1">
+            <DialogDescription className="text-gray-500 text-xs mt-0.5">
               {isEditMode
                 ? "Sesuaikan informasi identitas dan hak akses pengguna."
                 : "Lengkapi formulir untuk menambahkan akun ke sistem."}
@@ -144,8 +144,8 @@ export function CreateUserDialog({
           </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-8 bg-white">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5 bg-white">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
             {/* Nama Lengkap */}
             <div className="space-y-2">
               <Label htmlFor="nama_lengkap" className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">
@@ -153,13 +153,13 @@ export function CreateUserDialog({
               </Label>
               <div className="relative group">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-violet-500 transition-colors">
-                  <User size={18} />
+                  <User size={16} />
                 </div>
                 <Input
                   id="nama_lengkap"
                   {...register("nama_lengkap")}
                   placeholder="Bambang Pamungkas"
-                  className="pl-10 h-12 bg-gray-50 border-transparent focus:bg-white focus:border-violet-200 rounded-xl transition-all font-medium text-sm"
+                  className="pl-9 h-10 bg-gray-50 border-transparent focus:bg-white focus:border-violet-200 rounded-xl transition-all font-medium text-sm"
                 />
               </div>
               {errors.nama_lengkap && (
@@ -174,14 +174,14 @@ export function CreateUserDialog({
               </Label>
               <div className="relative group">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-violet-500 transition-colors">
-                  <Sms size={18} />
+                  <Sms size={16} />
                 </div>
                 <Input
                   id="email"
                   type="email"
                   {...register("email")}
                   placeholder="bambang@kerjabaik.ai"
-                  className="pl-10 h-12 bg-gray-50 border-transparent focus:bg-white focus:border-violet-200 rounded-xl transition-all font-medium text-sm"
+                  className="pl-9 h-10 bg-gray-50 border-transparent focus:bg-white focus:border-violet-200 rounded-xl transition-all font-medium text-sm"
                 />
               </div>
               {errors.email && (
@@ -196,14 +196,14 @@ export function CreateUserDialog({
               </Label>
               <div className="relative group">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-violet-500 transition-colors">
-                  <Key size={18} />
+                  <Key size={16} />
                 </div>
                 <Input
                   id="password"
                   type="password"
                   {...register("password")}
                   placeholder={isEditMode ? "Kosongkan jika tidak diubah" : "Paling sedikit 6 karakter"}
-                  className="pl-10 h-12 bg-gray-50 border-transparent focus:bg-white focus:border-violet-200 rounded-xl transition-all font-medium text-sm"
+                  className="pl-9 h-10 bg-gray-50 border-transparent focus:bg-white focus:border-violet-200 rounded-xl transition-all font-medium text-sm"
                 />
               </div>
               {errors.password && (
@@ -218,13 +218,13 @@ export function CreateUserDialog({
               </Label>
               <div className="relative group">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-gray-400 group-focus-within:text-violet-500 transition-colors">
-                  <Building size={18} />
+                  <Building size={16} />
                 </div>
                 <Select
                   value={watch("id_lembaga")}
                   onValueChange={(value) => setValue("id_lembaga", value, { shouldValidate: true })}
                 >
-                  <SelectTrigger className="pl-10 h-12 bg-gray-50 border-transparent focus:bg-white focus:border-violet-200 rounded-xl transition-all font-medium text-sm">
+                  <SelectTrigger className="pl-9 h-10 bg-gray-50 border-transparent focus:bg-white focus:border-violet-200 rounded-xl transition-all font-medium text-sm">
                     <SelectValue placeholder="Pilih Organisasi" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-gray-100">
@@ -251,13 +251,13 @@ export function CreateUserDialog({
               </Label>
               <div className="relative group">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-gray-400 group-focus-within:text-violet-500 transition-colors">
-                  <Hierarchy size={18} />
+                  <Hierarchy size={16} />
                 </div>
                 <Select
                   value={watch("role")}
                   onValueChange={(value: any) => setValue("role", value, { shouldValidate: true })}
                 >
-                  <SelectTrigger className="pl-10 h-12 bg-gray-50 border-transparent focus:bg-white focus:border-violet-200 rounded-xl transition-all font-medium text-sm">
+                  <SelectTrigger className="pl-9 h-10 bg-gray-50 border-transparent focus:bg-white focus:border-violet-200 rounded-xl transition-all font-medium text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-gray-100">
@@ -289,13 +289,13 @@ export function CreateUserDialog({
                 </Label>
                 <div className="relative group">
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-gray-400 group-focus-within:text-violet-500 transition-colors">
-                    <Status size={18} />
+                    <Status size={16} />
                   </div>
                   <Select
                     value={watch("status")}
                     onValueChange={(value: any) => setValue("status", value)}
                   >
-                    <SelectTrigger className="pl-10 h-12 bg-gray-50 border-transparent focus:bg-white focus:border-violet-200 rounded-xl transition-all font-medium text-sm">
+                    <SelectTrigger className="pl-9 h-10 bg-gray-50 border-transparent focus:bg-white focus:border-violet-200 rounded-xl transition-all font-medium text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-gray-100">
@@ -309,22 +309,22 @@ export function CreateUserDialog({
             )}
           </div>
 
-          <DialogFooter className="pt-4 flex items-center justify-end gap-3 border-t border-gray-50">
+          <DialogFooter className="pt-2 flex items-center justify-end gap-3 border-t border-gray-50 mt-4">
             <button
               type="button"
               onClick={() => onOpenChange(false)}
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-2.5 text-xs font-bold text-gray-500 hover:text-gray-800 transition-colors bg-gray-50 hover:bg-gray-100 rounded-xl"
+              className="flex items-center gap-2 px-5 py-2 text-xs font-bold text-gray-500 hover:text-gray-800 transition-colors bg-gray-50 hover:bg-gray-100 rounded-xl"
             >
-              <CloseCircle size={18} />
+              <CloseCircle size={16} />
               Batal
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-8 py-2.5 text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 active:scale-95 transition-all rounded-xl shadow-lg shadow-violet-100 disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2 text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 active:scale-95 transition-all rounded-xl shadow-lg shadow-violet-100 disabled:opacity-50"
             >
-              <TickCircle size={18} variant="Bold" />
+              <TickCircle size={16} variant="Bold" />
               {isSubmitting ? "Memproses..." : isEditMode ? "Simpan Perubahan" : "Daftarkan Pengguna"}
             </button>
           </DialogFooter>

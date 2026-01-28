@@ -26,6 +26,7 @@ import {
 import { Filter, ClipboardList, User, ShieldAlert, ArrowRight } from "lucide-react";
 import { cn } from "@/pustaka/utils";
 import { Badge } from "@/komponen/ui/badge";
+import { StatCard } from "@/fitur/superadmin/komponen/dashboard/StatCard";
 import type { AuditLogFilters } from "../tipe/auditLog.types";
 
 // --- Dictionaries & Helpers ---
@@ -125,176 +126,164 @@ export function AuditLogsPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 font-sans text-gray-900 antialiased pb-10">
       {/* Header Section */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-bold tracking-tight text-foreground">Jejak Audit</h1>
-        <p className="text-muted-foreground text-xs">
+        <h1 className="text-xl font-bold tracking-tight text-gray-800">Jejak Audit</h1>
+        <p className="text-gray-500 text-xs">
           Tinjau seluruh aktivitas sensitif dan perubahan sistem yang dilakukan oleh Superadmin.
         </p>
       </div>
 
       {/* Stats Summary */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-slate-500/50 group">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total Log</CardTitle>
-            <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-slate-700 transition-colors">
-              <ClipboardList className="w-4 h-4" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold tracking-tight">{data?.count || 0}</div>
-            <p className="text-[10px] font-medium text-muted-foreground mt-1 uppercase">Entri tercatat</p>
-          </CardContent>
-        </Card>
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          title="Total Log"
+          value={data?.count || 0}
+          subtext="Entri tercatat"
+          icon={ClipboardList}
+          color="bg-blue-500"
+          trend="Lifetime"
+        />
+        <StatCard
+          title="Aktivitas Hari Ini"
+          value={data?.data.filter(d => new Date(d.created_at).toDateString() === new Date().toDateString()).length || 0}
+          subtext="Data baru hari ini"
+          icon={ShieldAlert}
+          color="bg-emerald-500"
+          trend="Today"
+        />
+        {/* Placeholder for future stats if backend provides specifics */}
       </div>
 
       <div className="space-y-6">
-        {/* Filters */}
-        <div className="flex flex-col gap-4 bg-card p-6 rounded-xl border border-gray-300 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="p-1.5 bg-primary/5 rounded-md">
-              <Filter className="w-4 h-4 text-primary" />
+        {/* Filters Bar - Horizontal */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-300 shadow-sm">
+          {/* Date Range Group */}
+          <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+            <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1 border border-gray-200">
+              <span className="text-[10px] font-bold uppercase text-gray-400 pl-2">Rentang:</span>
+              <Input
+                type="date"
+                className="bg-transparent border-0 text-xs h-7 w-[110px] p-0 focus-visible:ring-0 shadow-none text-gray-600"
+                value={filters.date_from || ""}
+                onChange={(e) => setFilters((prev) => ({ ...prev, date_from: e.target.value }))}
+              />
+              <span className="text-gray-300">-</span>
+              <Input
+                type="date"
+                className="bg-transparent border-0 text-xs h-7 w-[110px] p-0 focus-visible:ring-0 shadow-none text-gray-600"
+                value={filters.date_to || ""}
+                onChange={(e) => setFilters((prev) => ({ ...prev, date_to: e.target.value }))}
+              />
             </div>
-            <h2 className="font-bold text-sm tracking-tight uppercase">Filter Pencarian</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold uppercase text-muted-foreground ml-1">Tindakan</label>
-              <Select
-                value={filters.aksi || "all"}
-                onValueChange={(val) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    aksi: val === "all" ? undefined : val,
-                  }))
-                }
-              >
-                <SelectTrigger className="bg-background border-muted-foreground/20 h-10">
-                  <SelectValue placeholder="Semua Tindakan" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Tindakan</SelectItem>
-                  <SelectItem value="CREATE">Tambah Data (CREATE)</SelectItem>
-                  <SelectItem value="UPDATE">Perbarui Data (UPDATE)</SelectItem>
-                  <SelectItem value="DELETE">Hapus Data (DELETE)</SelectItem>
-                  <SelectItem value="LOGIN">Log Masuk (LOGIN)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Select
+              value={filters.aksi || "all"}
+              onValueChange={(val) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  aksi: val === "all" ? undefined : val,
+                }))
+              }
+            >
+              <SelectTrigger className="w-[180px] bg-gray-50 border-gray-200 rounded-lg text-xs font-medium h-9 hover:bg-white hover:border-violet-200 transition-all focus:ring-0">
+                <SelectValue placeholder="Semua Tindakan" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-gray-100">
+                <SelectItem value="all">Semua Tindakan</SelectItem>
+                <SelectItem value="CREATE">Tambah Data (CREATE)</SelectItem>
+                <SelectItem value="UPDATE">Perbarui Data (UPDATE)</SelectItem>
+                <SelectItem value="DELETE">Hapus Data (DELETE)</SelectItem>
+                <SelectItem value="LOGIN">Log Masuk (LOGIN)</SelectItem>
+              </SelectContent>
+            </Select>
 
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold uppercase text-muted-foreground ml-1">Tgl Mulai</label>
-              <Input
-                type="date"
-                className="bg-background border-muted-foreground/20 text-xs h-10"
-                value={filters.date_from || ""}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, date_from: e.target.value }))
-                }
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold uppercase text-muted-foreground ml-1">Tgl Selesai</label>
-              <Input
-                type="date"
-                className="bg-background border-muted-foreground/20 text-xs h-10"
-                value={filters.date_to || ""}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, date_to: e.target.value }))
-                }
-              />
-            </div>
-
-            <div className="flex items-end">
-              <Button
-                variant="outline"
-                className="w-full text-xs font-bold uppercase tracking-tight h-10 hover:bg-muted hover:text-foreground transition-all"
-                onClick={clearFilters}
-              >
-                Atur Ulang Filter
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-lg border-gray-200 text-gray-500 hover:text-gray-700 hover:bg-gray-50 h-9 px-3 text-xs font-bold"
+              onClick={clearFilters}
+            >
+              Reset
+            </Button>
           </div>
         </div>
 
         {/* Table */}
-        <div className="bg-card text-card-foreground rounded-xl border border-gray-300 shadow-sm overflow-hidden transition-all">
+        <div className="bg-white rounded-xl border border-gray-300 shadow-sm overflow-hidden transition-all">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
-                  <TableHead className="font-bold text-foreground py-3 px-6 w-[200px]">Waktu & Tanggal</TableHead>
-                  <TableHead className="font-bold text-foreground py-3 w-[200px]">Pengguna</TableHead>
-                  <TableHead className="font-bold text-foreground py-3 w-[180px]">Tindakan</TableHead>
-                  <TableHead className="font-bold text-foreground py-3 w-[180px]">Sumber Daya</TableHead>
-                  <TableHead className="font-bold text-foreground py-3 pr-6">Rincian Perubahan</TableHead>
+                <TableRow className="bg-gray-50/50 hover:bg-gray-50/50 border-b border-gray-100">
+                  <TableHead className="py-4 pl-6 pr-4 text-left text-xs font-semibold text-gray-500 w-[200px]">Waktu & Tanggal</TableHead>
+                  <TableHead className="py-4 text-left text-xs font-semibold text-gray-500 w-[200px]">Pengguna</TableHead>
+                  <TableHead className="py-4 text-left text-xs font-semibold text-gray-500 w-[150px]">Tindakan</TableHead>
+                  <TableHead className="py-4 text-left text-xs font-semibold text-gray-500 w-[150px]">Sumber Daya</TableHead>
+                  <TableHead className="py-4 pr-6 text-left text-xs font-semibold text-gray-500">Rincian Perubahan</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   [...Array(5)].map((_, i) => (
-                    <TableRow key={i}>
+                    <TableRow key={i} className="border-b border-gray-50">
                       <TableCell colSpan={5} className="py-4 px-6">
-                        <div className="h-6 bg-muted animate-pulse rounded w-full" />
+                        <div className="h-8 bg-gray-50 animate-pulse rounded w-full" />
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   data?.data.map((log) => (
-                    <TableRow key={log.id} className="group hover:bg-muted/10 transition-colors border-b last:border-0 border-border/60 align-top">
-                      <TableCell className="py-2.5 px-6 text-sm font-medium text-muted-foreground whitespace-nowrap">
+                    <TableRow key={log.id} className="group hover:bg-gray-50/50 transition-colors border-b last:border-0 border-gray-100 align-top">
+                      <TableCell className="py-4 pl-6 pr-4 whitespace-nowrap">
                         <div className="flex flex-col">
-                          <span className="text-foreground font-semibold">
+                          <span className="text-gray-800 font-bold text-sm">
                             {new Date(log.created_at).toLocaleDateString("id-ID", {
                               day: 'numeric', month: 'long', year: 'numeric'
                             })}
                           </span>
-                          <span className="text-xs">
+                          <span className="text-xs text-gray-400 font-medium">
                             {new Date(log.created_at).toLocaleTimeString("id-ID", {
                               hour: '2-digit', minute: '2-digit'
                             })} WIB
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="py-2.5">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary shrink-0">
+                      <TableCell className="py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 shrink-0 border border-gray-200">
                             <User className="w-4 h-4" />
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-bold text-foreground text-sm truncate max-w-[140px]" title={log.id_pengguna || undefined}>
+                            <span className="font-bold text-gray-800 text-sm truncate max-w-[140px]" title={log.id_pengguna || undefined}>
                               {log.nama_pengguna || "Superadmin"}
                             </span>
-                            <span className="text-[10px] text-muted-foreground font-mono truncate max-w-[140px]">
+                            <span className="text-[10px] text-gray-400 font-mono truncate max-w-[140px]">
                               {log.id_pengguna?.split("-")[0]}...
                             </span>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="py-2.5">
+                      <TableCell className="py-4">
                         <Badge
                           variant="outline"
                           className={cn(
-                            "font-bold text-[10px] uppercase tracking-wider px-2.5 py-0.5 border shadow-sm",
+                            "font-bold text-[10px] uppercase tracking-wider px-2.5 py-1 border shadow-sm rounded-md",
                             ACTION_COLORS[log.aksi] || ACTION_COLORS.default
                           )}
                         >
                           {ACTION_LABELS[log.aksi] || log.aksi}
                         </Badge>
                       </TableCell>
-                      <TableCell className="py-2.5">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-foreground/80 capitalize">
-                            {RESOURCE_LABELS[log.tipe_sumber_daya] || log.tipe_sumber_daya}
-                          </span>
-                        </div>
+                      <TableCell className="py-4">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-gray-50 text-gray-600 text-xs font-medium border border-gray-200 capitalize">
+                          {RESOURCE_LABELS[log.tipe_sumber_daya] || log.tipe_sumber_daya}
+                        </span>
                       </TableCell>
-                      <TableCell className="py-2.5 pr-6 min-w-[350px]">
-                        <div className="bg-card/50 p-3 rounded-lg border border-border/40 hover:border-border/80 transition-colors">
+                      <TableCell className="py-4 pr-6 min-w-[350px]">
+                        <div className="bg-gray-50 p-3 rounded-xl border border-gray-200/60 group-hover:border-gray-300 transition-colors">
                           <AuditLogDetailParser detail={log.detail} />
                         </div>
                       </TableCell>
@@ -305,12 +294,11 @@ export function AuditLogsPage() {
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-20">
                       <div className="flex flex-col items-center gap-3">
-                        <div className="p-4 bg-muted/50 rounded-full">
-                          <ShieldAlert className="w-10 h-10 text-muted-foreground/30" />
+                        <div className="h-16 w-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300">
+                          <ShieldAlert size={32} />
                         </div>
-                        <p className="text-muted-foreground font-medium">
-                          Belum ada entri log audit yang ditemukan
-                        </p>
+                        <p className="text-gray-800 font-bold text-sm">Belum ada log aktifitas</p>
+                        <p className="text-gray-400 text-xs">Belum ada entri log audit yang ditemukan untuk filter ini.</p>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -321,15 +309,15 @@ export function AuditLogsPage() {
 
           {/* Pagination */}
           {data && data.totalPages > 1 && (
-            <div className="flex items-center justify-between p-4 border-t bg-muted/30">
-              <p className="text-sm text-muted-foreground font-medium">
-                Halaman {data.page} dari {data.totalPages}
-              </p>
+            <div className="px-6 py-5 border-t border-gray-100 flex items-center justify-between bg-gray-50/20">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                Halaman {data.page} / {data.totalPages}
+              </span>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-8 shadow-sm hover:bg-background"
+                  className="rounded-xl border-gray-200 h-9 px-4 text-xs font-bold"
                   disabled={data.page === 1}
                   onClick={() =>
                     setFilters((prev) => ({ ...prev, page: prev.page! - 1 }))
@@ -340,7 +328,7 @@ export function AuditLogsPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-8 text-primary border-primary/20 hover:bg-primary/5 shadow-sm"
+                  className="rounded-xl border-violet-200 text-violet-600 hover:bg-violet-50 h-9 px-4 text-xs font-bold"
                   disabled={data.page === data.totalPages}
                   onClick={() =>
                     setFilters((prev) => ({ ...prev, page: prev.page! + 1 }))
