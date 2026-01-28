@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense } from "react";
+import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/komponen/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/komponen/ui/card";
 import { FilterLaporan } from "@/fitur/admin/komponen/FilterLaporan";
@@ -77,31 +78,56 @@ export function HalamanLaporanAdmin() {
         <TombolEksporLaporan data={getCurrentData()} filename={getFilename()} />
       </div>
 
+      {/* Custom Motion Tabs */}
+      <div className="flex p-1 bg-muted/30 rounded-full w-full max-w-md mx-auto relative cursor-pointer">
+        {["kemajuan_belajar", "engagement"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`
+              relative flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors z-10
+              ${activeTab === tab ? "text-primary" : "text-muted-foreground hover:text-foreground"}
+            `}
+          >
+            {activeTab === tab && (
+              <motion.div
+                layoutId="activeTab"
+                className="absolute inset-0 bg-white dark:bg-card shadow-sm rounded-full border border-gray-100 dark:border-gray-800"
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+            )}
+            <span className="relative z-10 flex items-center gap-2">
+              {tab === "kemajuan_belajar" ? (
+                <TrendingUp className="w-4 h-4" />
+              ) : (
+                <Activity className="w-4 h-4" />
+              )}
+              {tab === "kemajuan_belajar" ? "Progress Belajar" : "Keterlibatan"}
+            </span>
+          </button>
+        ))}
+      </div>
+
       {/* Tabs Layout */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 h-auto p-1 bg-muted/50 rounded-xl">
-          <TabsTrigger value="kemajuan_belajar" className="flex items-center gap-2 py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
-            <TrendingUp className="h-4 w-4" />
-            <span className="hidden sm:inline">Progress Belajar</span>
-            <span className="sm:hidden">Progress</span>
-          </TabsTrigger>
-          <TabsTrigger value="engagement" className="flex items-center gap-2 py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
-            <Activity className="h-4 w-4" />
-            <span className="hidden sm:inline">Keterlibatan</span>
-            <span className="sm:hidden">Engagement</span>
-          </TabsTrigger>
-        </TabsList>
+        {/* Hidden standard tab list to maintain accessibiltiy if needed, but we typically replace it. 
+            For now, we just control the TabsContent via activeTab value. 
+            However, Radix Tabs component requires TabsList for triggers usually. 
+            Since we drive standard state 'activeTab' and pass it to Tabs 'value', we can omit TabsList if we control it externally, 
+            OR we keep TabsList hidden.
+            Actually, the best way is to simply NOT use Radix Tabs for the switcher part if we do custom motion, 
+            or wrap standard triggers. 
+            Here, I will just control the TabsContent directly or use the value prop.
+        */}
 
-        <div className="mt-6 space-y-6">
-          <div className="bg-card text-card-foreground rounded-xl border shadow-sm p-4">
-            <FilterLaporan
-              filters={filters}
-              onFiltersChange={setFilters}
-              showCourseFilter={false}
-              showStatusFilter={activeTab === "kemajuan_belajar"}
-              showKategoriFilter={activeTab === "kemajuan_belajar"}
-            />
-          </div>
+        <div className="mt-8 space-y-6">
+          <FilterLaporan
+            filters={filters}
+            onFiltersChange={setFilters}
+            showCourseFilter={false}
+            showStatusFilter={activeTab === "kemajuan_belajar"}
+            showKategoriFilter={activeTab === "kemajuan_belajar"}
+          />
 
           {/* Progress Tab */}
           <TabsContent value="kemajuan_belajar" className="space-y-6 mt-0">

@@ -62,18 +62,18 @@ export function TabelLaporanKemajuan({
   };
 
   return (
-    <div className="rounded-md border">
+    <div className="overflow-auto">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/30">
-            <TableHead className="py-3 px-4">Peserta</TableHead>
-            <TableHead className="py-3">Kursus</TableHead>
-            <TableHead className="py-3">Kategori</TableHead>
-            <TableHead className="py-3">Progress</TableHead>
-            <TableHead className="py-3">Modul</TableHead>
-            <TableHead className="py-3">Waktu Belajar</TableHead>
-            <TableHead className="py-3">Status</TableHead>
-            <TableHead className="py-3 pr-4">Tanggal Mulai</TableHead>
+            <TableHead className="py-3 px-4 whitespace-nowrap font-semibold">Peserta</TableHead>
+            <TableHead className="py-3 whitespace-nowrap font-semibold">Kursus</TableHead>
+            <TableHead className="py-3 whitespace-nowrap font-semibold">Kategori</TableHead>
+            <TableHead className="py-3 whitespace-nowrap font-semibold">Progress</TableHead>
+            <TableHead className="py-3 whitespace-nowrap font-semibold">Modul</TableHead>
+            <TableHead className="py-3 whitespace-nowrap font-semibold">Waktu Belajar</TableHead>
+            <TableHead className="py-3 whitespace-nowrap font-semibold">Status</TableHead>
+            <TableHead className="py-3 pr-4 whitespace-nowrap font-semibold">Tanggal Mulai</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -81,19 +81,19 @@ export function TabelLaporanKemajuan({
             <TableRow key={item.id} className="hover:bg-muted/5 transition-colors">
               <TableCell className="py-2.5 px-4">
                 <div>
-                  <div className="font-bold text-sm text-foreground">{item.peserta_nama}</div>
-                  <div className="text-[10px] text-muted-foreground">
+                  <div className="font-bold text-sm text-foreground whitespace-nowrap">{item.peserta_nama}</div>
+                  <div className="text-[10px] text-muted-foreground whitespace-nowrap">
                     {item.peserta_email}
                   </div>
                 </div>
               </TableCell>
               <TableCell className="py-2.5">
-                <div className="max-w-[200px] truncate text-sm">
+                <div className="max-w-[200px] truncate text-sm font-medium" title={item.kursus_judul}>
                   {item.kursus_judul}
                 </div>
               </TableCell>
               <TableCell className="py-2.5">
-                <Badge variant="outline" className="text-[10px] font-bold">{item.kursus_kategori}</Badge>
+                <Badge variant="outline" className="text-[10px] font-bold whitespace-nowrap">{item.kursus_kategori}</Badge>
               </TableCell>
               <TableCell className="py-2.5">
                 <div className="w-24 space-y-1">
@@ -104,19 +104,19 @@ export function TabelLaporanKemajuan({
                 </div>
               </TableCell>
               <TableCell className="py-2.5">
-                <div className="text-sm font-medium">
+                <div className="text-sm font-medium whitespace-nowrap">
                   {item.modul_selesai} / {item.total_modul}
                 </div>
               </TableCell>
               <TableCell className="py-2.5">
-                <div className="flex items-center gap-1 text-sm font-medium">
+                <div className="flex items-center gap-1 text-sm font-medium whitespace-nowrap">
                   <Clock className="h-3 w-3 text-muted-foreground" />
                   {Math.floor(item.waktu_belajar_menit / 60)}j{" "}
                   {item.waktu_belajar_menit % 60}m
                 </div>
               </TableCell>
               <TableCell className="py-2.5">{getStatusBadge(item.status)}</TableCell>
-              <TableCell className="py-2.5 pr-4 text-sm text-muted-foreground">
+              <TableCell className="py-2.5 pr-4 text-sm text-muted-foreground whitespace-nowrap">
                 {item.tanggal_mulai
                   ? format(new Date(item.tanggal_mulai), "dd MMM yyyy", {
                     locale: localeId,
