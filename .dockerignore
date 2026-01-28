@@ -1,0 +1,50 @@
+# Dependencies
+**/node_modules
+**/.npm
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+# Build outputs
+**/dist
+**/build
+**/.next
+**/.nuxt
+**/.cache
+
+# Environment files
+**/.env
+**/.env.local
+**/.env.*.local
+**/.env.development
+**/.env.test
+**/.env.production
+
+# IDE
+**/.vscode
+**/.idea
+**/*.swp
+**/*.swo
+**/*~
+
+# OS
+**/.DS_Store
+**/Thumbs.db
+
+# Git
+**/.git
+**/.gitignore
+
+# Logs
+**/logs
+**/*.log
+
+# Test coverage
+**/coverage
+**/.nyc_output
+
+# Misc
+**/.husky
+**/README.md
+**/PRD.md
