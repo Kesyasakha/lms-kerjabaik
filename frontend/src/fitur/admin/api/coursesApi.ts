@@ -238,6 +238,18 @@ export async function getCourseDetail(kursusId: string) {
         id,
         nama_lengkap,
         email
+      ),
+      modul(
+        id,
+        judul,
+        deskripsi,
+        urutan,
+        materi(
+          id,
+          judul,
+          tipe,
+          urutan
+        )
       )
     `,
     )

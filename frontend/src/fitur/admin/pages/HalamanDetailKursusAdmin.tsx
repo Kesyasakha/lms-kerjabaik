@@ -50,6 +50,10 @@ import {
   User,
   Pencil,
   Trash2,
+  FileText,
+  Video,
+  HelpCircle,
+  Layers,
 } from "lucide-react";
 import { useState } from "react";
 import { formatTanggal, cn } from "@/pustaka/utils";
@@ -236,7 +240,7 @@ export function HalamanDetailKursusAdmin() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate("/admin/kursus")}
+          onClick={() => navigate("/admin/courses")}
           className="w-fit -ml-2 hover:bg-transparent text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -370,11 +374,29 @@ export function HalamanDetailKursusAdmin() {
       {/* Insights Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          <Card className="rounded-2xl shadow-none border-muted/60 overflow-hidden">
+          <Card className="rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
             <CardHeader className="bg-muted/10 border-b p-6">
               <CardTitle className="text-xl font-bold">Informasi Detail</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
+              {/* Cover Image Banner */}
+              <div className="w-full h-64 bg-gray-100 overflow-hidden border-b border-muted/40 relative group">
+                <img
+                  src={course.url_gambar_mini || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.judul)}&background=random&size=512`}
+                  alt={course.judul}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(course.judul)}&background=random&size=512`;
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                <div className="absolute bottom-4 left-4">
+                  <Badge className="bg-white/90 text-black hover:bg-white border-none backdrop-blur-sm shadow-sm">
+                    Cover Image
+                  </Badge>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2">
                 <div className="p-6 border-b md:border-b-0 md:border-r border-muted/40 space-y-6">
                   <div className="flex items-start gap-4">
@@ -440,20 +462,58 @@ export function HalamanDetailKursusAdmin() {
         </div>
 
         <div>
-          <Card className="rounded-2xl shadow-none border-muted/60 bg-muted/5">
-            <CardHeader className="p-6">
+          <Card className="rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 bg-muted/5 h-fit sticky top-6 overflow-hidden">
+            <CardHeader className="p-6 flex flex-row items-center justify-between border-b bg-white dark:bg-card rounded-t-2xl">
               <CardTitle className="text-xl font-bold">Konten Kursus</CardTitle>
             </CardHeader>
-            <CardContent className="p-6 pt-0">
-              <div className="p-5 rounded-xl border bg-white dark:bg-card text-center space-y-3">
-                <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                  <BookOpen className="w-6 h-6 text-muted-foreground" />
-                </div>
-                <h4 className="font-bold">Modul & Materi</h4>
-                <p className="text-xs text-muted-foreground">Kelola kurikulum dan materi ajar untuk kursus ini.</p>
-                <Button variant="secondary" className="w-full text-xs font-bold" onClick={() => navigate(`/admin/kursus/${course.id}/modul`)}>
-                  Kelola Kurikulum
-                </Button>
+            <CardContent className="p-0">
+              <div className="max-h-[500px] overflow-y-auto">
+                {(course as any).modul && (course as any).modul.length > 0 ? (
+                  <div className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-card">
+                    {/* Sort modules manually just in case api sort isn't perfect or generic type issue */}
+                    {(course as any).modul.sort((a: any, b: any) => a.urutan - b.urutan).map((modul: any, index: number) => (
+                      <div key={modul.id} className="group">
+                        <div className="px-6 py-4 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
+                          <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                            {index + 1}
+                          </div>
+                          <div className="space-y-1 flex-1">
+                            <h4 className="font-bold text-sm text-gray-900 dark:text-gray-100">{modul.judul}</h4>
+                            <p className="text-xs text-muted-foreground line-clamp-1">{modul.deskripsi || "Tidak ada deskripsi"}</p>
+
+                            {/* Materials List */}
+                            {modul.materi && modul.materi.length > 0 && (
+                              <div className="mt-3 space-y-2 pl-1">
+                                {modul.materi.sort((a: any, b: any) => a.urutan - b.urutan).map((materi: any) => (
+                                  <div key={materi.id} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                                    {materi.tipe === 'video' && <Video className="w-3.5 h-3.5 text-rose-500" />}
+                                    {materi.tipe === 'artikel' && <FileText className="w-3.5 h-3.5 text-blue-500" />}
+                                    {materi.tipe === 'kuis' && <HelpCircle className="w-3.5 h-3.5 text-amber-500" />}
+                                    {materi.tipe === 'dokumen' && <Layers className="w-3.5 h-3.5 text-purple-500" />}
+                                    <span className="truncate">{materi.judul}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            {(!modul.materi || modul.materi.length === 0) && (
+                              <p className="text-[10px] text-gray-400 italic mt-2">Belum ada materi</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-8 text-center space-y-3">
+                    <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                      <BookOpen className="w-6 h-6 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">Belum ada modul yang dibuat.</p>
+                    <Button variant="link" size="sm" onClick={() => navigate(`/admin/kursus/${course.id}/modul`)}>
+                      Mulai Buat Kurikulum
+                    </Button>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
