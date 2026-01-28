@@ -414,3 +414,20 @@ export async function deleteAdminCourse(kursusId: string) {
   if (error) throw error;
   return true;
 }
+
+/**
+ * Upload course image
+ */
+export async function uploadCourseImage(file: File): Promise<string> {
+  const fileExt = file.name.split(".").pop();
+  const fileName = `covers/${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("courses")
+    .upload(fileName, file);
+
+  if (uploadError) throw uploadError;
+
+  const { data } = supabase.storage.from("courses").getPublicUrl(fileName);
+  return data.publicUrl;
+}

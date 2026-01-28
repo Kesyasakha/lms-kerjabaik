@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   useAdminUsers,
+  useAdminUserStats,
   useCreateAdminUser,
   useUpdateAdminUser,
   useDeleteAdminUser,
@@ -15,7 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/komponen/ui/select";
-import { Search, Plus } from "lucide-react";
+import { SearchNormal1, Add, Profile2User, UserTick, UserRemove } from "iconsax-react";
+import { StatCard } from "@/fitur/superadmin/komponen/dashboard/StatCard";
 import { TabelPenggunaAdmin } from "../komponen/TabelPenggunaAdmin";
 import type { AdminUserFilters, AdminUserData } from "../tipe/admin.types";
 import type { Database } from "@/shared/tipe/database.types";
@@ -32,6 +34,7 @@ export function HalamanPenggunaAdmin() {
   const [editingUser, setEditingUser] = useState<Pengguna | null>(null);
 
   const { data: usersData, isLoading } = useAdminUsers(filters);
+  const { data: statsData } = useAdminUserStats();
   const createUserMutation = useCreateAdminUser();
   const updateUserMutation = useUpdateAdminUser();
   const deleteUserMutation = useDeleteAdminUser();
@@ -55,6 +58,25 @@ export function HalamanPenggunaAdmin() {
       status: value === "all" ? undefined : value,
       page: 1,
     }));
+  };
+
+  const handleToggleStatus = (userId: string, currentStatus: string) => {
+    const newStatus = currentStatus === "aktif" ? "nonaktif" : "aktif";
+    pemberitahuan.tampilkanPemuatan("Mengubah status...");
+    updateUserMutation.mutate(
+      { userId, data: { status: newStatus as any } },
+      {
+        onSuccess: () => {
+          pemberitahuan.sukses(`Status pengguna berhasil diubah.`);
+        },
+        onError: () => {
+          pemberitahuan.gagal("Gagal mengubah status pengguna.");
+        },
+        onSettled: () => {
+          pemberitahuan.hilangkanPemuatan();
+        },
+      }
+    );
   };
 
   const handleCreateUser = async (data: AdminUserData) => {
@@ -126,65 +148,87 @@ export function HalamanPenggunaAdmin() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans text-gray-900 antialiased pb-10">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-bold tracking-tight text-foreground">Kelola Pengguna</h1>
-          <p className="text-muted-foreground text-xs">
-            Manajemen data pengguna organisasi Anda, termasuk instruktur dan pembelajar.
+          <h1 className="text-xl font-bold tracking-tight text-gray-800">Manajemen Pengguna</h1>
+          <p className="text-gray-500 text-xs">
+            Kelola akses dan data pengguna dalam organisasi Anda.
           </p>
         </div>
-        <Button onClick={handleOpenCreateDialog} size="sm" className="shadow-sm">
-          <Plus className="w-4 h-4 mr-2" />
-          Tambah Pengguna
+        <Button
+          onClick={handleOpenCreateDialog}
+          className="shadow-lg shadow-blue-100 bg-[#7B6CF0] hover:bg-[#6859d0] hover:brightness-110 active:scale-95 transition-all text-white rounded-xl px-4 text-xs font-semibold h-9"
+        >
+          <Add size={18} className="mr-2" variant="Bold" />
+          Tambah Pengguna Baru
         </Button>
       </div>
 
-      {/* Filters */}
-      <div className="bg-card text-card-foreground rounded-xl border shadow-sm p-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Search */}
-          <div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Cari nama atau email..."
-                className="pl-10 h-10 shadow-none border-muted focus-visible:ring-blue-500"
-                value={filters.search || ""}
-                onChange={(e) => handleSearchChange(e.target.value)}
-              />
-            </div>
-          </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <StatCard
+          title="Total Pengguna"
+          value={statsData?.total || 0}
+          subtext="Total seluruh pengguna"
+          icon={Profile2User}
+          color="bg-blue-500"
+          trend="Total"
+        />
+        <StatCard
+          title="Pengguna Aktif"
+          value={statsData?.active || 0}
+          subtext="Pengguna berstatus aktif"
+          icon={UserTick}
+          color="bg-emerald-500"
+          trend="Aktif"
+        />
+        <StatCard
+          title="Tidak Aktif / Ditangguhkan"
+          value={(statsData?.nonActive || 0) + (statsData?.suspended || 0)}
+          subtext="Tidak aktif atau ditangguhkan"
+          icon={UserRemove}
+          color="bg-rose-500"
+          trend="Tidak Aktif"
+        />
+      </div>
 
-          {/* Role Filter */}
-          <div>
-            <Select
-              value={filters.role || "all"}
-              onValueChange={handleRoleFilter}
-            >
-              <SelectTrigger className="h-10 shadow-none border-muted">
-                <SelectValue placeholder="Semua Peran" />
+      {/* Filters Bar - Separate Card to match GlobalUsersPage */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-300 shadow-sm">
+        <div className="relative flex-1 max-w-md group">
+          <SearchNormal1
+            size={18}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-violet-500 transition-colors"
+          />
+          <Input
+            type="text"
+            placeholder="Cari nama atau email pengguna..."
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus-visible:ring-2 focus-visible:ring-violet-100 focus-visible:border-violet-200 focus:bg-white transition-all h-10 shadow-none"
+            value={filters.search || ""}
+            onChange={(e) => handleSearchChange(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
+            <Select value={filters.role || "all"} onValueChange={handleRoleFilter}>
+              <SelectTrigger className="w-[140px] bg-gray-50 border-gray-200 rounded-lg text-xs font-medium h-9 hover:bg-white hover:border-violet-200 transition-all focus:ring-0">
+                <SelectValue placeholder="Peran" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl border-gray-100">
                 <SelectItem value="all">Semua Peran</SelectItem>
                 <SelectItem value="admin">Admin</SelectItem>
                 <SelectItem value="instruktur">Instruktur</SelectItem>
                 <SelectItem value="pembelajar">Pembelajar</SelectItem>
               </SelectContent>
             </Select>
-          </div>
 
-          {/* Status Filter */}
-          <div>
-            <Select
-              value={filters.status || "all"}
-              onValueChange={handleStatusFilter}
-            >
-              <SelectTrigger className="h-10 shadow-none border-muted">
-                <SelectValue placeholder="Semua Status" />
+            <Select value={filters.status || "all"} onValueChange={handleStatusFilter}>
+              <SelectTrigger className="w-[140px] bg-gray-50 border-gray-200 rounded-lg text-xs font-medium h-9 hover:bg-white hover:border-violet-200 transition-all focus:ring-0">
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl border-gray-100">
                 <SelectItem value="all">Semua Status</SelectItem>
                 <SelectItem value="aktif">Aktif</SelectItem>
                 <SelectItem value="nonaktif">Non-Aktif</SelectItem>
@@ -195,18 +239,6 @@ export function HalamanPenggunaAdmin() {
         </div>
       </div>
 
-      {/* Stats */}
-      {usersData && (
-        <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800">
-          <p className="text-xs font-medium text-blue-700 dark:text-blue-400">
-            Menampilkan <span className="font-bold">{usersData.data.length}</span> dari <span className="font-bold">{usersData.count}</span> pengguna
-            {filters.search || filters.role || filters.status
-              ? " (hasil filter)"
-              : ""}
-          </p>
-        </div>
-      )}
-
       {/* Table */}
       <TabelPenggunaAdmin
         users={usersData?.data || []}
@@ -215,14 +247,12 @@ export function HalamanPenggunaAdmin() {
         onDelete={(user) =>
           confirmDeleteUser({ id: user.id, nama: user.nama_lengkap })
         }
+        onToggleStatus={handleToggleStatus}
       />
 
       {/* Pagination */}
       {usersData && usersData.totalPages > 1 && (
-        <div className="flex items-center justify-between pt-6 border-t mt-2">
-          <p className="text-sm text-muted-foreground">
-            Halaman <span className="font-bold text-foreground">{usersData.page}</span> dari <span className="font-bold text-foreground">{usersData.totalPages}</span>
-          </p>
+        <div className="flex items-center justify-between pt-6 border-t border-gray-100">
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -231,6 +261,7 @@ export function HalamanPenggunaAdmin() {
               onClick={() =>
                 setFilters((prev) => ({ ...prev, page: prev.page! - 1 }))
               }
+              className="rounded-xl"
             >
               Sebelumnya
             </Button>
@@ -241,6 +272,7 @@ export function HalamanPenggunaAdmin() {
               onClick={() =>
                 setFilters((prev) => ({ ...prev, page: prev.page! + 1 }))
               }
+              className="rounded-xl"
             >
               Selanjutnya
             </Button>
@@ -261,8 +293,6 @@ export function HalamanPenggunaAdmin() {
         }
         user={editingUser}
       />
-
-      {/* Konfirmasi hapus menggunakan Notiflix */}
     </div>
   );
 }

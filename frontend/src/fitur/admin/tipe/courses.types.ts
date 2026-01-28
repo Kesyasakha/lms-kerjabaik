@@ -20,6 +20,7 @@ export interface KursusWithInstructor extends Kursus {
     email: string;
   } | null;
   enrollment_count?: number;
+  url_gambar_mini?: string | null;
 }
 
 /**

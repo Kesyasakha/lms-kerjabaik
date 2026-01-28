@@ -326,140 +326,176 @@ export function HalamanKursusAdmin() {
 
       {/* Course Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i} className="shadow-sm border-muted animate-pulse">
-              <CardHeader className="space-y-3">
-                <div className="h-6 bg-muted rounded w-3/4" />
-                <div className="h-4 bg-muted rounded w-1/4" />
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="h-4 bg-muted rounded w-full" />
-                <div className="h-4 bg-muted rounded w-2/3" />
-              </CardContent>
-              <CardFooter>
-                <div className="h-9 bg-muted rounded w-full" />
-              </CardFooter>
-            </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+              <div className="h-40 bg-gray-100 animate-pulse" />
+              <div className="p-4 space-y-3">
+                <div className="h-5 bg-gray-100 rounded w-3/4 animate-pulse" />
+                <div className="h-4 bg-gray-50 rounded w-full animate-pulse" />
+                <div className="h-4 bg-gray-50 rounded w-1/2 animate-pulse" />
+                <div className="pt-4 flex gap-2">
+                  <div className="h-8 bg-gray-100 rounded-lg w-full animate-pulse" />
+                  <div className="h-8 bg-gray-100 rounded-lg w-10 animate-pulse" />
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       ) : coursesData?.data.length === 0 ? (
-        <div className="p-20 text-center bg-card rounded-xl border border-dashed flex flex-col items-center gap-4">
-          <BookOpen className="w-16 h-16 text-muted-foreground/20" />
+        <div className="p-16 text-center bg-white rounded-2xl border border-dashed border-gray-200 flex flex-col items-center gap-4">
+          <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center">
+            <BookOpen className="w-8 h-8" />
+          </div>
           <div className="space-y-1">
-            <p className="text-lg font-bold text-foreground">Tidak ada kursus ditemukan</p>
-            <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-              Cobalah sesuaikan kata kunci atau filter pencarian Anda, atau buat kursus baru sekarang.
+            <h3 className="text-lg font-bold text-gray-900">Belum ada kursus</h3>
+            <p className="text-sm text-gray-500 max-w-xs mx-auto">
+              Mulai buat kursus pertama Anda untuk membagikan materi pembelajaran.
             </p>
           </div>
           <Button
-            variant="outline"
-            className="mt-2"
             onClick={handleOpenCreateDialog}
+            className="mt-2 bg-[#7B6CF0] hover:bg-[#6859d0] text-white rounded-xl shadow-lg shadow-blue-100"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Buat Kursus Pertama
+            Buat Kursus
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {coursesData?.data.map((course) => (
-            <Card key={course.id} className="group hover:shadow-md transition-all duration-300 border-muted-foreground/10 overflow-hidden flex flex-col">
-              <CardHeader className="pb-3 flex-1">
-                <div className="mb-3">
-                  {/* Status & Kategori dihapus sesuai permintaan */}
+            <div
+              key={course.id}
+              className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 flex flex-col relative"
+            >
+              {/* Image Cover */}
+              <div className="relative h-44 w-full bg-gray-100 overflow-hidden">
+                <img
+                  src={course.url_gambar_mini || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.judul)}&background=random&size=256`}
+                  alt={course.judul}
+                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(course.judul)}&background=random&size=256`;
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
+
+                {/* Status Badge */}
+                <div className="absolute top-3 right-3">
+                  <span className={`
+                    px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-sm backdrop-blur-md border border-white/20
+                    ${course.status === 'published' ? 'bg-emerald-500/90 text-white' :
+                      course.status === 'draft' ? 'bg-amber-500/90 text-white' : 'bg-gray-500/90 text-white'}
+                  `}>
+                    {statusLabels[course.status as keyof typeof statusLabels] || course.status}
+                  </span>
                 </div>
-                <Link to={`/admin/kursus/${course.id}`} className="block">
-                  <h3 className="font-bold text-lg leading-tight transition-colors line-clamp-2">
-                    {course.judul}
-                  </h3>
-                </Link>
-                <p className="text-sm text-muted-foreground line-clamp-2 mt-3">
-                  {course.deskripsi || "Tidak ada deskripsi yang tersedia untuk kursus ini."}
-                </p>
-              </CardHeader>
-              <CardContent className="py-0">
-                <div className="pt-4 border-t border-muted/50 space-y-3 pb-4">
-                  <div className="flex items-center gap-2 text-sm text-zinc-500 font-medium italic">
-                    <span className="truncate">
-                      Instruktur: {course.instruktur?.nama_lengkap || "Belum ada instruktur"}
+              </div>
+
+              {/* Content */}
+              <div className="p-5 flex flex-col flex-1">
+                <div className="flex-1 space-y-2">
+                  {/* Category */}
+                  <div className="text-[10px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50 w-fit px-2 py-0.5 rounded-md">
+                    {course.kategori || "Umum"}
+                  </div>
+
+                  <Link to={`/admin/kursus/${course.id}`} className="block">
+                    <h3 className="font-bold text-gray-900 group-hover:text-[#7B6CF0] transition-colors line-clamp-2 text-base leading-snug">
+                      {course.judul}
+                    </h3>
+                  </Link>
+
+                  <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                    {course.deskripsi || "Tidak ada deskripsi singkat."}
+                  </p>
+                </div>
+
+                {/* Stats Row */}
+                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                  <div className="flex items-center gap-1.5" title="Instruktur">
+                    <div className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-[9px] font-bold">
+                      {course.instruktur?.nama_lengkap.charAt(0) || "?"}
+                    </div>
+                    <span className="font-medium truncate max-w-[80px]">
+                      {course.instruktur?.nama_lengkap.split(' ')[0] || "No Instructor"}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between gap-4 text-[11px] text-zinc-500 font-bold uppercase tracking-wider">
-                    <div className="flex items-center gap-1.5 ">
-                      <Users className="w-3.5 h-3.5" />
-                      <span>{course.enrollment_count || 0} Pendaftar</span>
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1" title="Pendaftar">
+                      <Users size={12} className="text-gray-400" />
+                      <span className="font-semibold">{course.enrollment_count || 0}</span>
                     </div>
                     {course.durasi_menit && (
-                      <span>{course.durasi_menit} Menit</span>
+                      <div className="flex items-center gap-1" title="Durasi">
+                        <BookOpen size={12} className="text-gray-400" />
+                        <span className="font-semibold">{course.durasi_menit}m</span>
+                      </div>
                     )}
                   </div>
                 </div>
-              </CardContent>
-              <CardFooter className="bg-zinc-50/50 dark:bg-zinc-900/30 p-3 flex gap-2 border-t border-muted/50">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex-1 h-9 rounded-lg font-bold text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700"
-                  onClick={() => handleOpenEditDialog(course)}
-                >
-                  <Pencil className="w-3.5 h-3.5 mr-1.5" />
-                  Ubah
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex-1 h-9 rounded-lg font-bold text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700"
-                  onClick={() => handleOpenAssignDialog(course)}
-                >
-                  <Users className="w-3.5 h-3.5 mr-1.5" />
-                  Tugaskan
-                </Button>
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700 shrink-0"
-                    >
-                      <MoreVertical className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-[180px]">
-                    <DropdownMenuItem onClick={() => handleToggleVisibility(course)} disabled={course.status === "archived"} className="cursor-pointer">
-                      {course.status === "published" ? (
-                        <>
-                          <EyeOff className="w-4 h-4 mr-2 text-amber-600" />
-                          Batal Terbit
-                        </>
-                      ) : (
-                        <>
-                          <Eye className="w-4 h-4 mr-2 text-blue-600" />
-                          Terbitkan
-                        </>
-                      )}
-                    </DropdownMenuItem>
-                    {course.status !== "archived" && (
-                      <DropdownMenuItem
-                        onClick={() => handleArchiveCourse(course)}
-                        className="text-amber-600 cursor-pointer"
+                {/* Actions Footer */}
+                <div className="mt-4 flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 h-8 rounded-lg text-xs font-semibold bg-gray-50 border-gray-200 text-gray-700 hover:text-[#7B6CF0] hover:bg-indigo-50 hover:border-indigo-200 transition-all shadow-none"
+                    onClick={() => handleOpenEditDialog(course)}
+                  >
+                    Edit Info
+                  </Button>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 rounded-lg bg-white border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-all shadow-none"
                       >
-                        <Archive className="w-4 h-4 mr-2" />
-                        Arsipkan
+                        <MoreVertical className="w-3.5 h-3.5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[180px] rounded-xl">
+                      <DropdownMenuItem onClick={() => handleOpenAssignDialog(course)} className="cursor-pointer">
+                        <Users className="w-4 h-4 mr-2" />
+                        Assign Instruktur
                       </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem
-                      onClick={() => confirmDeleteCourse(course)}
-                      className="text-red-600 focus:text-red-600 cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Hapus Kursus
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </CardFooter>
-            </Card>
+                      <DropdownMenuItem onClick={() => handleToggleVisibility(course)} disabled={course.status === "archived"} className="cursor-pointer">
+                        {course.status === "published" ? (
+                          <>
+                            <EyeOff className="w-4 h-4 mr-2 text-amber-600" />
+                            Batal Terbit
+                          </>
+                        ) : (
+                          <>
+                            <Eye className="w-4 h-4 mr-2 text-blue-600" />
+                            Terbitkan
+                          </>
+                        )}
+                      </DropdownMenuItem>
+                      {course.status !== "archived" && (
+                        <DropdownMenuItem
+                          onClick={() => handleArchiveCourse(course)}
+                          className="text-amber-600 cursor-pointer"
+                        >
+                          <Archive className="w-4 h-4 mr-2" />
+                          Arsipkan
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem
+                        onClick={() => confirmDeleteCourse(course)}
+                        className="text-red-600 focus:text-red-600 cursor-pointer bg-red-50/50 hover:bg-red-50 focus:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Hapus Kursus
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       )}

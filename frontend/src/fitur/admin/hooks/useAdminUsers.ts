@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getAdminUsers,
+  getAdminUserStats,
   createAdminUser,
   updateAdminUser,
   deleteAdminUser,
@@ -114,5 +115,19 @@ export function useBulkImportUsers() {
         queryKey: ["admin-users", currentUser?.id_lembaga],
       });
     },
+  });
+}
+
+/**
+ * Hook untuk get user stats
+ */
+export function useAdminUserStats() {
+  const { user: currentUser } = useAuthStore();
+
+  return useQuery({
+    queryKey: ["admin-user-stats", currentUser?.id_lembaga],
+    queryFn: () => getAdminUserStats(),
+    staleTime: 1000 * 30, // 30 seconds
+    enabled: !!currentUser?.id_lembaga,
   });
 }

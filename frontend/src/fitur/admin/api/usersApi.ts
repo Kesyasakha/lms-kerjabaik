@@ -253,3 +253,51 @@ export async function bulkImportUsers(file: File): Promise<BulkImportResult> {
 
   return result;
 }
+
+/**
+ * Get user stats for admin dashboard
+ */
+export async function getAdminUserStats() {
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser();
+  if (!authUser) throw new Error("Not authenticated");
+
+  const { data: currentUser } = (await supabase
+    .from("pengguna")
+    .select("id_lembaga")
+    .eq("auth_id", authUser.id)
+    .single()) as { data: { id_lembaga: string } | null };
+
+  if (!currentUser) throw new Error("User not found");
+
+  // Run queries in parallel
+  const [total, active, nonActive, suspended] = await Promise.all([
+    supabase
+      .from("pengguna")
+      .select("*", { count: "exact", head: true })
+      .eq("id_lembaga", currentUser.id_lembaga),
+    supabase
+      .from("pengguna")
+      .select("*", { count: "exact", head: true })
+      .eq("id_lembaga", currentUser.id_lembaga)
+      .eq("status", "aktif"),
+    supabase
+      .from("pengguna")
+      .select("*", { count: "exact", head: true })
+      .eq("id_lembaga", currentUser.id_lembaga)
+      .eq("status", "nonaktif"),
+    supabase
+      .from("pengguna")
+      .select("*", { count: "exact", head: true })
+      .eq("id_lembaga", currentUser.id_lembaga)
+      .eq("status", "suspended"),
+  ]);
+
+  return {
+    total: total.count || 0,
+    active: active.count || 0,
+    nonActive: nonActive.count || 0,
+    suspended: suspended.count || 0
+  };
+}
