@@ -25,26 +25,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/komponen/ui/table";
-import { Badge } from "@/komponen/ui/badge";
 import { Switch } from "@/komponen/ui/switch";
-// AlertDialog dihapus karena digantikan oleh Notiflix
 import { Button } from "@/komponen/ui/button";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/komponen/ui/card";
-import {
-  Search,
-  Plus,
-  Pencil,
-  Trash2,
-  Users,
-  UserCheck,
-  UserX,
-  ShieldAlert
-} from "lucide-react";
+  SearchNormal1,
+  Add,
+  Edit,
+  Trash,
+  Profile2User,
+  UserTick,
+  UserRemove,
+  ShieldSearch,
+  Building,
+} from "iconsax-react";
 import { cn } from "@/pustaka/utils";
 import type {
   GlobalUserFilters,
@@ -52,21 +45,19 @@ import type {
   UpdateUserData,
   PenggunaWithTenant,
 } from "../api/usersApi";
+import { StatCard } from "@/fitur/superadmin/komponen/dashboard/StatCard";
 
-const statusColors = {
-  aktif: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 border-green-200 dark:border-green-900",
-  nonaktif: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400 border-gray-200 dark:border-gray-800",
-  suspended: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400 border-red-200 dark:border-red-900",
+const statusInfo = {
+  aktif: { label: "Aktif", color: "bg-emerald-500", text: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-100" },
+  nonaktif: { label: "Non-Aktif", color: "bg-gray-400", text: "text-gray-700", bg: "bg-gray-50", border: "border-gray-100" },
+  suspended: { label: "Ditangguhkan", color: "bg-red-500", text: "text-red-700", bg: "bg-red-50", border: "border-red-100" },
 };
 
-const roleColors = {
-  superadmin:
-    "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400 border-purple-200 dark:border-purple-900",
-  admin: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400 border-blue-200 dark:border-blue-900",
-  instruktur:
-    "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 border-green-200 dark:border-green-900",
-  pembelajar:
-    "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400 border-gray-200 dark:border-gray-800",
+const roleInfo = {
+  superadmin: { label: "Superadmin", color: "text-purple-700", bg: "bg-purple-50", border: "border-purple-100" },
+  admin: { label: "Admin", color: "text-blue-700", bg: "bg-blue-50", border: "border-blue-100" },
+  instruktur: { label: "Instruktur", color: "text-amber-700", bg: "bg-amber-50", border: "border-amber-100" },
+  pembelajar: { label: "Pembelajar", color: "text-gray-600", bg: "bg-gray-50", border: "border-gray-100" },
 };
 
 export function GlobalUsersPage() {
@@ -94,10 +85,6 @@ export function GlobalUsersPage() {
   const createUserMutation = useCreateGlobalUser();
   const updateUserMutation = useUpdateGlobalUser();
   const deleteUserMutation = useDeleteGlobalUser();
-
-  const handleSearchChange = (value: string) => {
-    setSearchTerm(value);
-  };
 
   const handleRoleFilter = (value: string) => {
     setFilters((prev) => ({
@@ -127,13 +114,10 @@ export function GlobalUsersPage() {
     const newStatus = currentStatus === "aktif" ? "nonaktif" : "aktif";
     pemberitahuan.tampilkanPemuatan("Mengubah status...");
     updateStatusMutation.mutate(
-      {
-        userId,
-        status: newStatus as any,
-      },
+      { userId, status: newStatus as any },
       {
         onSuccess: () => {
-          pemberitahuan.sukses(`Status pengguna berhasil diubah menjadi ${newStatus}.`);
+          pemberitahuan.sukses(`Status pengguna berhasil diubah.`);
         },
         onError: () => {
           pemberitahuan.gagal("Gagal mengubah status pengguna.");
@@ -152,8 +136,12 @@ export function GlobalUsersPage() {
         pemberitahuan.sukses("Pengguna baru berhasil ditambahkan.");
         setUserDialogOpen(false);
       },
-      onError: () => {
-        pemberitahuan.gagal("Gagal menambahkan pengguna.");
+      onError: (err: any) => {
+        // Handle Edge Function error response properly
+        // Supabase functions.invoke returns error in err object if status != 200
+        const errorMessage = err?.message || "Gagal menambahkan pengguna.";
+        console.error("Create User Error:", err);
+        pemberitahuan.gagal(errorMessage);
       },
       onSettled: () => {
         pemberitahuan.hilangkanPemuatan();
@@ -165,10 +153,7 @@ export function GlobalUsersPage() {
     if (!editingUser) return;
     pemberitahuan.tampilkanPemuatan("Memperbarui pengguna...");
     updateUserMutation.mutate(
-      {
-        userId: editingUser.id,
-        data,
-      },
+      { userId: editingUser.id, data },
       {
         onSuccess: () => {
           pemberitahuan.sukses("Data pengguna berhasil diperbarui.");
@@ -187,16 +172,28 @@ export function GlobalUsersPage() {
 
   const handleSubmitUser = (data: any) => {
     if (editingUser) {
+      // Filter out fields that are not in the database table public.pengguna
+      // Especially 'password' which is handled by auth, not this table directly
       const updateData: UpdateUserData = {
         nama_lengkap: data.nama_lengkap,
         email: data.email,
-        role: data.role,
         id_lembaga: data.id_lembaga,
         status: data.status,
+        role: data.role,
       };
       handleUpdateUser(updateData);
     } else {
-      handleCreateUser(data as CreateUserData);
+      // Ensure all required fields for Edge Function are present and clean
+      // and handle empty id_lembaga as null to avoid invalid UUID format error
+      const createData: CreateUserData = {
+        email: data.email,
+        password: data.password,
+        nama_lengkap: data.nama_lengkap,
+        role: data.role || "admin",
+        id_lembaga: data.id_lembaga || null,
+      };
+      console.log("Submitting Create User Data:", createData);
+      handleCreateUser(createData);
     }
   };
 
@@ -231,106 +228,84 @@ export function GlobalUsersPage() {
     );
   };
 
-  // handleDeleteUser dihapus karena logika dipindah ke confirmDeleteUser
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 font-sans text-gray-900 antialiased pb-10">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-bold tracking-tight text-foreground">Kelola Pengguna Global</h1>
-          <p className="text-muted-foreground text-xs">
-            Kelola data seluruh pengguna dari berbagai tenant dalam platform secara terpusat.
+          <h1 className="text-xl font-bold tracking-tight text-gray-800">Manajemen Pengguna</h1>
+          <p className="text-gray-500 text-xs">
+            Kelola akses dan data seluruh pengguna platform secara terpusat.
           </p>
         </div>
-        <Button onClick={handleOpenCreateDialog} size="sm" className="shadow-sm">
-          <Plus className="w-4 h-4 mr-2" />
-          Tambah Pengguna Baru
-        </Button>
+        <button
+          onClick={handleOpenCreateDialog}
+          className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-[#7B6CF0] rounded-xl hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-violet-200"
+        >
+          <Add size={18} variant="Bold" />
+          <span>Tambah Pengguna Baru</span>
+        </button>
       </div>
 
       {/* Stats Overview */}
-      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-blue-500/50 group">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total Pengguna</CardTitle>
-            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
-              <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold tracking-tight">{usersData?.count || 0}</div>
-            <p className="text-[10px] font-medium text-muted-foreground mt-1 uppercase">Pengguna terdaftar</p>
-          </CardContent>
-        </Card>
-
-        <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-green-500/50 group">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Aktif</CardTitle>
-            <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg group-hover:bg-green-100 dark:group-hover:bg-green-900/40 transition-colors">
-              <UserCheck className="w-4 h-4 text-green-600 dark:text-green-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold tracking-tight text-green-600">
-              {usersData?.data?.filter((u) => u.status === "aktif").length || 0}
-            </div>
-            <p className="text-[10px] font-medium text-muted-foreground mt-1 uppercase">Sesi aktif saat ini</p>
-          </CardContent>
-        </Card>
-
-        <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-border/60 hover:border-slate-500/50 group">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Non-Aktif</CardTitle>
-            <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg group-hover:bg-slate-200 dark:group-hover:bg-slate-700 transition-colors">
-              <UserX className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold tracking-tight text-slate-600">
-              {usersData?.data?.filter((u) => u.status === "nonaktif").length || 0}
-            </div>
-            <p className="text-[10px] font-medium text-muted-foreground mt-1 uppercase">Pengguna hibernasi</p>
-          </CardContent>
-        </Card>
-
-        <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-red-100 dark:border-red-900/30 hover:border-red-500/50 group">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Ditangguhkan</CardTitle>
-            <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg group-hover:bg-red-100 dark:group-hover:bg-red-900/40 transition-colors">
-              <ShieldAlert className="w-4 h-4 text-red-600 dark:text-red-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold tracking-tight text-red-600">
-              {usersData?.data?.filter((u) => u.status === "suspended").length || 0}
-            </div>
-            <p className="text-[10px] font-medium text-muted-foreground mt-1 uppercase">Memerlukan perhatian</p>
-          </CardContent>
-        </Card>
+      <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          title="Total Pengguna"
+          value={usersData?.count || 0}
+          subtext="Seluruh tenant"
+          icon={Profile2User}
+          color="bg-blue-500"
+          trend="+12%"
+        />
+        <StatCard
+          title="Pengguna Aktif"
+          value={usersData?.data?.filter((u) => u.status === "aktif").length || 0}
+          subtext="Berstatus Aktif"
+          icon={UserTick}
+          color="bg-emerald-500"
+          trend="85%"
+        />
+        <StatCard
+          title="Non-Aktif"
+          value={usersData?.data?.filter((u) => u.status === "nonaktif").length || 0}
+          subtext="Tidak aktif"
+          icon={UserRemove}
+          color="bg-gray-400"
+          trend="-2%"
+        />
+        <StatCard
+          title="Ditangguhkan"
+          value={usersData?.data?.filter((u) => u.status === "suspended").length || 0}
+          subtext="Perlu Verifikasi"
+          icon={ShieldSearch}
+          color="bg-red-500"
+          trend="Flagged"
+        />
       </section>
 
-      <div className="space-y-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="relative flex-1 md:max-w-sm">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Cari nama atau email..."
-              className="pl-10 bg-background border-muted-foreground/20 focus:border-primary transition-all h-10"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+      {/* Filters Bar - Separate Card to match TenantsPage */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="relative flex-1 max-w-md group">
+          <SearchNormal1
+            size={18}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-violet-500 transition-colors"
+          />
+          <Input
+            type="text"
+            placeholder="Cari nama atau email pengguna..."
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus-visible:ring-2 focus-visible:ring-violet-100 focus-visible:border-violet-200 focus:bg-white transition-all h-10 shadow-none"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
-          <div className="grid grid-cols-2 md:flex gap-2">
-            <Select
-              value={filters.role || "all"}
-              onValueChange={handleRoleFilter}
-            >
-              <SelectTrigger className="w-[150px] bg-background border-muted-foreground/20 h-10">
-                <SelectValue placeholder="Semua Peran" />
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
+            <Select value={filters.role || "all"} onValueChange={handleRoleFilter}>
+              <SelectTrigger className="w-[140px] bg-gray-50 border-gray-200 rounded-lg text-xs font-medium h-9 hover:bg-white hover:border-violet-200 transition-all focus:ring-0">
+                <SelectValue placeholder="Peran" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl border-gray-100">
                 <SelectItem value="all">Semua Peran</SelectItem>
                 <SelectItem value="superadmin">Superadmin</SelectItem>
                 <SelectItem value="admin">Admin</SelectItem>
@@ -339,29 +314,11 @@ export function GlobalUsersPage() {
               </SelectContent>
             </Select>
 
-            <Select
-              value={filters.status || "all"}
-              onValueChange={handleStatusFilter}
-            >
-              <SelectTrigger className="w-[150px] bg-background border-muted-foreground/20 h-10">
-                <SelectValue placeholder="Semua Status" />
+            <Select value={filters.id_lembaga || "all"} onValueChange={handleTenantFilter}>
+              <SelectTrigger className="w-[160px] bg-gray-50 border-gray-200 rounded-lg text-xs font-medium h-9 hover:bg-white hover:border-violet-200 transition-all focus:ring-0">
+                <SelectValue placeholder="Tenant" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Status</SelectItem>
-                <SelectItem value="aktif">Aktif</SelectItem>
-                <SelectItem value="nonaktif">Non-Aktif</SelectItem>
-                <SelectItem value="suspended">Ditangguhkan</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={filters.id_lembaga || "all"}
-              onValueChange={handleTenantFilter}
-            >
-              <SelectTrigger className="w-[180px] bg-background border-muted-foreground/20 h-10">
-                <SelectValue placeholder="Semua Tenant" />
-              </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl border-gray-100">
                 <SelectItem value="all">Semua Tenant</SelectItem>
                 {tenantsData?.data.map((tenant) => (
                   <SelectItem key={tenant.id} value={tenant.id}>
@@ -370,180 +327,159 @@ export function GlobalUsersPage() {
                 ))}
               </SelectContent>
             </Select>
+
+            <Select value={filters.status || "all"} onValueChange={handleStatusFilter}>
+              <SelectTrigger className="w-[140px] bg-gray-50 border-gray-200 rounded-lg text-xs font-medium h-9 hover:bg-white hover:border-violet-200 transition-all focus:ring-0">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-gray-100">
+                <SelectItem value="all">Semua Status</SelectItem>
+                <SelectItem value="aktif">Aktif</SelectItem>
+                <SelectItem value="nonaktif">Non-Aktif</SelectItem>
+                <SelectItem value="suspended">Ditangguhkan</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
+      </div>
 
-        <div className="bg-card text-card-foreground rounded-xl border border-border/60 shadow-sm overflow-hidden transition-all">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
-                  <TableHead className="font-semibold text-foreground py-3 px-6 w-[350px]">Identitas Pengguna</TableHead>
-                  <TableHead className="font-semibold text-foreground py-3">Peran</TableHead>
-                  <TableHead className="font-semibold text-foreground py-3">Tenant / Lembaga</TableHead>
-                  <TableHead className="font-semibold text-foreground py-3">Status</TableHead>
-                  <TableHead className="font-semibold text-foreground text-center py-3">Aksi</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="px-6 py-4">
-                        <div className="flex flex-col gap-2">
-                          <div className="h-4 bg-muted animate-pulse rounded w-3/4" />
-                          <div className="h-3 bg-muted animate-pulse rounded w-1/2" />
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="h-6 bg-muted animate-pulse rounded w-20" />
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="h-4 bg-muted animate-pulse rounded w-24" />
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="h-6 bg-muted animate-pulse rounded w-16" />
-                      </TableCell>
-                      <TableCell className="text-center py-4">
-                        <div className="h-8 w-16 mx-auto bg-muted animate-pulse rounded-full" />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : usersData?.data.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-20">
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="p-4 bg-muted/50 rounded-full">
-                          <Users className="w-10 h-10 text-muted-foreground/30" />
-                        </div>
-                        <p className="text-muted-foreground font-medium">
-                          Tidak ada pengguna yang ditemukan
-                        </p>
-                      </div>
-                    </TableCell>
+      {/* Table Card */}
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50/50 hover:bg-gray-50/50 border-b border-gray-100">
+                <TableHead className="py-4 px-6 text-[11px] font-bold uppercase tracking-widest text-gray-400">Pengguna</TableHead>
+                <TableHead className="py-4 text-[11px] font-bold uppercase tracking-widest text-gray-400">Akses & Tenant</TableHead>
+                <TableHead className="py-4 text-[11px] font-bold uppercase tracking-widest text-gray-400">Status Akun</TableHead>
+                <TableHead className="py-4 text-[11px] font-bold uppercase tracking-widest text-gray-400 text-center">Tindakan</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                [...Array(5)].map((_, i) => (
+                  <TableRow key={i} className="border-b border-gray-50">
+                    <TableCell className="px-6 py-4"><div className="h-10 bg-gray-50 animate-pulse rounded-xl w-48" /></TableCell>
+                    <TableCell className="py-4"><div className="h-6 bg-gray-50 animate-pulse rounded-lg w-32" /></TableCell>
+                    <TableCell className="py-4"><div className="h-6 bg-gray-50 animate-pulse rounded-lg w-20" /></TableCell>
+                    <TableCell className="py-4"><div className="h-8 bg-gray-50 animate-pulse rounded-xl w-24 mx-auto" /></TableCell>
                   </TableRow>
-                ) : (
-                  usersData?.data.map((user) => (
-                    <TableRow key={user.id} className="group transition-all hover:bg-muted/20 border-b last:border-0">
-                      <TableCell className="px-6 py-2.5">
-                        <div className="flex flex-col">
-                          <span className="font-bold text-sm text-foreground group-hover:text-primary transition-colors cursor-pointer" onClick={() => handleEditUser(user)}>
-                            {user.nama_lengkap}
-                          </span>
-                          <span className="text-xs text-muted-foreground font-medium">{user.email}</span>
+                ))
+              ) : usersData?.data.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="py-20 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="h-16 w-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300">
+                        <Profile2User size={32} />
+                      </div>
+                      <div>
+                        <p className="text-gray-800 font-bold text-sm">Data Tidak Ditemukan</p>
+                        <p className="text-gray-400 text-xs mt-1">Gunakan kata kunci atau filter lain.</p>
+                      </div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                usersData?.data.map((user) => {
+                  const sInfo = statusInfo[user.status as keyof typeof statusInfo] || statusInfo.nonaktif;
+                  const rInfo = roleInfo[user.role as keyof typeof roleInfo] || roleInfo.pembelajar;
+
+                  return (
+                    <TableRow key={user.id} className="group hover:bg-gray-50/50 border-b border-gray-100 last:border-0 transition-colors">
+                      <TableCell className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 shrink-0 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-white group-hover:shadow-sm transition-all duration-200 border border-gray-100 group-hover:border-violet-100 font-bold text-sm shrink-0 uppercase">
+                            {user.nama_lengkap.charAt(0)}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-bold text-sm text-gray-800 group-hover:text-[#7B6CF0] transition-colors">
+                              {user.nama_lengkap}
+                            </span>
+                            <span className="text-[11px] text-gray-400 font-medium">{user.email}</span>
+                          </div>
                         </div>
                       </TableCell>
-                      <TableCell className="py-2.5">
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "font-semibold text-[10px] uppercase tracking-wider px-2.5 py-0.5 border shadow-sm",
-                            roleColors[user.role as keyof typeof roleColors]
-                          )}
-                        >
-                          {user.role}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="py-2.5 font-medium text-sm text-foreground/80">
-                        {user.tenant_name || "-"}
-                      </TableCell>
-                      <TableCell className="py-2.5">
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "font-bold rounded-full px-3 py-1 text-[10px] uppercase tracking-wider border shadow-sm",
-                            statusColors[user.status]
-                          )}
-                        >
-                          {user.status === 'suspended' ? 'Ditangguhkan' : user.status === 'nonaktif' ? 'Non-Aktif' : 'Aktif'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-center py-2.5">
-                        <div className="flex items-center justify-center gap-3">
-                          <div className="flex items-center gap-2">
-                            <Switch
-                              checked={user.status === "aktif"}
-                              onCheckedChange={() =>
-                                handleToggleStatus(user.id, user.status)
-                              }
-                              disabled={
-                                user.role === "superadmin" ||
-                                user.status === "suspended" ||
-                                updateStatusMutation.isPending
-                              }
-                              className="data-[state=checked]:bg-green-600 scale-90"
-                            />
+                      <TableCell className="py-4">
+                        <div className="flex flex-col gap-1.5">
+                          <div className={cn("inline-flex items-center w-fit px-2 py-0.5 rounded-lg border text-[10px] font-bold uppercase tracking-wider", rInfo.bg, rInfo.color, rInfo.border)}>
+                            {rInfo.label}
                           </div>
-                          <div className="w-px h-6 bg-muted mx-1 hidden md:block" />
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-full"
-                              onClick={() => handleEditUser(user)}
-                              disabled={user.role === "superadmin"}
-                            >
-                              <Pencil className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full"
-                              onClick={() =>
-                                confirmDeleteUser({
-                                  id: user.id,
-                                  nama: user.nama_lengkap,
-                                })
-                              }
-                              disabled={
-                                user.role === "superadmin" ||
-                                deleteUserMutation.isPending
-                              }
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                          <div className="flex items-center gap-1.5 text-gray-500 text-[11px] font-medium">
+                            <Building size={12} />
+                            {user.tenant_name || "Tanpa Tenant"}
                           </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="flex items-center gap-3">
+                          <div className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider", sInfo.bg, sInfo.text, sInfo.border)}>
+                            <span className={cn("w-1.5 h-1.5 rounded-full", sInfo.color)}></span>
+                            {sInfo.label}
+                          </div>
+                          <Switch
+                            checked={user.status === "aktif"}
+                            onCheckedChange={() => handleToggleStatus(user.id, user.status)}
+                            disabled={user.role === "superadmin" || user.status === "suspended" || updateStatusMutation.isPending}
+                            className="data-[state=checked]:bg-emerald-500 scale-75"
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => handleEditUser(user)}
+                            disabled={user.role === "superadmin"}
+                            className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-orange-50 text-gray-400 hover:text-orange-600 transition-all disabled:opacity-30"
+                            title="Edit"
+                          >
+                            <Edit size={18} />
+                          </button>
+                          <button
+                            onClick={() => confirmDeleteUser({ id: user.id, nama: user.nama_lengkap })}
+                            disabled={user.role === "superadmin" || deleteUserMutation.isPending}
+                            className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-all disabled:opacity-30"
+                            title="Hapus"
+                          >
+                            <Trash size={18} />
+                          </button>
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-
-          {usersData && usersData.totalPages > 1 && (
-            <div className="flex items-center justify-between p-4 border-t bg-muted/30">
-              <p className="text-sm text-muted-foreground font-medium">
-                Halaman {usersData.page} dari {usersData.totalPages}
-              </p>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 shadow-sm hover:bg-background"
-                  disabled={usersData.page === 1}
-                  onClick={() =>
-                    setFilters((prev) => ({ ...prev, page: prev.page! - 1 }))
-                  }
-                >
-                  Sebelumnya
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 text-primary border-primary/20 hover:bg-primary/5 shadow-sm"
-                  disabled={usersData.page === usersData.totalPages}
-                  onClick={() =>
-                    setFilters((prev) => ({ ...prev, page: prev.page! + 1 }))
-                  }
-                >
-                  Selanjutnya
-                </Button>
-              </div>
-            </div>
-          )}
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
         </div>
+
+        {/* Pagination */}
+        {usersData && usersData.totalPages > 1 && (
+          <div className="px-6 py-5 border-t border-gray-50 flex items-center justify-between bg-gray-50/20">
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+              Halaman {usersData.page} / {usersData.totalPages}
+            </span>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-xl border-gray-200 h-9 px-4 text-xs font-bold"
+                disabled={usersData.page === 1}
+                onClick={() => setFilters((prev) => ({ ...prev, page: prev.page! - 1 }))}
+              >
+                Sebelumnya
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-xl border-violet-200 text-violet-600 hover:bg-violet-50 h-9 px-4 text-xs font-bold"
+                disabled={usersData.page === usersData.totalPages}
+                onClick={() => setFilters((prev) => ({ ...prev, page: prev.page! + 1 }))}
+              >
+                Selanjutnya
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       <CreateUserDialog
@@ -553,13 +489,9 @@ export function GlobalUsersPage() {
           if (!open) setEditingUser(null);
         }}
         onSubmit={handleSubmitUser}
-        isSubmitting={
-          createUserMutation.isPending || updateUserMutation.isPending
-        }
+        isSubmitting={createUserMutation.isPending || updateUserMutation.isPending}
         user={editingUser}
       />
-
-      {/* AlertDialog dihapus karena menggunakan Notiflix */}
     </div>
   );
 }

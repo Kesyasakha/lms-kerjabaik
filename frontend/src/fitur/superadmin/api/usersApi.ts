@@ -21,7 +21,7 @@ export interface CreateUserData {
   password: string;
   nama_lengkap: string;
   role: "admin" | "instruktur" | "pembelajar";
-  id_lembaga: string;
+  id_lembaga: string | null;
 }
 
 export interface UpdateUserData {
@@ -178,12 +178,26 @@ export async function getAdminUsers() {
  * Create new user
  */
 export async function createGlobalUser(userData: CreateUserData) {
-  const { data, error } = await supabase.functions.invoke("create-user", {
-    body: userData,
-  });
+  try {
+    const { data, error } = await supabase.functions.invoke("create-user", {
+      body: userData,
+    });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      // FunctionsHttpError has a context property which is the Response
+      if (typeof (error as any).context?.json === 'function') {
+        const body = await (error as any).context.json();
+        if (body && body.error) {
+          throw new Error(body.error);
+        }
+      }
+      throw error;
+    }
+    return data;
+  } catch (err: any) {
+    // Re-throw with clean message
+    throw new Error(err.message || "Gagal menghubungi layanan pendaftaran.");
+  }
 }
 
 /**
@@ -212,10 +226,22 @@ export async function updateGlobalUser(
  * Delete user
  */
 export async function deleteGlobalUser(userId: string) {
-  const { data, error } = await supabase.functions.invoke("delete-user", {
-    body: { id_pengguna: userId },
-  });
+  try {
+    const { data, error } = await supabase.functions.invoke("delete-user", {
+      body: { user_id: userId },
+    });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (typeof (error as any).context?.json === 'function') {
+        const body = await (error as any).context.json();
+        if (body && body.error) {
+          throw new Error(body.error);
+        }
+      }
+      throw error;
+    }
+    return data;
+  } catch (err: any) {
+    throw new Error(err.message || "Gagal menghubungi layanan penghapusan.");
+  }
 }

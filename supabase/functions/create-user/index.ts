@@ -13,7 +13,6 @@ serve(async (req) => {
   }
 
   try {
-    // Create a Supabase client with Admin (Service Role) key
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
@@ -25,56 +24,75 @@ serve(async (req) => {
       },
     );
 
-    // Get request body
-    const { email, password, nama_lengkap, role, id_lembaga } = await req.json();
+    const body = await req.json();
+    const { email, password, nama_lengkap, role, id_lembaga } = body;
 
-    // 1. Create user in Supabase Auth (Auto confirmed)
+    console.log("Processing Create User (Admin Action):", { email, role, id_lembaga });
+
+    if (!email || !password || !nama_lengkap || !role || !id_lembaga) {
+      return new Response(JSON.stringify({
+        error: "Lengkapi data pendaftaran (email, password, nama, peran, dan tenant wajib diisi)"
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
+
+    // 1. Create user in Supabase Auth with COMPLETE metadata
+    // This will trigger 'on_auth_user_created' database trigger in SQL
     const { data: authUser, error: authError } =
       await supabaseAdmin.auth.admin.createUser({
         email,
         password,
-        email_confirm: true, // Auto confirm email
+        email_confirm: true,
         user_metadata: {
           nama_lengkap,
+          role,
+          id_lembaga,
         },
       });
 
     if (authError) {
-      throw authError;
+      console.error("Supabase Auth Error:", authError);
+      return new Response(JSON.stringify({ error: `Penyedia Autentikasi: ${authError.message}` }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
     }
 
     if (!authUser.user) {
-      throw new Error("Failed to create user");
+      throw new Error("Gagal menginisialisasi akun pengguna");
     }
 
-    // 2. Create user in public.pengguna
-    const { data: pengguna, error: penggunaError } = await supabaseAdmin
+    // 2. Fetch the profile created by the database trigger
+    // We wait a tiny bit to ensure the trigger finished (usually instant)
+    const { data: pengguna, error: fetchError } = await supabaseAdmin
       .from("pengguna")
-      .insert({
-        auth_id: authUser.user.id,
-        email,
-        nama_lengkap,
-        role,
-        id_lembaga, // Fixed: tenant_id -> id_lembaga
-        status: "aktif",
-      })
-      .select()
+      .select("*")
+      .eq("auth_id", authUser.user.id)
       .single();
 
-    if (penggunaError) {
-      // Rollback: Delete auth user if public record fails
-      await supabaseAdmin.auth.admin.deleteUser(authUser.user.id);
-      throw penggunaError;
+    if (fetchError) {
+      console.log("Warning: User created in Auth but profile fetch failed yet. Returning basic info.");
+      return new Response(JSON.stringify({
+        id: authUser.user.id,
+        email: authUser.user.email,
+        nama_lengkap
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 201, // Created
+      });
     }
 
     return new Response(JSON.stringify(pengguna), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+  } catch (err: any) {
+    console.error("Function Handler Error:", err.message);
+    return new Response(JSON.stringify({ error: `Kesalahan sistem internal: ${err.message}` }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 400,
+      status: 500,
     });
   }
 });
