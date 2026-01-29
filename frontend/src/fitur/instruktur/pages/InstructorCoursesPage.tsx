@@ -31,7 +31,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/komponen/ui/dropdown-menu";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 export default function InstructorCoursesPage() {
   const [filters, setFilters] = useState<CourseFilters>({
@@ -74,7 +74,7 @@ export default function InstructorCoursesPage() {
     archived: "Diarsipkan",
   };
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -84,7 +84,7 @@ export default function InstructorCoursesPage() {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
@@ -498,7 +498,8 @@ export default function InstructorCoursesPage() {
             </Button>
           )}
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }

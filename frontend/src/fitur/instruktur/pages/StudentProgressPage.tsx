@@ -16,28 +16,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/komponen/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/komponen/ui/dropdown-menu";
+
 import { Badge } from "@/komponen/ui/badge";
 import { Skeleton } from "@/komponen/ui/skeleton";
 import {
   Filter,
   Eye,
-  AlertCircle,
-  Mail,
-  MessageSquare,
-  AlertTriangle,
-  CheckCircle2,
-  Calendar,
-  MoreVertical,
-  Users,
   Search,
   Award,
+  Clock,
+  ArrowUpRight,
+  AlertTriangle,
+  CheckCircle2,
+  Users,
+  Calendar,
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/komponen/ui/avatar";
 import { SearchInput } from "@/komponen/ui/SearchInput";
 import { useInstructorCourses } from "../hooks/useInstructorCourses";
 import {
@@ -128,157 +122,155 @@ export default function StudentProgressPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      {/* Header */}
+      {/* Header Modern */}
+      {/* Header Modern */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-            Progres Peserta
+          <h1 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Progres & Analitik Peserta
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">
-            Pelacakan progres dan interaksi peserta
+          <p className="text-muted-foreground mt-1 text-sm">
+            Pantau perkembangan dan performa belajar peserta secara real-time
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="px-3 py-1 bg-white/50 backdrop-blur-sm shadow-sm border-gray-200">
+          <Badge variant="outline" className="px-3 py-1 bg-background/50 backdrop-blur-sm border-gray-200 dark:border-gray-800 rounded-lg">
             <Calendar className="w-3.5 h-3.5 mr-2 text-primary" />
             {new Date().toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </Badge>
         </div>
       </div>
 
-      {/* Course Selector */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between">
+      {/* Filters Toolbar */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between bg-white dark:bg-zinc-950 p-4 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
+        <div className="flex flex-col md:flex-row gap-4 flex-1">
+          <Select
+            value={selectedCourseId}
+            onValueChange={(value) => {
+              setSelectedCourseId(value);
+              setFilters({ page: 1, limit: 20 });
+            }}
+          >
+            <SelectTrigger className="w-full md:w-[300px] h-9 border-gray-200 dark:border-gray-800 focus:ring-primary/20 bg-background">
+              <SelectValue placeholder="Pilih Kursus untuk Dianalisis" />
+            </SelectTrigger>
+            <SelectContent>
+              {courses?.data.map((course) => (
+                <SelectItem key={course.id} value={course.id}>
+                  {course.judul}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {selectedCourseId && (
+            <div className="flex-1 max-w-sm">
+              <SearchInput
+                placeholder="Cari nama atau email..."
+                value={filters.search || ""}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                onClear={() => handleSearchChange("")}
+                className="h-9 bg-background border-gray-200 dark:border-gray-800"
+              />
+            </div>
+          )}
+        </div>
+
+        {selectedCourseId && (
+          <div className="flex items-center gap-2">
             <Select
-              value={selectedCourseId}
-              onValueChange={(value) => {
-                setSelectedCourseId(value);
-                setFilters({ page: 1, limit: 20 }); // Reset filters
-              }}
+              value={filters.status || "all"}
+              onValueChange={handleStatusChange}
             >
-              <SelectTrigger className="w-full md:w-[300px] h-10 border-muted-foreground/20">
-                <SelectValue placeholder="Pilih Kursus" />
+              <SelectTrigger className="w-full md:w-[160px] h-9 border-gray-200 dark:border-gray-800 focus:ring-primary/20 text-muted-foreground">
+                <Filter className="mr-2 h-3.5 w-3.5" />
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                {courses?.data.map((course) => (
-                  <SelectItem key={course.id} value={course.id}>
-                    {course.judul}
-                  </SelectItem>
-                ))}
+                <SelectItem value="all">Semua Status</SelectItem>
+                <SelectItem value="active">Aktif</SelectItem>
+                <SelectItem value="inactive">Tidak Aktif</SelectItem>
+                <SelectItem value="completed">Selesai</SelectItem>
               </SelectContent>
             </Select>
-
-            {selectedCourseId && (
-              <>
-                <div className="flex-1">
-                  <SearchInput
-                    placeholder="Cari peserta..."
-                    value={filters.search || ""}
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                    onClear={() => handleSearchChange("")}
-                  />
-                </div>
-
-                <Select
-                  value={filters.status || "all"}
-                  onValueChange={handleStatusChange}
-                >
-                  <SelectTrigger className="w-full md:w-[200px] h-10 border-muted-foreground/20">
-                    <Filter className="mr-2 h-4 w-4" />
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Semua Status</SelectItem>
-                    <SelectItem value="active">Aktif</SelectItem>
-                    <SelectItem value="inactive">Tidak Aktif</SelectItem>
-                    <SelectItem value="completed">Selesai</SelectItem>
-                  </SelectContent>
-                </Select>
-              </>
-            )}
           </div>
-        </CardContent>
-      </Card>
+        )}
+      </div>
 
-      {/* Dashboard Summary Cards - Phase 1 Improvement */}
+      {/* Dashboard Summary Cards */}
       {selectedCourseId && analytics && !isLoading && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {/* Rata-rata Kelas */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Rata-rata Kelas
-              </CardTitle>
-              <Award className="h-4 w-4 text-muted-foreground" />
+          <Card className="relative overflow-hidden transition-all hover:shadow-md border border-gray-200 dark:border-gray-800">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Rata-rata Kelas</CardTitle>
+              <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
+                <Award className="w-4 h-4" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold tracking-tight text-foreground">
                 {analytics.avg_score.toFixed(1)}
               </div>
-              <p className="text-xs text-muted-foreground">
-                {analytics.avg_score >= 75
-                  ? "Performa sangat baik"
-                  : analytics.avg_score >= 60
-                    ? "Performa cukup baik"
-                    : "Perlu perhatian"}
-              </p>
+              <div className="mt-1 flex items-center text-[10px] font-medium text-muted-foreground uppercase">
+                {analytics.avg_score >= 75 ? (
+                  <span className="text-emerald-600 flex items-center"><ArrowUpRight className="w-3 h-3 mr-1" />Sangat Baik</span>
+                ) : (
+                  <span>Perlu ditingkatkan</span>
+                )}
+              </div>
             </CardContent>
           </Card>
 
-          {/* At-Risk Students */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Peserta At-Risk
-              </CardTitle>
-              <AlertTriangle className="h-4 w-4 text-destructive" />
+          <Card className="relative overflow-hidden transition-all hover:shadow-md border border-gray-200 dark:border-gray-800">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Peserta At-Risk</CardTitle>
+              <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg text-red-600 dark:text-red-400">
+                <AlertTriangle className="w-4 h-4" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-destructive">
+              <div className="text-2xl font-bold tracking-tight text-foreground">
                 {atRiskCount}
               </div>
-              <p className="text-xs text-muted-foreground">
-                {atRiskCount > 0
-                  ? "Butuh perhatian segera"
-                  : "Semua peserta sesuai target"}
-              </p>
+              <div className="mt-1 flex items-center text-[10px] font-medium text-muted-foreground uppercase">
+                <span className={atRiskCount > 0 ? "text-red-600" : "text-muted-foreground"}>
+                  {atRiskCount > 0 ? "Butuh perhatian" : "Aman"}
+                </span>
+              </div>
             </CardContent>
           </Card>
 
-          {/* Active Students */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Peserta Aktif
-              </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+          <Card className="relative overflow-hidden transition-all hover:shadow-md border border-gray-200 dark:border-gray-800">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Peserta Aktif</CardTitle>
+              <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600 dark:text-purple-400">
+                <Users className="w-4 h-4" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold tracking-tight text-foreground">
                 {analytics.active_students}
               </div>
-              <p className="text-xs text-muted-foreground">
-                dari {analytics.total_students} total peserta
-              </p>
+              <div className="mt-1 flex items-center text-[10px] font-medium text-muted-foreground uppercase">
+                <span>Dari {analytics.total_students} Total</span>
+              </div>
             </CardContent>
           </Card>
 
-          {/* Completion Rate */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Tingkat Penyelesaian
-              </CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+          <Card className="relative overflow-hidden transition-all hover:shadow-md border border-gray-200 dark:border-gray-800">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Selesai</CardTitle>
+              <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold tracking-tight text-foreground">
                 {analytics.completion_rate.toFixed(1)}%
               </div>
-              <p className="text-xs text-muted-foreground">
-                {analytics.completed_students} peserta selesai
-              </p>
+              <div className="mt-1 flex items-center text-[10px] font-medium text-muted-foreground uppercase">
+                <span>{analytics.completed_students} lulu</span>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -296,15 +288,17 @@ export default function StudentProgressPage() {
           </CardContent>
         </Card>
       ) : isLoading ? (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-3">
-              {[...Array(10)].map((_, i) => (
-                <Skeleton key={i} className="h-16 w-full" />
-              ))}
+        <div className="space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center space-x-4">
+              <Skeleton className="h-12 w-12 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[200px]" />
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          ))}
+        </div>
       ) : students && students.data.length > 0 ? (
         <Card>
           <CardHeader>
@@ -316,18 +310,16 @@ export default function StudentProgressPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="rounded-md border">
+            <div className="rounded-md border shadow-sm overflow-hidden">
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-muted/40">
                   <TableRow>
-                    <TableHead>Nama</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Progres</TableHead>
-                    <TableHead>Modul</TableHead>
-                    <TableHead>Nilai Rata-rata</TableHead>
+                    <TableHead className="w-[300px]">Peserta</TableHead>
+                    <TableHead>Progres Belajar</TableHead>
+                    <TableHead>Performa</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Aktivitas Terakhir</TableHead>
-                    <TableHead className="text-center w-[100px]">Aksi</TableHead>
+                    <TableHead className="text-center w-[120px]">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -336,159 +328,122 @@ export default function StudentProgressPage() {
                       student.avg_score,
                       student.last_activity,
                     );
-                    const daysSinceActivity = getDaysSinceLastActivity(
-                      student.last_activity,
-                    );
 
                     return (
                       <TableRow
                         key={student.id}
-                        className={
-                          severity === "critical"
-                            ? "bg-red-50 dark:bg-red-950/10"
-                            : severity === "warning"
-                              ? "bg-yellow-50 dark:bg-yellow-950/10"
-                              : ""
-                        }
+                        className="hover:bg-muted/50 transition-colors"
                       >
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            {severity && (
-                              <Badge
-                                variant={
-                                  severity === "critical"
-                                    ? "destructive"
-                                    : "secondary"
-                                }
-                                className="shrink-0"
-                              >
-                                <AlertCircle className="mr-1 h-3 w-3" />
-                                {severity === "critical"
-                                  ? "Kritis"
-                                  : "Peringatan"}
-                              </Badge>
-                            )}
-                            <span>{student.student_name}</span>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-9 w-9 border border-border">
+                              <AvatarImage
+                                src={`https://api.dicebear.com/7.x/initials/svg?seed=${student.student_name}`}
+                                alt={student.student_name}
+                              />
+                              <AvatarFallback className="bg-primary/5 text-primary text-xs font-medium">
+                                {student.student_name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")
+                                  .substring(0, 2)
+                                  .toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col gap-0.5">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-sm">
+                                  {student.student_name}
+                                </span>
+                                {severity === "critical" && (
+                                  <Badge
+                                    variant="destructive"
+                                    className="h-5 px-1.5 text-[10px] uppercase rounded-sm"
+                                  >
+                                    Risk
+                                  </Badge>
+                                )}
+                              </div>
+                              <span className="text-xs text-muted-foreground">
+                                {student.student_email}
+                              </span>
+                            </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {student.student_email}
-                        </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-2">
-                            <div className="h-2 w-24 rounded-full bg-muted">
+                          <div className="flex flex-col gap-1.5 w-[140px]">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-muted-foreground">{student.completed_modules}/{student.total_modules} Modul</span>
+                              <span className="font-medium">{student.progress_percentage}%</span>
+                            </div>
+                            <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
                               <div
-                                className="h-2 rounded-full bg-primary transition-all"
+                                className="h-full bg-primary transition-all duration-500 ease-in-out"
                                 style={{
                                   width: `${student.progress_percentage}%`,
                                 }}
                               />
                             </div>
-                            <span className="text-sm font-medium">
-                              {student.progress_percentage}%
-                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <span className="text-sm">
-                            {student.completed_modules}/{student.total_modules}
-                          </span>
-                        </TableCell>
-                        <TableCell>
                           {student.avg_score !== null ? (
-                            <span
-                              className={
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className={
                                 student.avg_score >= 75
-                                  ? "font-medium text-green-600"
+                                  ? "bg-green-50 text-green-700 border-green-200"
                                   : student.avg_score >= 60
-                                    ? "font-medium text-yellow-600"
-                                    : "font-medium text-red-600"
-                              }
-                            >
-                              {student.avg_score}
-                            </span>
+                                    ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                                    : "bg-red-50 text-red-700 border-red-200"
+                              }>
+                                {student.avg_score}
+                              </Badge>
+                            </div>
                           ) : (
-                            <span className="text-muted-foreground">-</span>
+                            <span className="text-xs text-muted-foreground italic">Belum ada nilai</span>
                           )}
                         </TableCell>
                         <TableCell>
                           <Badge
-                            variant={
+                            variant="secondary"
+                            className={
                               student.status === "completed"
-                                ? "default"
+                                ? "bg-green-100 text-green-700 hover:bg-green-100"
                                 : student.status === "active"
-                                  ? "secondary"
-                                  : "outline"
+                                  ? "bg-blue-100 text-blue-700 hover:bg-blue-100"
+                                  : "bg-gray-100 text-gray-700 hover:bg-gray-100"
                             }
                           >
                             {student.status === "completed"
-                              ? "Selesai"
+                              ? "Lulus"
                               : student.status === "active"
                                 ? "Aktif"
-                                : student.status === "inactive"
-                                  ? "Tidak Aktif"
-                                  : student.status}
+                                : "Tidak Aktif"}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-sm">
-                          <div className="flex flex-col">
-                            <span
-                              className={
-                                daysSinceActivity && daysSinceActivity > 14
-                                  ? "text-red-600 font-medium"
-                                  : daysSinceActivity && daysSinceActivity > 7
-                                    ? "text-yellow-600 font-medium"
-                                    : "text-muted-foreground"
-                              }
-                            >
+                        <TableCell>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>
                               {student.last_activity
-                                ? formatDistanceToNow(
-                                  new Date(student.last_activity),
-                                  {
-                                    addSuffix: true,
-                                    locale: idLocale,
-                                  },
-                                )
+                                ? formatDistanceToNow(new Date(student.last_activity), {
+                                  addSuffix: true,
+                                  locale: idLocale,
+                                })
                                 : "-"}
                             </span>
-                            {daysSinceActivity && daysSinceActivity > 7 && (
-                              <span className="text-xs text-muted-foreground">
-                                ({daysSinceActivity} hari tidak aktif)
-                              </span>
-                            )}
                           </div>
                         </TableCell>
                         <TableCell className="text-center">
-                          {/* Quick Actions Menu - Phase 1 Improvement */}
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button size="sm" variant="ghost">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  setSelectedStudentId(student.student_id)
-                                }
-                              >
-                                <Eye className="mr-2 h-4 w-4" />
-                                Lihat Detail
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  window.location.href = `mailto:${student.student_email}?subject=Mengenai Progres Kursus&body=Halo ${student.student_name},%0D%0A%0D%0A`;
-                                }}
-                              >
-                                <Mail className="mr-2 h-4 w-4" />
-                                Kirim Email
-                              </DropdownMenuItem>
-                              <DropdownMenuItem disabled>
-                                <MessageSquare className="mr-2 h-4 w-4" />
-                                Kirim Pesan
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-3 text-xs font-medium"
+                            onClick={() => setSelectedStudentId(student.student_id)}
+                          >
+                            <Eye className="mr-2 h-3.5 w-3.5" />
+                            Detail
+                          </Button>
                         </TableCell>
                       </TableRow>
                     );

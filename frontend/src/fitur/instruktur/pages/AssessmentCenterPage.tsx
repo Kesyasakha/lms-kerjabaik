@@ -192,7 +192,7 @@ export default function AssessmentCenterPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onClear={() => setSearchQuery("")}
                 placeholder="Cari peserta, email, atau tugas..."
-                className="w-full h-8 text-xs bg-background"
+                className="w-[290px] h-8 text-xs bg-background"
               />
             </div>
 

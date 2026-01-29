@@ -239,7 +239,184 @@ export async function getStudentProgress(
 
   if (!enrollment) throw new Error("Student is not enrolled in this course");
 
-  // Partially implemented/mocked as tables are missing
+  // 1. Get Quiz/Exam Data from percobaan_asesmen
+  const { data: quizAttemptsData } = (await supabase
+    .from("percobaan_asesmen")
+    .select(`
+      nilai, 
+      status, 
+      created_at, 
+      asesmen:id_asesmen (
+        id, 
+        judul, 
+        poin,
+        tipe
+      )
+    `)
+    .eq("id_pengguna", studentId)
+    .in(
+      "id_asesmen",
+      ((await supabase
+        .from("asesmen")
+        .select("id")
+        .eq("id_kursus", kursusId)
+        .not("tipe", "eq", "tugas") // Exclude tasks from quiz attempts
+      ) as { data: { id: string }[] | null }).data?.map((a) => a.id) || []
+    )) as {
+      data: {
+        nilai: number | null;
+        status: string;
+        created_at: string;
+        asesmen: {
+          id: string;
+          judul: string;
+          poin: number;
+          tipe: string;
+        }
+      }[] | null
+    };
+
+  const quizGradesMap = new Map<string, any>();
+  (quizAttemptsData || []).forEach((g) => {
+    const score = g.nilai ? Number(g.nilai) : null;
+    const existing = quizGradesMap.get(g.asesmen.id);
+
+    // Update if not exists or if current is graded and existing is not, or if current score is higher
+    if (!existing ||
+      (score !== null && (existing.grade === null || score > existing.grade)) ||
+      (g.status === 'selesai' && existing.status !== 'graded')) {
+      quizGradesMap.set(g.asesmen.id, {
+        assignment_id: g.asesmen.id,
+        assignment_title: g.asesmen.judul,
+        grade: score,
+        max_score: g.asesmen.poin || 100,
+        submitted_at: g.created_at,
+        status: (g.status === "selesai" ? "graded" : "pending") as "graded" | "pending" | "not_submitted",
+        type: g.asesmen.tipe
+      });
+    }
+  });
+  const quizGrades = Array.from(quizGradesMap.values());
+
+  // 2. Get Task Submission Data from pengumpulan_tugas
+  const { data: courseAssessments } = (await supabase
+    .from("asesmen")
+    .select("id")
+    .eq("id_kursus", kursusId)
+    .eq("tipe", "tugas")) as { data: { id: string }[] | null };
+
+  const assessmentIdsForTasks = (courseAssessments || []).map(a => a.id);
+
+  const { data: tasks } = (await supabase
+    .from("tugas")
+    .select("id, id_asesmen, judul")
+    .in("id_asesmen", assessmentIdsForTasks)) as { data: { id: string, id_asesmen: string, judul: string }[] | null };
+
+  const taskIds = (tasks || []).map(t => t.id);
+
+  const { data: submissionsData } = (await supabase
+    .from("pengumpulan_tugas")
+    .select(`
+      id,
+      id_tugas,
+      nilai,
+      status,
+      created_at,
+      tugas:id_tugas (
+        id_asesmen,
+        judul
+      )
+    `)
+    .eq("id_pengguna", studentId)
+    .in("id_tugas", taskIds)) as {
+      data: {
+        id: string;
+        id_tugas: string;
+        nilai: number | null;
+        status: string;
+        created_at: string;
+        tugas: {
+          id_asesmen: string;
+          judul: string;
+        }
+      }[] | null
+    };
+
+  const taskGradesMap = new Map<string, any>();
+  (submissionsData || []).forEach((s) => {
+    const score = s.nilai ? Number(s.nilai) : null;
+    const existing = taskGradesMap.get(s.tugas.id_asesmen);
+
+    if (!existing || (score !== null && (existing.grade === null || score > existing.grade))) {
+      taskGradesMap.set(s.tugas.id_asesmen, {
+        assignment_id: s.tugas.id_asesmen,
+        assignment_title: s.tugas.judul,
+        grade: score,
+        max_score: 100, // Default for tasks
+        submitted_at: s.created_at,
+        status: (s.status === "dinilai" ? "graded" : "pending") as "graded" | "pending" | "not_submitted",
+        type: "tugas"
+      });
+    }
+  });
+  const taskGrades = Array.from(taskGradesMap.values());
+
+  // Combine both types of grades
+  const grades = [...quizGrades, ...taskGrades];
+
+  // 3. Get Module Progress Data (Real Implementation via Materi)
+  // Fetch all modules for the course
+  const { data: modulesData } = (await supabase
+    .from("modul")
+    .select("id, judul, urutan")
+    .eq("id_kursus", kursusId)
+    .order("urutan", { ascending: true })) as {
+      data: { id: string; judul: string; urutan: number }[] | null;
+    };
+
+  // Fetch all materials (materi) for these modules
+  const { data: materiData } = (await supabase
+    .from("materi")
+    .select("id, id_modul")
+    .in("id_modul", (modulesData || []).map(m => m.id))) as {
+      data: { id: string, id_modul: string }[] | null
+    };
+
+  // Fetch real progress from kemajuan_belajar (mapped to materi)
+  const { data: kemajuanData } = (await supabase
+    .from("kemajuan_belajar")
+    .select("id_materi, status, updated_at")
+    .eq("id_pengguna", studentId)
+    .in("id_materi", (materiData || []).map(mat => mat.id))) as {
+      data: { id_materi: string, status: string, updated_at: string | null }[] | null
+    };
+
+  const moduleProgress = (modulesData || []).map((m) => {
+    // A module is completed if ALL its materials are 'selesai'
+    const moduleMaterials = (materiData || []).filter(mat => mat.id_modul === m.id);
+    const completedMaterials = moduleMaterials.filter(mat =>
+      (kemajuanData || []).some(k => k.id_materi === mat.id && k.status === 'selesai')
+    );
+
+    const isCompleted = moduleMaterials.length > 0 && completedMaterials.length === moduleMaterials.length;
+
+    // Use the latest material completion date as module completion date
+    const completionDates = (kemajuanData || [])
+      .filter(k => moduleMaterials.some(mat => mat.id === k.id_materi) && k.status === 'selesai' && k.updated_at)
+      .map(k => new Date(k.updated_at!).getTime());
+
+    const latestCompletion = completionDates.length > 0 ? new Date(Math.max(...completionDates)).toISOString() : null;
+
+    return {
+      module_id: m.id,
+      module_title: m.judul,
+      module_order: m.urutan,
+      completed: isCompleted,
+      completed_at: latestCompletion,
+      time_spent_minutes: 0,
+    };
+  });
+
   return {
     student_id: studentId,
     student_name: student.nama_lengkap,
@@ -248,8 +425,8 @@ export async function getStudentProgress(
     kursus_judul: course.judul,
     enrollment_date: enrollment.tanggal_mulai,
     progress_percentage: enrollment.persentase_kemajuan || 0,
-    module_progress: [], // Mocking empty for now
-    grades: [], // Mocking empty for now
+    module_progress: moduleProgress,
+    grades: grades,
     engagement: {
       total_login_count: 0,
       last_login: null,
