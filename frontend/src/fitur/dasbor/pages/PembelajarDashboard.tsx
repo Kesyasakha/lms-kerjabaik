@@ -44,10 +44,10 @@ export function PembelajarDashboard() {
       {/* Header Modern */}
       <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
             Dasbor Pembelajar
           </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <p className="text-muted-foreground mt-1 text-xs">
             Selamat datang kembali! Lanjutkan perjalanan belajar Anda hari ini.
           </p>
         </div>

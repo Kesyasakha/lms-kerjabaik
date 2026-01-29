@@ -13,7 +13,7 @@ import {
     TrendUp
 } from 'iconsax-react';
 import { Search } from 'lucide-react';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
     Card,
     CardContent,
@@ -25,7 +25,7 @@ import { Skeleton } from '@/komponen/ui/skeleton';
 import {
     useEnrollments,
     useAssessments,
-    useAssessmentAttempts,
+    useAllAssessmentAttempts,
     useAssignments
 } from '@/fitur/pembelajar/api/learnerApi';
 import { format } from 'date-fns';
@@ -38,34 +38,22 @@ import {
 } from '@/komponen/ui/tabs';
 import type { Assessment } from '../tipe';
 
-const container = {
-    hidden: { opacity: 0 },
-    show: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-        },
-    },
-};
-
-const item = {
-    hidden: { opacity: 0, y: 15 },
-    show: { opacity: 1, y: 0 },
-};
-
 export function AssessmentsListPage() {
     const navigate = useNavigate();
-    const { data: enrollments } = useEnrollments();
+    const { data: enrollments, isLoading: isLoadingEnrollments } = useEnrollments();
     const { data: assessments, isLoading: isLoadingAssessments } = useAssessments();
     const { data: assignmentsList, isLoading: isLoadingAssignments } = useAssignments();
+    const { data: allAttempts, isLoading: isLoadingAttempts } = useAllAssessmentAttempts();
+
+    const isDataLoading = isLoadingEnrollments || isLoadingAssessments || isLoadingAssignments || isLoadingAttempts;
 
     const [searchTerm, setSearchTerm] = useState('');
+    const [activeTab, setActiveTab] = useState('exams');
 
     // Get unique course IDs from enrollments for filtering
     const enrolledCourseIds = enrollments?.map(e => e.id_kursus) || [];
 
     // Filter Kuis & Ujian (Exams)
-    // Only show exams from enrolled courses
     const quizzesAndExams = assessments?.filter(a =>
         enrolledCourseIds.includes(a.id_kursus) &&
         (a.tipe === 'kuis' || a.tipe === 'ujian')
@@ -75,7 +63,6 @@ export function AssessmentsListPage() {
     );
 
     // Filter Tugas Proyek (Tasks/Assignments)
-    // Only show assignments from enrolled courses
     const filteredAssignments = assignmentsList?.filter(a =>
         (a.asesmen?.kursus?.id && enrolledCourseIds.includes(a.asesmen.kursus.id))
     ).filter(a =>
@@ -87,13 +74,21 @@ export function AssessmentsListPage() {
         a => !a.pengumpulan_tugas || a.pengumpulan_tugas.status === 'perlu_revisi'
     );
 
-
+    const totalStats = {
+        assessments: (quizzesAndExams?.length || 0),
+        tasks: (pendingAssignments?.length || 0),
+        passed: assessments?.filter(a => {
+            const assessmentAttempts = allAttempts?.filter(at => at.id_asesmen === a.id) || [];
+            const bestScore = assessmentAttempts.reduce((max, attempt) => Math.max(max, attempt.nilai || 0), 0);
+            return bestScore >= (a.nilai_kelulusan || 70);
+        }).length || 0
+    };
 
     const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
-        const { data: attempts } = useAssessmentAttempts(assessment.id);
-        const bestScore = attempts?.reduce((max, attempt) => Math.max(max, attempt.nilai || 0), 0) || 0;
-        const totalAttempts = attempts?.length || 0;
-        const hasActiveAttempt = attempts?.some(a => a.status === 'sedang_berjalan');
+        const attempts = allAttempts?.filter(a => a.id_asesmen === assessment.id) || [];
+        const bestScore = attempts.reduce((max, attempt) => Math.max(max, attempt.nilai || 0), 0) || 0;
+        const totalAttempts = attempts.length || 0;
+        const hasActiveAttempt = attempts.some(a => a.status === 'sedang_berjalan');
         const canTakeAssessment = assessment.jumlah_percobaan === -1 || totalAttempts < assessment.jumlah_percobaan;
 
         const getStatusBadge = () => {
@@ -110,11 +105,7 @@ export function AssessmentsListPage() {
         };
 
         return (
-            <motion.div
-                variants={item}
-                whileHover={{ y: -2 }}
-                className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all p-4 flex flex-col md:flex-row md:items-center gap-5"
-            >
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all p-4 flex flex-col md:flex-row md:items-center gap-5">
                 <div className={`w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center ${assessment.tipe === 'ujian' ? 'bg-rose-50 text-rose-500' : 'bg-violet-50 text-violet-500'}`}>
                     {assessment.tipe === 'ujian' ? <Receipt2 size={24} variant="Bold" /> : <TickCircle size={24} variant="Bold" />}
                 </div>
@@ -181,43 +172,16 @@ export function AssessmentsListPage() {
                         </button>
                     )}
                 </div>
-            </motion.div>
-        );
-    };
-
-    if (isLoadingAssessments || isLoadingAssignments) {
-        return (
-            <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-                    {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)}
-                </div>
-                <div className="space-y-4 pt-10">
-                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 w-full rounded-2xl" />)}
-                </div>
             </div>
         );
-    }
-
-    const totalStats = {
-        assessments: (quizzesAndExams?.length || 0),
-        tasks: (pendingAssignments?.length || 0),
-        passed: assessments?.filter(a => {
-            // This is a simplified check since we can't easily hook into every attempt here without extra effect
-            return false; // placeholder for actual complex logic
-        }).length || 0
     };
 
     return (
-        <motion.div
-            className="space-y-8 pb-10"
-            variants={container}
-            initial="hidden"
-            animate="show"
-        >
+        <div className="space-y-8 pb-10">
             {/* Header & Search */}
-            <motion.div variants={item} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-white dark:to-gray-400">Pusat Asesmen</h1>
+                    <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-white dark:to-gray-400">Pusat Asesmen</h1>
                     <p className="text-xs text-gray-500 font-medium mt-1">
                         Selesaikan kuis, ujian, dan tugas proyek Anda untuk mengukur pemahaman materi.
                     </p>
@@ -232,10 +196,10 @@ export function AssessmentsListPage() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-            </motion.div>
+            </div>
 
             {/* Quick Stats */}
-            <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <Card className="shadow-sm border-gray-200 rounded-2xl">
                     <CardContent className="p-5 flex items-center justify-between">
                         <div>
@@ -286,108 +250,170 @@ export function AssessmentsListPage() {
                         </div>
                     </CardContent>
                 </Card>
-            </motion.div>
+            </div>
 
-            <Tabs defaultValue="exams" className="w-full">
-                <motion.div variants={item} className="mb-6">
-                    <TabsList className="bg-gray-100/50 p-1 rounded-xl w-fit border border-gray-200">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <div className="mb-6">
+                    <TabsList className="bg-gray-100/50 p-1 rounded-xl w-fit border border-gray-200 relative">
                         <TabsTrigger
                             value="exams"
-                            className="rounded-lg px-6 py-2 text-xs font-bold transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                            className="relative rounded-lg px-6 py-2 text-xs font-bold transition-all data-[state=active]:text-primary z-10"
                         >
-                            Kuis & Ujian
+                            {activeTab === 'exams' && (
+                                <motion.div
+                                    layoutId="active-tab-pill"
+                                    className="absolute inset-0 bg-white rounded-lg shadow-sm"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                            )}
+                            <span className="relative z-20">Kuis & Ujian</span>
                         </TabsTrigger>
                         <TabsTrigger
                             value="tasks"
-                            className="rounded-lg px-6 py-2 text-xs font-bold transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                            className="relative rounded-lg px-6 py-2 text-xs font-bold transition-all data-[state=active]:text-primary z-10"
                         >
-                            Tugas Proyek
+                            {activeTab === 'tasks' && (
+                                <motion.div
+                                    layoutId="active-tab-pill"
+                                    className="absolute inset-0 bg-white rounded-lg shadow-sm"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                            )}
+                            <span className="relative z-20">Tugas Proyek</span>
                         </TabsTrigger>
                     </TabsList>
-                </motion.div>
+                </div>
 
-                <TabsContent value="exams" className="space-y-4 outline-none">
-                    <div className="grid grid-cols-1 gap-4">
-                        {quizzesAndExams && quizzesAndExams.length > 0 ? (
-                            quizzesAndExams.map((assessment) => (
-                                <AssessmentCard key={assessment.id} assessment={assessment} />
-                            ))
-                        ) : (
-                            <EmptyState message="Belum ada kuis atau ujian yang tersedia untuk Anda." />
-                        )}
-                    </div>
-                </TabsContent>
-
-                <TabsContent value="tasks" className="space-y-4 outline-none">
-                    <div className="grid grid-cols-1 gap-4">
-                        {filteredAssignments && filteredAssignments.length > 0 ? (
-                            filteredAssignments.map((assignment) => {
-                                const status = assignment.pengumpulan_tugas?.status || 'belum_dikerjakan';
-                                return (
-                                    <motion.div
-                                        key={assignment.id}
-                                        variants={item}
-                                        whileHover={{ y: -2 }}
-                                        className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all p-4 flex flex-col md:flex-row md:items-center gap-5"
-                                    >
-                                        <div className="w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center bg-orange-50 text-orange-500">
-                                            <ClipboardText size={24} variant="Bold" />
-                                        </div>
-
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <h4 className="font-bold text-gray-800 truncate">{assignment.judul}</h4>
-                                                {status === 'belum_dikerjakan' && <Badge variant="outline" className="text-gray-400 border-gray-200 font-bold text-[10px] px-2 h-6">Belum Submit</Badge>}
-                                                {status === 'perlu_revisi' && <Badge className="bg-orange-50 text-orange-600 border-orange-100 font-bold text-[10px] px-2 h-6">Perlu Revisi</Badge>}
-                                                {status === 'dikumpulkan' && <Badge className="bg-sky-50 text-sky-600 border-sky-100 font-bold text-[10px] px-2 h-6">Ditinjau</Badge>}
-                                                {status === 'dinilai' && <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 font-bold text-[10px] px-2 h-6">Selesai</Badge>}
-                                                {status === 'ditolak' && <Badge className="bg-rose-50 text-rose-600 border-rose-100 font-bold text-[10px] px-2 h-6">Ditolak</Badge>}
+                <AnimatePresence mode="popLayout">
+                    {activeTab === 'exams' && (
+                        <TabsContent value="exams" key="exams" forceMount className="space-y-4 outline-none">
+                            <motion.div
+                                initial={{ opacity: 0, y: 5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -5 }}
+                                transition={{ duration: 0.15, ease: "easeOut" }}
+                                className="grid grid-cols-1 gap-4"
+                            >
+                                {isDataLoading ? (
+                                    Array(3).fill(0).map((_, i) => (
+                                        <div key={i} className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
+                                            <div className="flex items-center gap-4">
+                                                <Skeleton className="w-12 h-12 rounded-2xl" />
+                                                <div className="space-y-2 flex-1">
+                                                    <Skeleton className="h-5 w-1/3" />
+                                                    <Skeleton className="h-4 w-1/2" />
+                                                </div>
                                             </div>
-                                            <p className="text-xs text-gray-500 line-clamp-1">{assignment.deskripsi || "Tidak ada deskripsi tersedia."}</p>
-
-                                            <div className="flex flex-wrap items-center gap-4 mt-3">
-                                                <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400">
-                                                    <Timer1 size={14} variant="Bulk" className="text-gray-300" />
-                                                    <span>Tenggat: {assignment.deadline ? format(new Date(assignment.deadline), 'd MMM yyyy', { locale: localeId }) : '-'}</span>
-                                                </div>
-                                                <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400">
-                                                    <InfoCircle size={14} variant="Bulk" className="text-gray-300" />
-                                                    <span>Kursus: {assignment.asesmen?.kursus?.judul || '-'}</span>
-                                                </div>
-                                                {status === 'dinilai' && (
-                                                    <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400">
-                                                        <TrendUp size={14} variant="Bulk" className="text-emerald-400" />
-                                                        <span className="text-emerald-600 font-bold">Nilai: {assignment.pengumpulan_tugas?.nilai}/100</span>
-                                                    </div>
-                                                )}
+                                            <div className="flex gap-2">
+                                                <Skeleton className="h-4 w-20" />
+                                                <Skeleton className="h-4 w-20" />
                                             </div>
                                         </div>
+                                    ))
+                                ) : quizzesAndExams && quizzesAndExams.length > 0 ? (
+                                    quizzesAndExams.map((assessment) => (
+                                        <AssessmentCard key={assessment.id} assessment={assessment} />
+                                    ))
+                                ) : (
+                                    <EmptyState message="Belum ada kuis atau ujian yang tersedia untuk Anda." />
+                                )}
+                            </motion.div>
+                        </TabsContent>
+                    )}
 
-                                        <div className="flex items-center gap-2 md:pl-4 md:border-l border-gray-100">
-                                            <Button
-                                                size="sm"
-                                                className={`${status === 'belum_dikerjakan' || status === 'perlu_revisi' ? 'bg-primary' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'} rounded-xl h-9 px-4 text-xs font-bold transition-all active:scale-95`}
-                                                onClick={() => navigate(`/pembelajar/assignments/${assignment.id}`)}
+                    {activeTab === 'tasks' && (
+                        <TabsContent value="tasks" key="tasks" forceMount className="space-y-4 outline-none">
+                            <motion.div
+                                initial={{ opacity: 0, y: 5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -5 }}
+                                transition={{ duration: 0.15, ease: "easeOut" }}
+                                className="grid grid-cols-1 gap-4"
+                            >
+                                {isDataLoading ? (
+                                    Array(3).fill(0).map((_, i) => (
+                                        <div key={i} className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
+                                            <div className="flex items-center gap-4">
+                                                <Skeleton className="w-12 h-12 rounded-2xl" />
+                                                <div className="space-y-2 flex-1">
+                                                    <Skeleton className="h-5 w-1/3" />
+                                                    <Skeleton className="h-4 w-1/2" />
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Skeleton className="h-4 w-20" />
+                                                <Skeleton className="h-4 w-20" />
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : filteredAssignments && filteredAssignments.length > 0 ? (
+                                    filteredAssignments.map((assignment) => {
+                                        const status = assignment.pengumpulan_tugas?.status || 'belum_dikerjakan';
+                                        return (
+                                            <div
+                                                key={assignment.id}
+                                                className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all p-4 flex flex-col md:flex-row md:items-center gap-5"
                                             >
-                                                {status === 'belum_dikerjakan' ? 'Kerjakan Sekarang' : status === 'perlu_revisi' ? 'Revisi Tugas' : 'Lihat Detail'}
-                                            </Button>
-                                        </div>
-                                    </motion.div>
-                                );
-                            })
-                        ) : (
-                            <EmptyState message="Tidak ada tugas proyek yang ditemukan." />
-                        )}
-                    </div>
-                </TabsContent>
+                                                <div className="w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center bg-orange-50 text-orange-500">
+                                                    <ClipboardText size={24} variant="Bold" />
+                                                </div>
+
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <h4 className="font-bold text-gray-800 truncate">{assignment.judul}</h4>
+                                                        {status === 'belum_dikerjakan' && <Badge variant="outline" className="text-gray-400 border-gray-200 font-bold text-[10px] px-2 h-6">Belum Submit</Badge>}
+                                                        {status === 'perlu_revisi' && <Badge className="bg-orange-50 text-orange-600 border-orange-100 font-bold text-[10px] px-2 h-6">Perlu Revisi</Badge>}
+                                                        {status === 'dikumpulkan' && <Badge className="bg-sky-50 text-sky-600 border-sky-100 font-bold text-[10px] px-2 h-6">Ditinjau</Badge>}
+                                                        {status === 'dinilai' && <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 font-bold text-[10px] px-2 h-6">Selesai</Badge>}
+                                                        {status === 'ditolak' && <Badge className="bg-rose-50 text-rose-600 border-rose-100 font-bold text-[10px] px-2 h-6">Ditolak</Badge>}
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 line-clamp-1">{assignment.deskripsi || "Tidak ada deskripsi tersedia."}</p>
+
+                                                    <div className="flex flex-wrap items-center gap-4 mt-3">
+                                                        <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400">
+                                                            <Timer1 size={14} variant="Bulk" className="text-gray-300" />
+                                                            <span>Tenggat: {assignment.deadline ? format(new Date(assignment.deadline), 'd MMM yyyy', { locale: localeId }) : '-'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400">
+                                                            <InfoCircle size={14} variant="Bulk" className="text-gray-300" />
+                                                            <span>Kursus: {assignment.asesmen?.kursus?.judul || '-'}</span>
+                                                        </div>
+                                                        {status === 'dinilai' && (
+                                                            <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400">
+                                                                <TrendUp size={14} variant="Bulk" className="text-emerald-400" />
+                                                                <span className="text-emerald-600 font-bold">Nilai: {assignment.pengumpulan_tugas?.nilai}/100</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center gap-2 md:pl-4 md:border-l border-gray-100">
+                                                    <Button
+                                                        size="sm"
+                                                        className={`${status === 'belum_dikerjakan' || status === 'perlu_revisi' ? 'bg-primary' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'} rounded-xl h-9 px-4 text-xs font-bold transition-all active:scale-95`}
+                                                        onClick={() => navigate(`/pembelajar/assignments/${assignment.id}`)}
+                                                    >
+                                                        {status === 'belum_dikerjakan' ? 'Kerjakan Sekarang' : status === 'perlu_revisi' ? 'Revisi Tugas' : 'Lihat Detail'}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <EmptyState message="Tidak ada tugas proyek yang ditemukan." />
+                                )}
+                            </motion.div>
+                        </TabsContent>
+                    )}
+                </AnimatePresence>
             </Tabs>
-        </motion.div>
+        </div>
     );
 }
 
 function EmptyState({ message }: { message: string }) {
     return (
-        <motion.div variants={item} className="bg-white rounded-3xl border border-dashed border-gray-300 py-16 px-4 flex flex-col items-center justify-center text-center">
+        <div className="bg-white rounded-3xl border border-dashed border-gray-300 py-16 px-4 flex flex-col items-center justify-center text-center">
             <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                 <Receipt2 size={40} variant="Bulk" className="text-gray-300" />
             </div>
@@ -395,6 +421,6 @@ function EmptyState({ message }: { message: string }) {
             <p className="text-xs text-gray-400 max-w-sm">
                 Silakan daftar kursus terlebih dahulu atau hubungi instruktur jika Anda merasa seharusnya ada tugas di sini.
             </p>
-        </motion.div>
+        </div>
     );
 }

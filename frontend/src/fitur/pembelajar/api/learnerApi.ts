@@ -31,7 +31,7 @@ export const learnerKeys = {
     assignmentSubmission: (assessmentId: string) => [...learnerKeys.all, 'assignmentSubmission', assessmentId] as const,
     assessments: () => [...learnerKeys.all, 'assessments'] as const,
     assessment: (id: string) => [...learnerKeys.all, 'assessment', id] as const,
-    attempts: (assessmentId: string) => [...learnerKeys.all, 'attempts', assessmentId] as const,
+    attempts: (assessmentId?: string) => (assessmentId ? [...learnerKeys.all, 'attempts', assessmentId] : [...learnerKeys.all, 'attempts']) as const,
 };
 
 // ============================================================================
@@ -459,7 +459,29 @@ export function useAssessments(kursusId?: string) {
 }
 
 /**
- * Fetch percobaan asesmen
+ * Fetch semua percobaan asesmen milik pembelajar (untuk optimasi list)
+ */
+export function useAllAssessmentAttempts() {
+    return useQuery({
+        queryKey: learnerKeys.attempts(),
+        queryFn: async () => {
+            const { user: pengguna } = useAuthStore.getState();
+            if (!pengguna) throw new Error('Pengguna not found');
+
+            const { data, error } = await supabase
+                .from('percobaan_asesmen')
+                .select('*')
+                .eq('id_pengguna', pengguna.id)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            return data as AssessmentAttempt[];
+        },
+    });
+}
+
+/**
+ * Fetch percobaan asesmen (specific assessment)
  */
 export function useAssessmentAttempts(assessmentId: string) {
     return useQuery({
