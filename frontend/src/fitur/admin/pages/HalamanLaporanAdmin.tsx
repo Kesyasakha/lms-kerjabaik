@@ -63,10 +63,30 @@ export function HalamanLaporanAdmin() {
     }
   };
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="space-y-5">
+    <motion.div
+      className="space-y-5"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">
             Laporan & Analitik
@@ -76,10 +96,10 @@ export function HalamanLaporanAdmin() {
           </p>
         </div>
         <TombolEksporLaporan data={getCurrentData()} filename={getFilename()} />
-      </div>
+      </motion.div>
 
       {/* Custom Motion Tabs */}
-      <div className="flex p-1 bg-muted/30 rounded-full w-full max-w-md mx-auto relative cursor-pointer">
+      <motion.div variants={item} className="flex p-1 bg-muted/30 rounded-full w-full max-w-md mx-auto relative cursor-pointer">
         {["kemajuan_belajar", "engagement"].map((tab) => (
           <button
             key={tab}
@@ -106,7 +126,7 @@ export function HalamanLaporanAdmin() {
             </span>
           </button>
         ))}
-      </div>
+      </motion.div>
 
       {/* Tabs Layout */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -120,7 +140,7 @@ export function HalamanLaporanAdmin() {
             Here, I will just control the TabsContent directly or use the value prop.
         */}
 
-        <div className="mt-8 space-y-6">
+        <motion.div variants={item} className="mt-8 space-y-6">
           <FilterLaporan
             filters={filters}
             onFiltersChange={setFilters}
@@ -179,8 +199,8 @@ export function HalamanLaporanAdmin() {
               </CardContent>
             </Card>
           </TabsContent>
-        </div>
+        </motion.div>
       </Tabs>
-    </div>
+    </motion.div>
   );
 }

@@ -57,6 +57,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/komponen/ui/dropdown-menu";
+import { motion, AnimatePresence } from "framer-motion";
 
 const statusLabels = {
   draft: "Draft",
@@ -242,10 +243,30 @@ export function HalamanKursusAdmin() {
     );
   };
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl font-bold tracking-tight text-foreground">Katalog Kursus</h1>
           <p className="text-muted-foreground text-xs">
@@ -256,10 +277,10 @@ export function HalamanKursusAdmin() {
           <Plus className="w-4 h-4 mr-2" />
           Buat Kursus Baru
         </Button>
-      </div>
+      </motion.div>
 
       {/* Filters */}
-      <div className="bg-card text-card-foreground rounded-xl border shadow-sm p-4">
+      <motion.div variants={item} className="bg-card text-card-foreground rounded-xl border shadow-sm p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Search */}
           <div>
@@ -312,197 +333,199 @@ export function HalamanKursusAdmin() {
             </Select>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats Info */}
       {coursesData && (
-        <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800">
+        <motion.div variants={item} className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800">
           <p className="text-xs font-medium text-blue-700 dark:text-blue-400">
             Menampilkan <span className="font-bold">{coursesData.data.length}</span> dari <span className="font-bold">{coursesData.count}</span> kursus
             {filters.search || filters.status ? " (hasil filter)" : ""}
           </p>
-        </div>
+        </motion.div>
       )}
 
       {/* Course Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-              <div className="h-40 bg-gray-100 animate-pulse" />
-              <div className="p-4 space-y-3">
-                <div className="h-5 bg-gray-100 rounded w-3/4 animate-pulse" />
-                <div className="h-4 bg-gray-50 rounded w-full animate-pulse" />
-                <div className="h-4 bg-gray-50 rounded w-1/2 animate-pulse" />
-                <div className="pt-4 flex gap-2">
-                  <div className="h-8 bg-gray-100 rounded-lg w-full animate-pulse" />
-                  <div className="h-8 bg-gray-100 rounded-lg w-10 animate-pulse" />
+      <motion.div variants={item}>
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                <div className="h-40 bg-gray-100 animate-pulse" />
+                <div className="p-4 space-y-3">
+                  <div className="h-5 bg-gray-100 rounded w-3/4 animate-pulse" />
+                  <div className="h-4 bg-gray-50 rounded w-full animate-pulse" />
+                  <div className="h-4 bg-gray-50 rounded w-1/2 animate-pulse" />
+                  <div className="pt-4 flex gap-2">
+                    <div className="h-8 bg-gray-100 rounded-lg w-full animate-pulse" />
+                    <div className="h-8 bg-gray-100 rounded-lg w-10 animate-pulse" />
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
+        ) : coursesData?.data.length === 0 ? (
+          <div className="p-16 text-center bg-white rounded-2xl border border-dashed border-gray-200 flex flex-col items-center gap-4">
+            <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center">
+              <BookOpen className="w-8 h-8" />
             </div>
-          ))}
-        </div>
-      ) : coursesData?.data.length === 0 ? (
-        <div className="p-16 text-center bg-white rounded-2xl border border-dashed border-gray-200 flex flex-col items-center gap-4">
-          <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center">
-            <BookOpen className="w-8 h-8" />
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-lg font-bold text-gray-900">Belum ada kursus</h3>
-            <p className="text-sm text-gray-500 max-w-xs mx-auto">
-              Mulai buat kursus pertama Anda untuk membagikan materi pembelajaran.
-            </p>
-          </div>
-          <Button
-            onClick={handleOpenCreateDialog}
-            className="mt-2 bg-[#7B6CF0] hover:bg-[#6859d0] text-white rounded-xl shadow-lg shadow-blue-100"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Buat Kursus
-          </Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {coursesData?.data.map((course) => (
-            <div
-              key={course.id}
-              className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 flex flex-col relative"
+            <div className="space-y-1">
+              <h3 className="text-lg font-bold text-gray-900">Belum ada kursus</h3>
+              <p className="text-sm text-gray-500 max-w-xs mx-auto">
+                Mulai buat kursus pertama Anda untuk membagikan materi pembelajaran.
+              </p>
+            </div>
+            <Button
+              onClick={handleOpenCreateDialog}
+              className="mt-2 bg-[#7B6CF0] hover:bg-[#6859d0] text-white rounded-xl shadow-lg shadow-blue-100"
             >
-              {/* Image Cover */}
-              <div className="relative h-44 w-full bg-gray-100 overflow-hidden">
-                <img
-                  src={course.url_gambar_mini || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.judul)}&background=random&size=256`}
-                  alt={course.judul}
-                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(course.judul)}&background=random&size=256`;
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
+              <Plus className="w-4 h-4 mr-2" />
+              Buat Kursus
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {coursesData?.data.map((course) => (
+              <div
+                key={course.id}
+                className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 flex flex-col relative"
+              >
+                {/* Image Cover */}
+                <div className="relative h-44 w-full bg-gray-100 overflow-hidden">
+                  <img
+                    src={course.url_gambar_mini || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.judul)}&background=random&size=256`}
+                    alt={course.judul}
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(course.judul)}&background=random&size=256`;
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
 
-                {/* Status Badge */}
-                <div className="absolute top-3 right-3">
-                  <span className={`
+                  {/* Status Badge */}
+                  <div className="absolute top-3 right-3">
+                    <span className={`
                     px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-sm backdrop-blur-md border border-white/20
                     ${course.status === 'published' ? 'bg-emerald-500/90 text-white' :
-                      course.status === 'draft' ? 'bg-amber-500/90 text-white' : 'bg-gray-500/90 text-white'}
+                        course.status === 'draft' ? 'bg-amber-500/90 text-white' : 'bg-gray-500/90 text-white'}
                   `}>
-                    {statusLabels[course.status as keyof typeof statusLabels] || course.status}
-                  </span>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-5 flex flex-col flex-1">
-                <div className="flex-1 space-y-2">
-                  {/* Category */}
-                  <div className="text-[10px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50 w-fit px-2 py-0.5 rounded-md">
-                    {course.kategori || "Umum"}
-                  </div>
-
-                  <Link to={`/admin/kursus/${course.id}`} className="block">
-                    <h3 className="font-bold text-gray-900 group-hover:text-[#7B6CF0] transition-colors line-clamp-2 text-base leading-snug">
-                      {course.judul}
-                    </h3>
-                  </Link>
-
-                  <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
-                    {course.deskripsi || "Tidak ada deskripsi singkat."}
-                  </p>
-                </div>
-
-                {/* Stats Row */}
-                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-                  <div className="flex items-center gap-1.5" title="Instruktur">
-                    <div className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-[9px] font-bold">
-                      {course.instruktur?.nama_lengkap.charAt(0) || "?"}
-                    </div>
-                    <span className="font-medium truncate max-w-[80px]">
-                      {course.instruktur?.nama_lengkap.split(' ')[0] || "No Instructor"}
+                      {statusLabels[course.status as keyof typeof statusLabels] || course.status}
                     </span>
                   </div>
+                </div>
 
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1" title="Pendaftar">
-                      <Users size={12} className="text-gray-400" />
-                      <span className="font-semibold">{course.enrollment_count || 0}</span>
+                {/* Content */}
+                <div className="p-5 flex flex-col flex-1">
+                  <div className="flex-1 space-y-2">
+                    {/* Category */}
+                    <div className="text-[10px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50 w-fit px-2 py-0.5 rounded-md">
+                      {course.kategori || "Umum"}
                     </div>
-                    {course.durasi_menit && (
-                      <div className="flex items-center gap-1" title="Durasi">
-                        <BookOpen size={12} className="text-gray-400" />
-                        <span className="font-semibold">{course.durasi_menit}m</span>
+
+                    <Link to={`/admin/kursus/${course.id}`} className="block">
+                      <h3 className="font-bold text-gray-900 group-hover:text-[#7B6CF0] transition-colors line-clamp-2 text-base leading-snug">
+                        {course.judul}
+                      </h3>
+                    </Link>
+
+                    <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                      {course.deskripsi || "Tidak ada deskripsi singkat."}
+                    </p>
+                  </div>
+
+                  {/* Stats Row */}
+                  <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                    <div className="flex items-center gap-1.5" title="Instruktur">
+                      <div className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-[9px] font-bold">
+                        {course.instruktur?.nama_lengkap.charAt(0) || "?"}
                       </div>
-                    )}
+                      <span className="font-medium truncate max-w-[80px]">
+                        {course.instruktur?.nama_lengkap.split(' ')[0] || "No Instructor"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1" title="Pendaftar">
+                        <Users size={12} className="text-gray-400" />
+                        <span className="font-semibold">{course.enrollment_count || 0}</span>
+                      </div>
+                      {course.durasi_menit && (
+                        <div className="flex items-center gap-1" title="Durasi">
+                          <BookOpen size={12} className="text-gray-400" />
+                          <span className="font-semibold">{course.durasi_menit}m</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Actions Footer */}
+                  <div className="mt-4 flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-8 rounded-lg text-xs font-semibold bg-gray-50 border-gray-200 text-gray-700 hover:text-[#7B6CF0] hover:bg-indigo-50 hover:border-indigo-200 transition-all shadow-none"
+                      onClick={() => handleOpenEditDialog(course)}
+                    >
+                      Edit Info
+                    </Button>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8 rounded-lg bg-white border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-all shadow-none"
+                        >
+                          <MoreVertical className="w-3.5 h-3.5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-[180px] rounded-xl">
+                        <DropdownMenuItem onClick={() => handleOpenAssignDialog(course)} className="cursor-pointer">
+                          <Users className="w-4 h-4 mr-2" />
+                          Assign Instruktur
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleToggleVisibility(course)} disabled={course.status === "archived"} className="cursor-pointer">
+                          {course.status === "published" ? (
+                            <>
+                              <EyeOff className="w-4 h-4 mr-2 text-amber-600" />
+                              Batal Terbit
+                            </>
+                          ) : (
+                            <>
+                              <Eye className="w-4 h-4 mr-2 text-blue-600" />
+                              Terbitkan
+                            </>
+                          )}
+                        </DropdownMenuItem>
+                        {course.status !== "archived" && (
+                          <DropdownMenuItem
+                            onClick={() => handleArchiveCourse(course)}
+                            className="text-amber-600 cursor-pointer"
+                          >
+                            <Archive className="w-4 h-4 mr-2" />
+                            Arsipkan
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuItem
+                          onClick={() => confirmDeleteCourse(course)}
+                          className="text-red-600 focus:text-red-600 cursor-pointer bg-red-50/50 hover:bg-red-50 focus:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Hapus Kursus
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
-
-                {/* Actions Footer */}
-                <div className="mt-4 flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 h-8 rounded-lg text-xs font-semibold bg-gray-50 border-gray-200 text-gray-700 hover:text-[#7B6CF0] hover:bg-indigo-50 hover:border-indigo-200 transition-all shadow-none"
-                    onClick={() => handleOpenEditDialog(course)}
-                  >
-                    Edit Info
-                  </Button>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 rounded-lg bg-white border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-all shadow-none"
-                      >
-                        <MoreVertical className="w-3.5 h-3.5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-[180px] rounded-xl">
-                      <DropdownMenuItem onClick={() => handleOpenAssignDialog(course)} className="cursor-pointer">
-                        <Users className="w-4 h-4 mr-2" />
-                        Assign Instruktur
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleToggleVisibility(course)} disabled={course.status === "archived"} className="cursor-pointer">
-                        {course.status === "published" ? (
-                          <>
-                            <EyeOff className="w-4 h-4 mr-2 text-amber-600" />
-                            Batal Terbit
-                          </>
-                        ) : (
-                          <>
-                            <Eye className="w-4 h-4 mr-2 text-blue-600" />
-                            Terbitkan
-                          </>
-                        )}
-                      </DropdownMenuItem>
-                      {course.status !== "archived" && (
-                        <DropdownMenuItem
-                          onClick={() => handleArchiveCourse(course)}
-                          className="text-amber-600 cursor-pointer"
-                        >
-                          <Archive className="w-4 h-4 mr-2" />
-                          Arsipkan
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem
-                        onClick={() => confirmDeleteCourse(course)}
-                        className="text-red-600 focus:text-red-600 cursor-pointer bg-red-50/50 hover:bg-red-50 focus:bg-red-50"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Hapus Kursus
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </motion.div>
 
       {/* Pagination */}
       {coursesData && coursesData.totalPages > 1 && (
-        <div className="flex items-center justify-between pt-6 border-t mt-6">
+        <motion.div variants={item} className="flex items-center justify-between pt-6 border-t mt-6">
           <p className="text-sm text-muted-foreground">
             Halaman <span className="font-bold text-foreground">{coursesData.page}</span> dari <span className="font-bold text-foreground">{coursesData.totalPages}</span>
           </p>
@@ -528,7 +551,7 @@ export function HalamanKursusAdmin() {
               Selanjutnya
             </Button>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Create/Edit Course Dialog */}
@@ -592,9 +615,7 @@ export function HalamanKursusAdmin() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Konfirmasi hapus menggunakan Notiflix */}
-    </div>
+    </motion.div>
   );
 }
 

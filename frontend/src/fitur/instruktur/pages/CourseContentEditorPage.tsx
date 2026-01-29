@@ -45,6 +45,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/pustaka/utils";
+import { motion } from "framer-motion";
 
 // --- Sortable Module Item (Sidebar) ---
 
@@ -258,10 +259,30 @@ export default function CourseContentEditorPage() {
 
   if (!course) return <div>Kursus tidak ditemukan</div>;
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
-    <div className="h-[calc(100vh-80px)] flex flex-col">
+    <motion.div
+      className="h-[calc(100vh-80px)] flex flex-col"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b mb-4">
+      <motion.div variants={item} className="flex items-center justify-between pb-4 border-b mb-4">
         <div>
           <Link
             to={`/instruktur/kursus/${kursusId}`}
@@ -279,10 +300,10 @@ export default function CourseContentEditorPage() {
             <Plus className="mr-2 h-3 w-3" /> Tambah Modul
           </Button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Editor Layout */}
-      <div className="flex flex-1 gap-4 min-h-0">
+      <motion.div variants={item} className="flex flex-1 gap-4 min-h-0">
         {/* Left Sidebar: Module List */}
         <div className="w-72 flex flex-col gap-3 overflow-y-auto pr-2">
           <div className="flex items-center justify-between">
@@ -371,7 +392,7 @@ export default function CourseContentEditorPage() {
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Dialogs */}
       <ModuleEditorDialog
@@ -385,6 +406,6 @@ export default function CourseContentEditorPage() {
       />
 
       {/* Konfirmasi hapus menggunakan Notiflix */}
-    </div>
+    </motion.div>
   );
 }

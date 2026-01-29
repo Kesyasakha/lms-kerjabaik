@@ -58,6 +58,7 @@ import {
 import { useState } from "react";
 import { formatTanggal, cn } from "@/pustaka/utils";
 import { useToast } from "@/komponen/ui/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Definisikan tipe untuk status kursus
 type CourseStatus = "draft" | "published" | "archived";
@@ -233,10 +234,30 @@ export function HalamanDetailKursusAdmin() {
     );
   }
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="space-y-8">
+    <motion.div
+      className="space-y-8"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Navigation & Actions */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <Button
           variant="ghost"
           size="sm"
@@ -295,10 +316,10 @@ export function HalamanDetailKursusAdmin() {
             Hapus
           </Button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Hero Section */}
-      <div className="border-b pb-6">
+      <motion.div variants={item} className="border-b pb-6">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-3">
             <Badge variant="outline" className={cn("px-2.5 py-0.5 font-semibold uppercase tracking-wider text-[9px]", statusColors[course.status as CourseStatus])}>
@@ -315,10 +336,10 @@ export function HalamanDetailKursusAdmin() {
             {course.deskripsi || "Informasi deskripsi kursus belum ditambahkan."}
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="rounded-2xl border-none shadow-sm bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/20 dark:to-background border border-blue-100 dark:border-blue-900/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-400">
@@ -369,10 +390,10 @@ export function HalamanDetailKursusAdmin() {
             <p className="text-[10px] text-purple-600/70 dark:text-purple-400/70 mt-1 font-medium uppercase">Telah menyelesaikan modul</p>
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
 
       {/* Insights Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <motion.div variants={item} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           <Card className="rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
             <CardHeader className="bg-muted/10 border-b p-6">
@@ -518,7 +539,7 @@ export function HalamanDetailKursusAdmin() {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </motion.div>
 
       {/* Dialogs */}
       <DialogKursusAdmin
@@ -595,6 +616,6 @@ export function HalamanDetailKursusAdmin() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </motion.div>
   );
 }

@@ -17,6 +17,7 @@ import {
   ArrowRight,
   Clock
 } from "iconsax-react";
+import { motion } from "framer-motion";
 
 export function HalamanDasborAdmin() {
   const { data: stats, isLoading, error } = useDashboardStats();
@@ -69,10 +70,30 @@ export function HalamanDasborAdmin() {
     );
   }
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="space-y-6 font-sans text-gray-900 antialiased selection:bg-violet-100 selection:text-violet-900">
+    <motion.div
+      className="space-y-6 font-sans text-gray-900 antialiased selection:bg-violet-100 selection:text-violet-900"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-gray-800 mb-1">
             Dasbor Admin
@@ -81,10 +102,10 @@ export function HalamanDasborAdmin() {
             Overview performa organisasi dan statistik pembelajaran.
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard
           title="Total Pengguna"
           value={stats?.totalUsers || 0}
@@ -113,10 +134,10 @@ export function HalamanDasborAdmin() {
           icon={Teacher} // Using 'Teacher' as a metaphor for 'Graduated/Mastery' or we could use 'Award'
           color="bg-amber-500"
         />
-      </div>
+      </motion.div>
 
       {/* Quick Actions Redesign */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link to="/admin/users" className="group relative overflow-hidden rounded-2xl bg-white border border-gray-200 p-6 hover:shadow-md hover:border-blue-200 transition-all duration-300">
           <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-[100px] -mr-4 -mt-4 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
           <div className="relative z-10 flex flex-col h-full justify-between">
@@ -164,10 +185,10 @@ export function HalamanDasborAdmin() {
             </div>
           </div>
         </Link>
-      </div>
+      </motion.div>
 
       {/* Recent Activity Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <motion.div variants={item} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Users */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
           <div className="flex items-center justify-between p-6 border-b border-gray-100">
@@ -305,10 +326,8 @@ export function HalamanDasborAdmin() {
             )}
           </div>
         </div>
-      </div>
-
-
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

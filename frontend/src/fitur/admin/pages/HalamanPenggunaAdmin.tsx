@@ -22,6 +22,7 @@ import { TabelPenggunaAdmin } from "../komponen/TabelPenggunaAdmin";
 import type { AdminUserFilters, AdminUserData } from "../tipe/admin.types";
 import type { Database } from "@/shared/tipe/database.types";
 import { pemberitahuan } from "@/pustaka/pemberitahuan";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Pengguna = Database["public"]["Tables"]["pengguna"]["Row"];
 
@@ -147,10 +148,30 @@ export function HalamanPenggunaAdmin() {
     );
   };
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="space-y-6 font-sans text-gray-900 antialiased pb-10">
+    <motion.div
+      className="space-y-6 font-sans text-gray-900 antialiased pb-10"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl font-bold tracking-tight text-gray-800">Manajemen Pengguna</h1>
           <p className="text-gray-500 text-xs">
@@ -164,10 +185,10 @@ export function HalamanPenggunaAdmin() {
           <Add size={18} className="mr-2" variant="Bold" />
           Tambah Pengguna Baru
         </Button>
-      </div>
+      </motion.div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <StatCard
           title="Total Pengguna"
           value={statsData?.total || 0}
@@ -192,10 +213,10 @@ export function HalamanPenggunaAdmin() {
           color="bg-rose-500"
           trend="Tidak Aktif"
         />
-      </div>
+      </motion.div>
 
       {/* Filters Bar - Separate Card to match GlobalUsersPage */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-300 shadow-sm">
+      <motion.div variants={item} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-300 shadow-sm">
         <div className="relative flex-1 max-w-md group">
           <SearchNormal1
             size={18}
@@ -237,22 +258,24 @@ export function HalamanPenggunaAdmin() {
             </Select>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Table */}
-      <TabelPenggunaAdmin
-        users={usersData?.data || []}
-        isLoading={isLoading}
-        onEdit={handleEditUser}
-        onDelete={(user) =>
-          confirmDeleteUser({ id: user.id, nama: user.nama_lengkap })
-        }
-        onToggleStatus={handleToggleStatus}
-      />
+      <motion.div variants={item}>
+        <TabelPenggunaAdmin
+          users={usersData?.data || []}
+          isLoading={isLoading}
+          onEdit={handleEditUser}
+          onDelete={(user) =>
+            confirmDeleteUser({ id: user.id, nama: user.nama_lengkap })
+          }
+          onToggleStatus={handleToggleStatus}
+        />
+      </motion.div>
 
       {/* Pagination */}
       {usersData && usersData.totalPages > 1 && (
-        <div className="flex items-center justify-between pt-6 border-t border-gray-100">
+        <motion.div variants={item} className="flex items-center justify-between pt-6 border-t border-gray-100">
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -277,7 +300,7 @@ export function HalamanPenggunaAdmin() {
               Selanjutnya
             </Button>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* User Dialog */}
@@ -293,6 +316,6 @@ export function HalamanPenggunaAdmin() {
         }
         user={editingUser}
       />
-    </div>
+    </motion.div>
   );
 }

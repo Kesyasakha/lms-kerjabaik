@@ -74,34 +74,30 @@ export default function InstructorCoursesPage() {
     archived: "Diarsipkan",
   };
 
-  const containerVariants: Variants = {
+  const container = {
     hidden: { opacity: 0 },
-    visible: {
+    show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.05,
-      },
-    },
+        staggerChildren: 0.1
+      }
+    }
   };
 
-  const itemVariants: Variants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15,
-      },
-    },
-    exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } },
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 }
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
             Kursus Saya
@@ -122,10 +118,10 @@ export default function InstructorCoursesPage() {
             </Link>
           </Button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Filters Toolbar */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between bg-white dark:bg-zinc-950 p-4 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
+      <motion.div variants={item} className="flex flex-col gap-4 md:flex-row md:items-center justify-between bg-white dark:bg-zinc-950 p-4 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
         <div className="flex-1 md:max-w-md">
           <SearchInput
             placeholder="Cari kursus..."
@@ -189,7 +185,7 @@ export default function InstructorCoursesPage() {
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Courses Grid/List */}
       {isLoading ? (
@@ -204,14 +200,14 @@ export default function InstructorCoursesPage() {
             {viewMode === "grid" ? (
               <motion.div
                 key="grid"
-                variants={containerVariants}
+                variants={container}
                 initial="hidden"
-                animate="visible"
+                animate="show"
                 exit="hidden"
                 className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
               >
                 {data.data.map((course) => (
-                  <motion.div key={course.id} variants={itemVariants} layout>
+                  <motion.div key={course.id} variants={item} layout>
                     <Card
                       className="group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col h-full bg-white dark:bg-card"
                     >
@@ -312,14 +308,14 @@ export default function InstructorCoursesPage() {
             ) : (
               <motion.div
                 key="list"
-                variants={containerVariants}
+                variants={container}
                 initial="hidden"
-                animate="visible"
+                animate="show"
                 exit="hidden"
                 className="flex flex-col gap-3"
               >
                 {data.data.map((course) => (
-                  <motion.div key={course.id} variants={itemVariants} layout>
+                  <motion.div key={course.id} variants={item} layout>
                     <Card
                       className="group hover:shadow-md transition-all duration-300 border-gray-200 dark:border-gray-800 overflow-hidden bg-white dark:bg-card h-full sm:h-36"
                     >
@@ -500,6 +496,6 @@ export default function InstructorCoursesPage() {
         </div>
       )
       }
-    </div >
+    </motion.div >
   );
 }

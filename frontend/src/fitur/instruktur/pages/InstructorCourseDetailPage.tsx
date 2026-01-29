@@ -108,10 +108,30 @@ export default function InstructorCourseDetailPage() {
     exit: { y: -10, opacity: 0, transition: { duration: 0.2 } },
   };
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
-    <div className="space-y-4">
+    <motion.div
+      className="space-y-4"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <motion.div variants={item} className="flex items-start justify-between">
         <div className="flex-1">
           <Link
             to="/instruktur/courses"
@@ -141,10 +161,10 @@ export default function InstructorCourseDetailPage() {
             Edit Konten
           </Button>
         </Link>
-      </div>
+      </motion.div>
 
       {/* Stats Cards */}
-      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+      <motion.div variants={item} className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
         <Card className="border border-gray-200 dark:border-gray-800">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
             <CardTitle className="text-xs font-medium">Total Peserta</CardTitle>
@@ -198,408 +218,410 @@ export default function InstructorCourseDetailPage() {
             <p className="text-[10px] text-muted-foreground">Total tugas</p>
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="h-9">
-          <TabsTrigger value="overview" className="text-xs px-3">Ringkasan</TabsTrigger>
-          <TabsTrigger value="students" className="text-xs px-3">
-            Peserta ({course.enrollment_stats.total_enrolled})
-          </TabsTrigger>
-          <TabsTrigger value="submissions" className="text-xs px-3">
-            Tugas ({submissions?.data.filter((s) => s.status === "pending").length || 0})
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="text-xs px-3">Analisis</TabsTrigger>
-        </TabsList>
+      <motion.div variants={item}>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="h-9">
+            <TabsTrigger value="overview" className="text-xs px-3">Ringkasan</TabsTrigger>
+            <TabsTrigger value="students" className="text-xs px-3">
+              Peserta ({course.enrollment_stats.total_enrolled})
+            </TabsTrigger>
+            <TabsTrigger value="submissions" className="text-xs px-3">
+              Tugas ({submissions?.data.filter((s) => s.status === "pending").length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="text-xs px-3">Analisis</TabsTrigger>
+          </TabsList>
 
-        <AnimatePresence mode="wait">
-          {activeTab === "overview" && (
-            <TabsContent value="overview" forceMount={true} className="mt-3 focus-visible:outline-none">
-              <motion.div
-                key="overview"
-                variants={tabVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="space-y-3"
-              >
-                <Card className="border border-gray-200 dark:border-gray-800">
-                  <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-base">Informasi Kursus</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4 space-y-3">
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground">
-                          Status
-                        </p>
-                        <p className="text-sm font-medium">{statusLabels[course.status]}</p>
+          <AnimatePresence mode="wait">
+            {activeTab === "overview" && (
+              <TabsContent value="overview" forceMount={true} className="mt-3 focus-visible:outline-none">
+                <motion.div
+                  key="overview"
+                  variants={tabVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="space-y-3"
+                >
+                  <Card className="border border-gray-200 dark:border-gray-800">
+                    <CardHeader className="p-4 pb-2">
+                      <CardTitle className="text-base">Informasi Kursus</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 space-y-3">
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Status
+                          </p>
+                          <p className="text-sm font-medium">{statusLabels[course.status]}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Kategori
+                          </p>
+                          <p className="text-sm font-medium">{course.kategori || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Total Modul
+                          </p>
+                          <p className="text-sm font-medium">{course.module_count}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Total Assignments
+                          </p>
+                          <p className="text-sm font-medium">{course.total_assignments}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground">
-                          Kategori
-                        </p>
-                        <p className="text-sm font-medium">{course.kategori || "-"}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground">
-                          Total Modul
-                        </p>
-                        <p className="text-sm font-medium">{course.module_count}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground">
-                          Total Assignments
-                        </p>
-                        <p className="text-sm font-medium">{course.total_assignments}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
 
-                <Card className="border border-gray-200 dark:border-gray-800">
-                  <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-base">Statistik Pendaftaran</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs">Total Terdaftar</span>
-                        <span className="text-sm font-medium">
-                          {course.enrollment_stats.total_enrolled}
-                        </span>
+                  <Card className="border border-gray-200 dark:border-gray-800">
+                    <CardHeader className="p-4 pb-2">
+                      <CardTitle className="text-base">Statistik Pendaftaran</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs">Total Terdaftar</span>
+                          <span className="text-sm font-medium">
+                            {course.enrollment_stats.total_enrolled}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs">Siswa Aktif</span>
+                          <span className="text-sm font-medium">
+                            {course.enrollment_stats.active_students}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs">Siswa Selesai</span>
+                          <span className="text-sm font-medium">
+                            {course.enrollment_stats.completed_students}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs">Tingkat Penyelesaian</span>
+                          <span className="text-sm font-medium">
+                            {course.enrollment_stats.completion_rate}%
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs">Siswa Aktif</span>
-                        <span className="text-sm font-medium">
-                          {course.enrollment_stats.active_students}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs">Siswa Selesai</span>
-                        <span className="text-sm font-medium">
-                          {course.enrollment_stats.completed_students}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs">Tingkat Penyelesaian</span>
-                        <span className="text-sm font-medium">
-                          {course.enrollment_stats.completion_rate}%
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </TabsContent>
-          )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </TabsContent>
+            )}
 
-          {activeTab === "students" && (
-            <TabsContent value="students" forceMount={true} className="mt-3 focus-visible:outline-none">
-              <motion.div
-                key="students"
-                variants={tabVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-              >
-                <Card className="border border-gray-200 dark:border-gray-800">
-                  <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-base">Daftar Peserta</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    {studentsLoading ? (
-                      <div className="space-y-3 p-4">
-                        {[...Array(5)].map((_, i) => (
-                          <Skeleton key={i} className="h-10 w-full" />
-                        ))}
-                      </div>
-                    ) : students && students.data.length > 0 ? (
-                      <div className="rounded-md border-t border-gray-100 dark:border-gray-800">
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="hover:bg-transparent">
-                              <TableHead className="h-9 text-xs">Nama</TableHead>
-                              <TableHead className="h-9 text-xs">Email</TableHead>
-                              <TableHead className="h-9 text-xs">Progress</TableHead>
-                              <TableHead className="h-9 text-xs">Score</TableHead>
-                              <TableHead className="h-9 text-xs">Status</TableHead>
-                              <TableHead className="h-9 text-xs">Aktivitas</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {students.data.map((student) => (
-                              <TableRow key={student.id} className="h-10">
-                                <TableCell className="py-2 text-sm font-medium">
-                                  {student.student_name}
-                                </TableCell>
-                                <TableCell className="py-2 text-xs text-muted-foreground">
-                                  {student.student_email}
-                                </TableCell>
-                                <TableCell className="py-2">
-                                  <div className="flex items-center gap-2">
-                                    <div className="h-1.5 w-16 rounded-full bg-muted">
-                                      <div
-                                        className="h-1.5 rounded-full bg-primary"
-                                        style={{
-                                          width: `${student.progress_percentage}%`,
-                                        }}
-                                      />
+            {activeTab === "students" && (
+              <TabsContent value="students" forceMount={true} className="mt-3 focus-visible:outline-none">
+                <motion.div
+                  key="students"
+                  variants={tabVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Card className="border border-gray-200 dark:border-gray-800">
+                    <CardHeader className="p-4 pb-2">
+                      <CardTitle className="text-base">Daftar Peserta</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      {studentsLoading ? (
+                        <div className="space-y-3 p-4">
+                          {[...Array(5)].map((_, i) => (
+                            <Skeleton key={i} className="h-10 w-full" />
+                          ))}
+                        </div>
+                      ) : students && students.data.length > 0 ? (
+                        <div className="rounded-md border-t border-gray-100 dark:border-gray-800">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="hover:bg-transparent">
+                                <TableHead className="h-9 text-xs">Nama</TableHead>
+                                <TableHead className="h-9 text-xs">Email</TableHead>
+                                <TableHead className="h-9 text-xs">Progress</TableHead>
+                                <TableHead className="h-9 text-xs">Score</TableHead>
+                                <TableHead className="h-9 text-xs">Status</TableHead>
+                                <TableHead className="h-9 text-xs">Aktivitas</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {students.data.map((student) => (
+                                <TableRow key={student.id} className="h-10">
+                                  <TableCell className="py-2 text-sm font-medium">
+                                    {student.student_name}
+                                  </TableCell>
+                                  <TableCell className="py-2 text-xs text-muted-foreground">
+                                    {student.student_email}
+                                  </TableCell>
+                                  <TableCell className="py-2">
+                                    <div className="flex items-center gap-2">
+                                      <div className="h-1.5 w-16 rounded-full bg-muted">
+                                        <div
+                                          className="h-1.5 rounded-full bg-primary"
+                                          style={{
+                                            width: `${student.progress_percentage}%`,
+                                          }}
+                                        />
+                                      </div>
+                                      <span className="text-xs">
+                                        {student.progress_percentage}%
+                                      </span>
                                     </div>
-                                    <span className="text-xs">
-                                      {student.progress_percentage}%
-                                    </span>
-                                  </div>
-                                </TableCell>
-                                <TableCell className="py-2 text-xs">
-                                  {student.avg_score !== null
-                                    ? student.avg_score
-                                    : "-"}
-                                </TableCell>
-                                <TableCell className="py-2">
-                                  <Badge
-                                    variant={
-                                      student.status === "completed"
-                                        ? "default"
-                                        : student.status === "active"
-                                          ? "secondary"
-                                          : "outline"
-                                    }
-                                    className="text-[10px] px-1.5 py-0 h-5"
-                                  >
-                                    {student.status}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="py-2 text-xs text-muted-foreground">
-                                  {student.last_activity
-                                    ? formatDistanceToNow(
-                                      new Date(student.last_activity),
+                                  </TableCell>
+                                  <TableCell className="py-2 text-xs">
+                                    {student.avg_score !== null
+                                      ? student.avg_score
+                                      : "-"}
+                                  </TableCell>
+                                  <TableCell className="py-2">
+                                    <Badge
+                                      variant={
+                                        student.status === "completed"
+                                          ? "default"
+                                          : student.status === "active"
+                                            ? "secondary"
+                                            : "outline"
+                                      }
+                                      className="text-[10px] px-1.5 py-0 h-5"
+                                    >
+                                      {student.status}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell className="py-2 text-xs text-muted-foreground">
+                                    {student.last_activity
+                                      ? formatDistanceToNow(
+                                        new Date(student.last_activity),
+                                        {
+                                          addSuffix: true,
+                                          locale: idLocale,
+                                        },
+                                      )
+                                      : "-"}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      ) : (
+                        <div className="py-8 text-center text-sm text-muted-foreground">
+                          Belum ada peserta terdaftar
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </TabsContent>
+            )}
+
+            {activeTab === "submissions" && (
+              <TabsContent value="submissions" forceMount={true} className="mt-3 focus-visible:outline-none">
+                <motion.div
+                  key="submissions"
+                  variants={tabVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <Card className="border border-gray-200 dark:border-gray-800">
+                    <CardHeader className="p-4 pb-2">
+                      <CardTitle className="text-base">Pengumpulan Tugas Terbaru</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      {submissionsLoading ? (
+                        <div className="space-y-3 p-4">
+                          {[...Array(5)].map((_, i) => (
+                            <Skeleton key={i} className="h-10 w-full" />
+                          ))}
+                        </div>
+                      ) : submissions && submissions.data.length > 0 ? (
+                        <div className="rounded-md border-t border-gray-100 dark:border-gray-800">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="hover:bg-transparent">
+                                <TableHead className="h-9 text-xs">Siswa</TableHead>
+                                <TableHead className="h-9 text-xs">Tugas</TableHead>
+                                <TableHead className="h-9 text-xs">Diserahkan</TableHead>
+                                <TableHead className="h-9 text-xs">Status</TableHead>
+                                <TableHead className="h-9 text-xs">Nilai</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {submissions.data.slice(0, 10).map((submission) => (
+                                <TableRow key={submission.id} className="h-10">
+                                  <TableCell className="py-2 text-sm font-medium">
+                                    {submission.student_name}
+                                  </TableCell>
+                                  <TableCell className="py-2 text-xs">{submission.assignment_title}</TableCell>
+                                  <TableCell className="py-2 text-xs text-muted-foreground">
+                                    {formatDistanceToNow(
+                                      new Date(submission.submitted_at),
                                       {
                                         addSuffix: true,
                                         locale: idLocale,
                                       },
-                                    )
-                                    : "-"}
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    ) : (
-                      <div className="py-8 text-center text-sm text-muted-foreground">
-                        Belum ada peserta terdaftar
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </TabsContent>
-          )}
-
-          {activeTab === "submissions" && (
-            <TabsContent value="submissions" forceMount={true} className="mt-3 focus-visible:outline-none">
-              <motion.div
-                key="submissions"
-                variants={tabVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-              >
-                <Card className="border border-gray-200 dark:border-gray-800">
-                  <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-base">Pengumpulan Tugas Terbaru</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    {submissionsLoading ? (
-                      <div className="space-y-3 p-4">
-                        {[...Array(5)].map((_, i) => (
-                          <Skeleton key={i} className="h-10 w-full" />
-                        ))}
-                      </div>
-                    ) : submissions && submissions.data.length > 0 ? (
-                      <div className="rounded-md border-t border-gray-100 dark:border-gray-800">
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="hover:bg-transparent">
-                              <TableHead className="h-9 text-xs">Siswa</TableHead>
-                              <TableHead className="h-9 text-xs">Tugas</TableHead>
-                              <TableHead className="h-9 text-xs">Diserahkan</TableHead>
-                              <TableHead className="h-9 text-xs">Status</TableHead>
-                              <TableHead className="h-9 text-xs">Nilai</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {submissions.data.slice(0, 10).map((submission) => (
-                              <TableRow key={submission.id} className="h-10">
-                                <TableCell className="py-2 text-sm font-medium">
-                                  {submission.student_name}
-                                </TableCell>
-                                <TableCell className="py-2 text-xs">{submission.assignment_title}</TableCell>
-                                <TableCell className="py-2 text-xs text-muted-foreground">
-                                  {formatDistanceToNow(
-                                    new Date(submission.submitted_at),
-                                    {
-                                      addSuffix: true,
-                                      locale: idLocale,
-                                    },
-                                  )}
-                                </TableCell>
-                                <TableCell className="py-2">
-                                  <Badge
-                                    variant={
-                                      submission.status === "graded"
-                                        ? "default"
-                                        : "secondary"
-                                    }
-                                    className="text-[10px] px-1.5 py-0 h-5"
-                                  >
-                                    {submission.status}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="py-2 text-xs">
-                                  {submission.grade !== null ? submission.grade : "-"}
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    ) : (
-                      <div className="py-8 text-center text-sm text-muted-foreground">
-                        Belum ada pengumpulan tugas
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </TabsContent>
-          )}
-
-          {activeTab === "analytics" && (
-            <TabsContent value="analytics" forceMount={true} className="mt-3 focus-visible:outline-none">
-              <motion.div
-                key="analytics"
-                variants={tabVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="space-y-3"
-              >
-                {analyticsLoading ? (
-                  <Skeleton className="h-64 w-full" />
-                ) : analytics ? (
-                  <>
-                    <div className="grid gap-3 md:grid-cols-2">
-                      {/* Module Completion Chart */}
-                      <Card className="border border-gray-200 dark:border-gray-800">
-                        <CardHeader className="p-4 pb-2">
-                          <CardTitle className="text-base">Penyelesaian Modul</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-4">
-                          <ResponsiveContainer width="100%" height={250}>
-                            <BarChart data={analytics.module_completion}>
-                              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                              <XAxis
-                                dataKey="module_title"
-                                angle={-45}
-                                textAnchor="end"
-                                height={80}
-                                tick={{ fontSize: 10 }}
-                                interval={0}
-                              />
-                              <YAxis tick={{ fontSize: 10 }} />
-                              <Tooltip contentStyle={{ fontSize: '12px' }} />
-                              <Bar dataKey="completion_rate" fill="#8884d8" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                          </ResponsiveContainer>
-                        </CardContent>
-                      </Card>
-
-                      {/* Grade Distribution Chart */}
-                      <Card className="border border-gray-200 dark:border-gray-800">
-                        <CardHeader className="p-4 pb-2">
-                          <CardTitle className="text-base">Distribusi Nilai</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-4">
-                          <ResponsiveContainer width="100%" height={250}>
-                            <PieChart>
-                              <Pie
-                                data={analytics.grade_distribution}
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={60}
-                                outerRadius={80}
-                                paddingAngle={5}
-                                dataKey="count"
-                              >
-                                {analytics.grade_distribution.map((_, index) => (
-                                  <Cell
-                                    key={`cell-${index}`}
-                                    fill={COLORS[index % COLORS.length]}
-                                  />
-                                ))}
-                              </Pie>
-                              <Tooltip contentStyle={{ fontSize: '12px' }} />
-                            </PieChart>
-                          </ResponsiveContainer>
-                          <div className="flex flex-wrap justify-center gap-2 mt-2">
-                            {analytics.grade_distribution.map((entry, index) => (
-                              <div key={index} className="flex items-center gap-1 text-[10px]">
-                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-                                <span>{entry.range}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    <Card className="border border-gray-200 dark:border-gray-800">
-                      <CardHeader className="p-4 pb-2">
-                        <CardTitle className="text-base">Statistik Kursus</CardTitle>
-                      </CardHeader>
-                      <CardContent className="p-4">
-                        <div className="grid gap-3 md:grid-cols-3">
-                          <div className="flex flex-col">
-                            <p className="text-xs text-muted-foreground">
-                              Rata-rata Nilai
-                            </p>
-                            <p className="text-xl font-bold">
-                              {analytics.avg_score}
-                            </p>
-                          </div>
-                          <div className="flex flex-col">
-                            <p className="text-xs text-muted-foreground">
-                              Tugas Pending
-                            </p>
-                            <p className="text-xl font-bold">
-                              {analytics.pending_submissions}
-                            </p>
-                          </div>
-                          <div className="flex flex-col">
-                            <p className="text-xs text-muted-foreground">
-                              Siswa Aktif
-                            </p>
-                            <p className="text-xl font-bold">
-                              {analytics.active_students}
-                            </p>
-                          </div>
+                                    )}
+                                  </TableCell>
+                                  <TableCell className="py-2">
+                                    <Badge
+                                      variant={
+                                        submission.status === "graded"
+                                          ? "default"
+                                          : "secondary"
+                                      }
+                                      className="text-[10px] px-1.5 py-0 h-5"
+                                    >
+                                      {submission.status}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell className="py-2 text-xs">
+                                    {submission.grade !== null ? submission.grade : "-"}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </>
-                ) : (
-                  <div className="py-8 text-center text-sm text-muted-foreground">
-                    Data analytics tidak tersedia
-                  </div>
-                )}
-              </motion.div>
-            </TabsContent>
-          )}
-        </AnimatePresence>
-      </Tabs>
-    </div>
+                      ) : (
+                        <div className="py-8 text-center text-sm text-muted-foreground">
+                          Belum ada pengumpulan tugas
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </TabsContent>
+            )}
+
+            {activeTab === "analytics" && (
+              <TabsContent value="analytics" forceMount={true} className="mt-3 focus-visible:outline-none">
+                <motion.div
+                  key="analytics"
+                  variants={tabVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="space-y-3"
+                >
+                  {analyticsLoading ? (
+                    <Skeleton className="h-64 w-full" />
+                  ) : analytics ? (
+                    <>
+                      <div className="grid gap-3 md:grid-cols-2">
+                        {/* Module Completion Chart */}
+                        <Card className="border border-gray-200 dark:border-gray-800">
+                          <CardHeader className="p-4 pb-2">
+                            <CardTitle className="text-base">Penyelesaian Modul</CardTitle>
+                          </CardHeader>
+                          <CardContent className="p-4">
+                            <ResponsiveContainer width="100%" height={250}>
+                              <BarChart data={analytics.module_completion}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis
+                                  dataKey="module_title"
+                                  angle={-45}
+                                  textAnchor="end"
+                                  height={80}
+                                  tick={{ fontSize: 10 }}
+                                  interval={0}
+                                />
+                                <YAxis tick={{ fontSize: 10 }} />
+                                <Tooltip contentStyle={{ fontSize: '12px' }} />
+                                <Bar dataKey="completion_rate" fill="#8884d8" radius={[4, 4, 0, 0]} />
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </CardContent>
+                        </Card>
+
+                        {/* Grade Distribution Chart */}
+                        <Card className="border border-gray-200 dark:border-gray-800">
+                          <CardHeader className="p-4 pb-2">
+                            <CardTitle className="text-base">Distribusi Nilai</CardTitle>
+                          </CardHeader>
+                          <CardContent className="p-4">
+                            <ResponsiveContainer width="100%" height={250}>
+                              <PieChart>
+                                <Pie
+                                  data={analytics.grade_distribution}
+                                  cx="50%"
+                                  cy="50%"
+                                  innerRadius={60}
+                                  outerRadius={80}
+                                  paddingAngle={5}
+                                  dataKey="count"
+                                >
+                                  {analytics.grade_distribution.map((_, index) => (
+                                    <Cell
+                                      key={`cell-${index}`}
+                                      fill={COLORS[index % COLORS.length]}
+                                    />
+                                  ))}
+                                </Pie>
+                                <Tooltip contentStyle={{ fontSize: '12px' }} />
+                              </PieChart>
+                            </ResponsiveContainer>
+                            <div className="flex flex-wrap justify-center gap-2 mt-2">
+                              {analytics.grade_distribution.map((entry, index) => (
+                                <div key={index} className="flex items-center gap-1 text-[10px]">
+                                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                                  <span>{entry.range}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      <Card className="border border-gray-200 dark:border-gray-800">
+                        <CardHeader className="p-4 pb-2">
+                          <CardTitle className="text-base">Statistik Kursus</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-4">
+                          <div className="grid gap-3 md:grid-cols-3">
+                            <div className="flex flex-col">
+                              <p className="text-xs text-muted-foreground">
+                                Rata-rata Nilai
+                              </p>
+                              <p className="text-xl font-bold">
+                                {analytics.avg_score}
+                              </p>
+                            </div>
+                            <div className="flex flex-col">
+                              <p className="text-xs text-muted-foreground">
+                                Tugas Pending
+                              </p>
+                              <p className="text-xl font-bold">
+                                {analytics.pending_submissions}
+                              </p>
+                            </div>
+                            <div className="flex flex-col">
+                              <p className="text-xs text-muted-foreground">
+                                Siswa Aktif
+                              </p>
+                              <p className="text-xl font-bold">
+                                {analytics.active_students}
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </>
+                  ) : (
+                    <div className="py-8 text-center text-sm text-muted-foreground">
+                      Data analytics tidak tersedia
+                    </div>
+                  )}
+                </motion.div>
+              </TabsContent>
+            )}
+          </AnimatePresence>
+        </Tabs>
+      </motion.div>
+    </motion.div>
   );
 }
