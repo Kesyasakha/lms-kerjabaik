@@ -7,7 +7,6 @@ import { MainLayout } from "@/shared/komponen/layout/MainLayout";
 
 // Auth pages
 import { LoginPage } from "@/fitur/autentikasi/pages/LoginPage";
-import { RegisterPage } from "@/fitur/autentikasi/pages/RegisterPage";
 
 // Dashboard pages
 import { PembelajarDashboard } from "@/fitur/dasbor/pages/PembelajarDashboard";
@@ -25,6 +24,7 @@ import { AssignmentDetailPage } from "@/fitur/pembelajar/pages/AssignmentDetailP
 import { AssessmentsListPage } from "@/fitur/pembelajar/pages/AssessmentsListPage";
 import { TakeAssessmentPage } from "@/fitur/pembelajar/pages/TakeAssessmentPage";
 import { AssessmentResultsPage } from "@/fitur/pembelajar/pages/AssessmentResultsPage";
+import { ProfilePage } from "@/fitur/pengguna/pages/ProfilePage";
 
 // Assessment pages
 import { AssessmentsPage } from "@/fitur/penilaian/pages/AssessmentsPage";
@@ -130,7 +130,6 @@ export function AppRouter() {
     <Routes>
       {/* Auth Routes */}
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
 
       {/* Protected Routes */}
       <Route
@@ -140,6 +139,9 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       >
+        {/* Profile */}
+        <Route path="/profil" element={<ProfilePage />} />
+
         {/* Dashboard */}
         <Route path="/" element={<DashboardRouter />} />
         <Route path="/dashboard" element={<DashboardRouter />} />

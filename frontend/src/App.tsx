@@ -5,6 +5,8 @@ import { AppRouter } from "./router";
 import { useAuthStore } from "@/fitur/autentikasi/stores/authStore";
 import { queryClient } from "@/pustaka/queryClient";
 
+import { Toaster } from "@/komponen/ui/toaster";
+
 function App() {
   const initialize = useAuthStore((state) => state.initialize);
 
@@ -22,6 +24,7 @@ function App() {
       >
         <AppRouter />
       </BrowserRouter>
+      <Toaster />
     </QueryClientProvider>
   );
 }

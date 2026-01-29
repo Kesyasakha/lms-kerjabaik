@@ -4,19 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Element3,
     Profile2User,
-    Calendar,
     Document,
-    Setting2,
-    Headphone,
-    Triangle,
-    ArrowRight2,
-    Book,
-    Teacher,
     Building,
     SidebarLeft,
     SidebarRight,
     ShieldSecurity,
     ChartSquare,
+    Book,
     Note,
     ClipboardText,
     LogoutCurve
@@ -185,15 +179,21 @@ export default function Sidebar() {
 
                 <div className="flex flex-col gap-1 pb-4">
                     {/* User Profile */}
-                    <div className={cn(
-                        'flex items-center w-full cursor-pointer group hover:bg-gray-50 py-1.5',
+                    <Link to="/profil" className={cn(
+                        'flex items-center w-full cursor-pointer group hover:bg-white/50 dark:hover:bg-zinc-800/50 py-1.5 transition-colors border-y border-transparent hover:border-gray-200 dark:hover:border-gray-800',
+                        pathname === '/profil' && "bg-white dark:bg-zinc-800 border-gray-200 dark:border-gray-800"
                     )}>
                         <div className="w-[60px] shrink-0 flex items-center justify-center">
                             <div className={cn(
-                                "h-9 w-9 rounded-full flex items-center justify-center text-[10px] text-white font-bold ring-2 ring-white shadow-sm z-10 transition-transform duration-200 group-hover:scale-105",
-                                user?.nama_lengkap ? getAvatarColor(user.nama_lengkap) : "bg-gray-400"
+                                "h-9 w-9 rounded-full flex items-center justify-center text-[10px] text-white font-bold ring-2 ring-white dark:ring-zinc-900 shadow-sm z-10 transition-transform duration-200 group-hover:scale-105",
+                                user?.nama_lengkap ? getAvatarColor(user.nama_lengkap) : "bg-gray-400",
+                                pathname === '/profil' && "ring-template-primary/20"
                             )}>
-                                {user?.nama_lengkap ? getInitials(user.nama_lengkap) : "?"}
+                                {user?.url_foto ? (
+                                    <img src={user.url_foto} alt={user.nama_lengkap} className="h-full w-full rounded-full object-cover" />
+                                ) : (
+                                    user?.nama_lengkap ? getInitials(user.nama_lengkap) : "?"
+                                )}
                             </div>
                         </div>
 
@@ -206,12 +206,15 @@ export default function Sidebar() {
                                     transition={{ duration: 0.3 }}
                                     className="flex flex-col justify-center overflow-hidden whitespace-nowrap pr-4"
                                 >
-                                    <p className='text-xs font-bold text-gray-800 truncate'>{user?.nama_lengkap || "User"}</p>
+                                    <p className={cn(
+                                        'text-xs font-bold truncate transition-colors',
+                                        pathname === '/profil' ? "text-template-primary" : "text-gray-800 dark:text-gray-200"
+                                    )}>{user?.nama_lengkap || "User"}</p>
                                     <p className='text-[9px] font-medium text-gray-400 truncate'>{user?.role ? getRoleLabel(user.role) : "-"}</p>
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                    </div>
+                    </Link>
 
                     <div className="mx-4">
                         <hr className='bg-gray-100' />

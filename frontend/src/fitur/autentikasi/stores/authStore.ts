@@ -7,7 +7,7 @@ import type { Database } from "@/shared/tipe/database.types";
 
 type Pengguna = Database["public"]["Tables"]["pengguna"]["Row"];
 
-type AuthUser = Pengguna;
+export type AuthUser = Pengguna;
 
 interface AuthState {
   user: AuthUser | null;

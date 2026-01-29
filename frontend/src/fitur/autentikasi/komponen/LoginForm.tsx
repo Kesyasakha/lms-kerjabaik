@@ -3,13 +3,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Link, useNavigate } from "react-router-dom";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 
 import { Button } from "@/komponen/ui/button";
 import { Input } from "@/komponen/ui/input";
-import { Label } from "@/komponen/ui/label";
 import { useAuthStore } from "@/fitur/autentikasi/stores/authStore";
-import { useToast } from "@/komponen/ui/use-toast";
+import { pemberitahuan } from "@/pustaka/pemberitahuan"; // Konsisten pakai notiflix
 
 import { AuthFormError } from "./AuthFormError";
 
@@ -25,13 +24,11 @@ export const LoginForm = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const { login, isLoading } = useAuthStore();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
@@ -40,15 +37,12 @@ export const LoginForm = () => {
     try {
       setServerError(null);
       await login(data.email, data.password);
-      toast({
-        title: "Login Berhasil",
-        description: "Selamat datang kembali!",
-      });
+      pemberitahuan.sukses("Selamat datang kembali!");
       navigate("/dashboard");
     } catch (error: any) {
       const errorMessage = error.message === "Invalid login credentials"
-        ? "Email atau kata sandi Anda salah. Silakan periksa kembali."
-        : error.message || "Terjadi kesalahan saat masuk. Silakan coba lagi.";
+        ? "Email atau kata sandi tidak ditemukan."
+        : error.message || "Terjadi kesalahan saat masuk.";
 
       setServerError(errorMessage);
     }
@@ -59,105 +53,85 @@ export const LoginForm = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <AuthFormError message={serverError} />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm">
-            Alamat Email
-          </Label>
-          <div className="relative">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {/* Email Field */}
+        <div className="space-y-1">
+          <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-gray-600 transition-colors">
+              <Mail className="h-5 w-5" />
+            </div>
             <Input
               id="email"
               type="email"
-              placeholder="contoh@email.com"
+              placeholder="Alamat Email"
               {...register("email", { onChange: clearServerError })}
-              className={`${errors.email || serverError ? "border-destructive/50 focus-visible:ring-destructive/20" : ""}`}
+              className={`pl-10 h-12 rounded-xl bg-gray-50 border-gray-100 focus:bg-white focus:border-gray-200 focus:ring-2 focus:ring-gray-100 transition-all font-medium placeholder:text-gray-400 ${errors.email ? "border-red-200 bg-red-50 focus:ring-red-100" : ""}`}
             />
           </div>
           {errors.email && (
-            <p className="text-xs text-destructive font-medium">
+            <p className="text-xs text-red-500 font-bold ml-1">
               {errors.email.message}
             </p>
           )}
         </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-sm">
-              Kata Sandi
-            </Label>
-            <Link
-              to="/forgot-password"
-              className="text-xs font-medium text-primary hover:underline"
-            >
-              Lupa password?
-            </Link>
-          </div>
-          <div className="relative">
+        {/* Password Field */}
+        <div className="space-y-1">
+          <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-gray-600 transition-colors">
+              <Lock className="h-5 w-5" />
+            </div>
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
+              placeholder="Kata Sandi"
               {...register("password", { onChange: clearServerError })}
-              className={`pr-8 ${errors.password || serverError ? "border-destructive/50 focus-visible:ring-destructive/20" : ""}`}
+              className={`pl-10 pr-10 h-12 rounded-xl bg-gray-50 border-gray-100 focus:bg-white focus:border-gray-200 focus:ring-2 focus:ring-gray-100 transition-all font-medium placeholder:text-gray-400 ${errors.password ? "border-red-200 bg-red-50 focus:ring-red-100" : ""}`}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-2.5 top-2.5 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
             >
               {showPassword ? (
-                <EyeOff className="h-4 w-4" />
+                <EyeOff className="h-5 w-5" />
               ) : (
-                <Eye className="h-4 w-4" />
+                <Eye className="h-5 w-5" />
               )}
             </button>
           </div>
           {errors.password && (
-            <p className="text-xs text-destructive font-medium">
+            <p className="text-xs text-red-500 font-bold ml-1">
               {errors.password.message}
             </p>
           )}
         </div>
 
-        <div className="flex items-center space-x-3 py-1">
-          {/* Checkbox manually handled or standard input if shadcn checkbox missing */}
-          <input
-            type="checkbox"
-            id="remember"
-            className="h-4 w-4 rounded border-2 border-muted-foreground/30 text-primary focus:ring-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all"
-          />
-          <Label
-            htmlFor="remember"
-            className="text-sm font-normal text-muted-foreground cursor-pointer select-none"
+        <div className="flex justify-end">
+          <Link
+            to="/forgot-password"
+            className="text-xs font-bold text-gray-500 hover:text-gray-800 transition-colors"
           >
-            Ingat saya
-          </Label>
+            Lupa kata sandi?
+          </Link>
         </div>
 
         <Button
           type="submit"
-          className="w-full text-sm shadow-sm hover:shadow-md transition-all mt-2"
+          className="w-full h-12 rounded-xl bg-gray-900 text-white font-bold text-base hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-gray-200"
           disabled={isLoading}
         >
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Masuk
+          {isLoading ? (
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+          ) : (
+            "Masuk"
+          )}
         </Button>
       </form>
 
-
-
-      <div className="text-center text-sm">
-        Belum punya akun?{" "}
-        <Link
-          to="/register"
-          className="font-semibold text-primary hover:underline"
-        >
-          Daftar
-        </Link>
-      </div>
     </div>
   );
 };

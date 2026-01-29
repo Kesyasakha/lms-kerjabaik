@@ -169,7 +169,7 @@ export function PembelajarDashboard() {
               ))}
             </div>
           ) : (
-            <Card className="border-dashed border-2 rounded-sm bg-muted/20">
+            <Card className="border border-gray-200 dark:border-gray-800 rounded-sm bg-muted/20">
               <CardContent className="p-12 text-center">
                 <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                   <BookOpen className="h-6 w-6 text-muted-foreground/40" />

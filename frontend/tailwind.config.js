@@ -1,4 +1,5 @@
 import tailwindcssAnimate from "tailwindcss-animate";
+import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -89,13 +90,35 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+				'aurora': {
+					from: {
+						backgroundPosition: "50% 50%, 50% 50%",
+					},
+					to: {
+						backgroundPosition: "350% 50%, 350% 50%",
+					},
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'aurora': "aurora 60s linear infinite",
 			}
 		}
 	},
-	plugins: [tailwindcssAnimate, require("tailwindcss-animate")],
+	plugins: [tailwindcssAnimate, addVariablesForColors],
 };
+
+// Plugin ini menambahkan setiap warna Tailwind sebagai variabel CSS global, misal: var(--gray-200).
+function addVariablesForColors({ addBase, theme }) {
+	let allColors = flattenColorPalette(theme("colors"));
+	let newVars = Object.fromEntries(
+		Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+	);
+
+	addBase({
+		":root": newVars,
+	});
+}
+

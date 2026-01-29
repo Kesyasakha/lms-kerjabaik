@@ -25,6 +25,20 @@ export function CoursesPage() {
   const [viewStatus, setViewStatus] = useState<'katalog' | 'aktif' | 'selesai'>('katalog');
   const [viewType, setViewType] = useState<'grid' | 'list'>('grid');
 
+  // Animasi variants
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 }
+  };
+
   const { data: catalogData, isLoading: isCatalogLoading } = useCatalogCourses({
     search: viewStatus === 'katalog' ? courseFilters.search : undefined,
     kategori: viewStatus === 'katalog' && courseFilters.kategori ? courseFilters.kategori : undefined,
@@ -125,9 +139,14 @@ export function CoursesPage() {
   };
 
   return (
-    <div className="space-y-6 pb-12">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="space-y-6 pb-12"
+    >
       {/* Header Compact - Tanpa Ikon */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
             Katalog & Kursus Saya
@@ -136,10 +155,10 @@ export function CoursesPage() {
             Kelola pembelajaran dan temukan materi baru untuk pengembangan diri.
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Modern Tool Bar - Clean White Style */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between bg-white dark:bg-zinc-950 p-4 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
+      <motion.div variants={item} className="flex flex-col gap-4 md:flex-row md:items-center justify-between bg-white dark:bg-zinc-950 p-4 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
         <div className="flex-1 md:max-w-md">
           <SearchInput
             placeholder="Cari kursus..."
@@ -194,7 +213,7 @@ export function CoursesPage() {
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Main Content */}
       <AnimatePresence mode="wait">
@@ -208,7 +227,7 @@ export function CoursesPage() {
           {renderContent()}
         </motion.div>
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
 
