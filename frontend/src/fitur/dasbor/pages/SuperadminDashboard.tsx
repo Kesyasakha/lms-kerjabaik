@@ -7,7 +7,6 @@ import {
   CardTitle,
 } from "@/komponen/ui/card";
 import {
-  TrendingUp,
   HardDrive,
 } from "lucide-react";
 import {
@@ -22,6 +21,7 @@ import {
 import { StatCard } from "@/fitur/superadmin/komponen/dashboard/StatCard";
 import { ActivityList } from "@/fitur/superadmin/komponen/dashboard/ActivityList";
 import { Book, Profile2User, Teacher, TrendUp, ArrowRight } from 'iconsax-react';
+import { motion } from "framer-motion";
 
 // Dummy data for Tenant Growth Chart
 const tenantGrowthData = [
@@ -53,16 +53,36 @@ export function SuperadminDashboard() {
   const { data: recentActivity, isLoading: activityLoading } =
     useRecentActivity(10); // Limit to 10 for sidebar
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="space-y-6 font-sans text-gray-900 antialiased selection:bg-violet-100 selection:text-violet-900">
+    <motion.div
+      className="space-y-6 font-sans text-gray-900 antialiased selection:bg-violet-100 selection:text-violet-900"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div>
+      <motion.div variants={item}>
         <h1 className="text-xl font-bold text-gray-800 mb-1">Dasbor Superadmin</h1>
         <p className="text-gray-500 text-xs">Overview performa platform dan statistik sistem.</p>
-      </div>
+      </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard
           title="Total Tenant"
           value={overview?.total_tenants || 0}
@@ -91,11 +111,11 @@ export function SuperadminDashboard() {
           icon={TrendUp}
           color="bg-orange-500"
         />
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Content Section - Main (Charts) */}
-        <div className="lg:col-span-2 space-y-6">
+        <motion.div variants={item} className="lg:col-span-2 space-y-6">
 
           {/* Tenant Growth Chart */}
           <Card className="rounded-xl border border-gray-300 shadow-sm overflow-hidden">
@@ -187,10 +207,10 @@ export function SuperadminDashboard() {
             </CardContent>
           </Card>
 
-        </div>
+        </motion.div>
 
         {/* Sidebar Section - Right (Activity) */}
-        <div className="space-y-5">
+        <motion.div variants={item} className="space-y-5">
           <h2 className="text-base font-bold text-gray-800">Aktivitas Terbaru</h2>
           <div className="bg-white rounded-xl border border-gray-300 p-5 shadow-sm min-h-[400px]">
             <ActivityList logs={recentActivity || []} isLoading={activityLoading} />
@@ -204,9 +224,9 @@ export function SuperadminDashboard() {
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

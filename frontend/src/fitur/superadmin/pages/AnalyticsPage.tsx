@@ -24,6 +24,7 @@ import {
 import { Badge } from "@/komponen/ui/badge";
 import { StatCard } from "@/fitur/superadmin/komponen/dashboard/StatCard";
 import { AnalyticsCharts } from "@/fitur/superadmin/komponen/dashboard/AnalyticsCharts";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function AnalyticsPage() {
   const { data: analytics, isLoading } = useTenantAnalytics();
@@ -53,20 +54,40 @@ export function AnalyticsPage() {
   ) || { tenants: 0, users: 0, courses: 0, enrollments: 0 };
 
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="space-y-6 font-sans text-gray-900 antialiased pb-10">
+    <motion.div
+      className="space-y-6 font-sans text-gray-900 antialiased pb-10"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl font-bold tracking-tight text-gray-800">Analitik & Wawasan</h1>
           <p className="text-gray-500 text-xs">
             Pantau performa platform, pertumbuhan tenant, dan aktivitas pengguna secara real-time.
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Platform Overview */}
-      <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <motion.section variants={item} className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Tenant"
           value={totals.tenants}
@@ -99,13 +120,15 @@ export function AnalyticsPage() {
           color="bg-amber-500"
           trend="+24%"
         />
-      </section>
+      </motion.section>
 
       {/* Analytics Charts */}
-      <AnalyticsCharts />
+      <motion.div variants={item}>
+        <AnalyticsCharts />
+      </motion.div>
 
       {/* Full Table */}
-      <Card className="shadow-sm border border-gray-300 rounded-xl overflow-hidden bg-white">
+      <motion.div variants={item} className="shadow-sm border border-gray-300 rounded-xl overflow-hidden bg-white">
         <CardHeader className="bg-white border-b py-5 px-6">
           <div className="flex items-center justify-between">
             <div>
@@ -177,7 +200,7 @@ export function AnalyticsPage() {
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

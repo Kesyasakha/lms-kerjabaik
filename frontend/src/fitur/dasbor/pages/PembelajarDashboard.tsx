@@ -1,4 +1,4 @@
-import { BookOpen, GraduationCap, Trophy, Clock, FileText, Calendar, ChevronRight } from 'lucide-react';
+import { BookOpen, GraduationCap, Trophy, Clock, FileText, Calendar } from 'lucide-react';
 import { CourseCard } from '@/fitur/pembelajar/komponen/CourseCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/komponen/ui/card';
 import { Badge } from '@/komponen/ui/badge';
@@ -15,8 +15,9 @@ export function PembelajarDashboard() {
   const { data: enrollments, isLoading: enrollmentsLoading } = useEnrollments();
   const { data: deadlines, isLoading: deadlinesLoading } = useUpcomingDeadlines();
 
-  // Filter hanya kursus aktif untuk ditampilkan
+  // Filter kursus berdasarkan status
   const activeEnrollments = enrollments?.filter(e => e.status === 'aktif') || [];
+  const finishedEnrollments = enrollments?.filter(e => e.status === 'selesai') || [];
 
   const container = {
     hidden: { opacity: 0 },
@@ -179,6 +180,20 @@ export function PembelajarDashboard() {
                 </p>
               </CardContent>
             </Card>
+          )}
+
+          {/* Riwayat Belajar Section (Courses Selesai) */}
+          {finishedEnrollments.length > 0 && (
+            <div className="space-y-4 pt-8">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold tracking-tight">Riwayat Belajar</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {finishedEnrollments.map((enrollment) => (
+                  <CourseCard key={enrollment.id} enrollment={enrollment} />
+                ))}
+              </div>
+            </div>
           )}
         </motion.div>
 

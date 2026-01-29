@@ -30,6 +30,7 @@ import { formatTanggal, cn } from "@/pustaka/utils";
 import { StatCard } from "@/fitur/superadmin/komponen/dashboard/StatCard";
 import { TenantDialog } from "../komponen/TenantDialog";
 import { pemberitahuan } from "@/pustaka/pemberitahuan";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function TenantDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -104,10 +105,30 @@ export function TenantDetailPage() {
 
   const statusInfo = getStatusInfo((tenant as any).status);
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="space-y-6 font-sans text-gray-900 antialiased pb-10">
+    <motion.div
+      className="space-y-6 font-sans text-gray-900 antialiased pb-10"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate("/superadmin/tenants")}
@@ -139,10 +160,10 @@ export function TenantDetailPage() {
             <span>Ubah Data Tenant</span>
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats Overview */}
-      <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <motion.section variants={item} className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Pengguna"
           value={stats?.total_users || 0}
@@ -175,9 +196,9 @@ export function TenantDetailPage() {
           color="bg-amber-500"
           trend="85% limit"
         />
-      </section>
+      </motion.section>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      <motion.div variants={item} className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Profile Card */}
         <div className="lg:col-span-8 space-y-6">
           <div className="bg-white border border-gray-300 rounded-xl shadow-sm overflow-hidden h-full">
@@ -280,7 +301,7 @@ export function TenantDetailPage() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <TenantDialog
         open={dialogOpen}
@@ -289,6 +310,6 @@ export function TenantDetailPage() {
         onSubmit={handleUpdate}
         isSubmitting={updateMutation.isPending}
       />
-    </div>
+    </motion.div>
   );
 }

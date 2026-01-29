@@ -4,7 +4,12 @@ import {
     Clock,
     ChevronRight,
     ChevronLeft,
-    AlertCircle
+    AlertCircle,
+    Play,
+    Timer,
+    ClipboardList,
+    Trophy,
+    ArrowLeft
 } from 'lucide-react';
 import { Button } from '@/komponen/ui/button';
 import { Skeleton } from '@/komponen/ui/skeleton';
@@ -24,6 +29,11 @@ import {
 } from '@/fitur/pembelajar/api/learnerApi';
 import { QuestionRenderer } from '../komponen/QuestionRenderer';
 import { toast } from 'sonner';
+import {
+    Card,
+    CardContent
+} from '@/komponen/ui/card';
+import { motion } from 'framer-motion';
 import { supabase } from '@/pustaka/supabase';
 
 export function TakeAssessmentPage() {
@@ -40,8 +50,9 @@ export function TakeAssessmentPage() {
     const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
-    const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+    const [viewMode, setViewMode] = useState<'intro' | 'taking'>('intro');
     const [isLoading, setIsLoading] = useState(true);
+    const [showSubmitDialog, setShowSubmitDialog] = useState(false);
 
     const autoSaveTimerRef = useRef<NodeJS.Timeout>();
     const assessment = assessments?.find(a => a.id === assessmentId);
@@ -208,41 +219,138 @@ export function TakeAssessmentPage() {
         return <Skeleton className="h-screen w-full" />;
     }
 
-    if (!assessment || !currentAttempt) {
+    if (!assessment) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <p>Assessment not found</p>
+            <div className="flex flex-col items-center justify-center h-screen gap-4">
+                <AlertCircle className="h-12 w-12 text-rose-500" />
+                <p className="font-bold text-gray-800">Assessment not found</p>
+                <Button variant="outline" onClick={() => navigate('/pembelajar/assessments')}>Kembali</Button>
             </div>
         );
     }
 
+    if (viewMode === 'intro') {
+        const totalPoints = questions.reduce((sum, q) => sum + (q.poin || 0), 0);
+
+        return (
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="min-h-screen bg-zinc-50/50 flex items-center justify-center p-4"
+            >
+                <Card className="max-w-xl w-full rounded-3xl border-gray-200 shadow-xl shadow-gray-200/50 overflow-hidden bg-white">
+                    <div className="bg-violet-600 p-8 text-white relative">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl" />
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate('/pembelajar/assessments')}
+                            className="bg-white/10 hover:bg-white/20 text-white border-0 mb-6 rounded-xl h-8 px-3"
+                        >
+                            <ArrowLeft className="h-4 w-4 mr-2" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest">Kembali</span>
+                        </Button>
+                        <h1 className="text-2xl font-black leading-tight mb-2">{assessment.judul}</h1>
+                        <p className="text-white/80 text-xs font-medium line-clamp-2 leading-relaxed">
+                            {assessment.deskripsi || "Persiapkan diri Anda dengan baik sebelum memulai asesmen ini."}
+                        </p>
+                    </div>
+
+                    <CardContent className="p-8">
+                        <div className="grid grid-cols-2 gap-4 mb-8">
+                            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-4 hover:border-violet-200 transition-colors group">
+                                <div className="p-2.5 bg-white rounded-xl text-violet-600 shadow-sm transition-transform group-hover:scale-110">
+                                    <Timer className="h-5 w-5" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Durasi</p>
+                                    <h4 className="font-bold text-gray-800">{assessment.durasi_menit} Menit</h4>
+                                </div>
+                            </div>
+
+                            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-4 hover:border-violet-200 transition-colors group">
+                                <div className="p-2.5 bg-white rounded-xl text-violet-600 shadow-sm transition-transform group-hover:scale-110">
+                                    <ClipboardList className="h-5 w-5" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Soal</p>
+                                    <h4 className="font-bold text-gray-800">{questions.length} Butir</h4>
+                                </div>
+                            </div>
+
+                            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-4 hover:border-violet-200 transition-colors group">
+                                <div className="p-2.5 bg-white rounded-xl text-violet-600 shadow-sm transition-transform group-hover:scale-110">
+                                    <Trophy className="h-5 w-5" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Lulus</p>
+                                    <h4 className="font-bold text-gray-800">{assessment.nilai_kelulusan}%</h4>
+                                </div>
+                            </div>
+
+                            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-4 hover:border-violet-200 transition-colors group">
+                                <div className="p-2.5 bg-white rounded-xl text-violet-600 shadow-sm transition-transform group-hover:scale-110">
+                                    <Trophy className="h-5 w-5 opacity-0 invisible" />
+                                    <span className="absolute inset-0 flex items-center justify-center font-black text-violet-600">Σ</span>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Poin</p>
+                                    <h4 className="font-bold text-gray-800">{totalPoints} Poin</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-100/50 flex gap-4">
+                                <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
+                                <div className="text-xs text-amber-800/80 leading-relaxed font-medium">
+                                    <p className="font-bold text-amber-900 mb-1 leading-none uppercase tracking-tighter text-[10px]">Instruksi Penting:</p>
+                                    Jangan refresh halaman saat ujian berlangsung. Pastikan koneksi internet Anda stabil. Jawaban akan tersimpan otomatis.
+                                </div>
+                            </div>
+
+                            <Button
+                                className="w-full h-14 rounded-2xl text-lg font-black bg-violet-600 hover:bg-violet-700 shadow-lg shadow-violet-200 transition-all active:scale-95"
+                                onClick={() => setViewMode('taking')}
+                            >
+                                <Play className="h-5 w-5 mr-3 fill-white" />
+                                MULAI ASESMEN SEKARANG
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        );
+    }
+
     return (
-        <div className="min-h-screen bg-muted/30">
+        <div className="min-h-screen bg-zinc-50/50">
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b shadow-sm">
-                <div className="container max-w-5xl mx-auto px-4 py-4">
+            <div className="sticky top-0 z-10 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+                <div className="container max-w-4xl mx-auto px-4 py-3">
                     <div className="flex items-center justify-between gap-4">
                         <div className="min-w-0">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Sedang Mengerjakan</span>
-                            <h1 className="text-lg font-bold truncate text-gray-900 dark:text-white leading-tight">{assessment.judul}</h1>
-                            <p className="text-[10px] font-bold text-muted-foreground mt-0.5 uppercase tracking-tighter">
-                                Butir Soal: {currentQuestionIndex + 1} / {questions.length}
-                            </p>
+                            <div className="flex items-center gap-2 mb-0.5">
+                                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Aktif</span>
+                            </div>
+                            <h1 className="text-base font-black truncate text-gray-800 dark:text-white leading-tight">{assessment.judul}</h1>
                         </div>
 
                         <div className="flex items-center gap-3 shrink-0">
                             {timeRemaining !== null && (
-                                <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-colors shadow-sm ${timeRemaining < 300
-                                    ? 'bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400'
-                                    : 'bg-white dark:bg-zinc-900 border-muted-foreground/20'
+                                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all shadow-sm ${timeRemaining < 300
+                                    ? 'bg-rose-50 border-rose-200 text-rose-700'
+                                    : 'bg-zinc-50 border-gray-200 text-gray-700'
                                     }`}>
-                                    <Clock className={`h-4 w-4 ${timeRemaining < 300 ? 'animate-pulse' : ''}`} />
-                                    <span className="font-mono font-black tracking-widest text-sm">{formatTime(timeRemaining)}</span>
+                                    <Clock className={`h-3.5 w-3.5 ${timeRemaining < 300 ? 'animate-pulse' : ''}`} />
+                                    <span className="font-mono font-black tracking-widest text-xs">{formatTime(timeRemaining)}</span>
                                 </div>
                             )}
 
                             <Button
-                                className="rounded-xl font-bold h-10 px-6 shadow-sm shadow-primary/20"
+                                size="sm"
+                                className="rounded-xl font-bold h-9 px-4 bg-gray-800 hover:bg-gray-900 shadow-lg shadow-gray-200/50"
                                 onClick={() => setShowSubmitDialog(true)}
                             >
                                 Kumpulkan
@@ -250,24 +358,18 @@ export function TakeAssessmentPage() {
                         </div>
                     </div>
 
-                    {/* Progress bar */}
-                    <div className="mt-4">
-                        <div className="flex justify-between items-end text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5 px-0.5">
-                            <span>{answeredCount} / {questions.length} Terjawab</span>
-                            <span>{Math.round(progress)}% Selesai</span>
-                        </div>
-                        <div className="h-1.5 bg-muted/50 rounded-full overflow-hidden border border-black/5 dark:border-white/5">
-                            <div
-                                className="h-full bg-primary transition-all duration-500 ease-out rounded-full shadow-[0_0_10px_rgba(var(--primary),0.3)]"
-                                style={{ width: `${progress}%` }}
-                            />
-                        </div>
+                    {/* Compact Progress bar */}
+                    <div className="mt-3 relative h-1 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                            className="h-full bg-violet-600 transition-all duration-700 ease-in-out rounded-full shadow-[0_0_8px_rgba(124,58,237,0.4)]"
+                            style={{ width: `${progress}%` }}
+                        />
                     </div>
                 </div>
             </div>
 
-            {/* Question */}
-            <div className="container max-w-5xl mx-auto px-4 py-8">
+            {/* Question Container */}
+            <div className="container max-w-4xl mx-auto px-4 py-8">
                 {currentQuestion && (
                     <QuestionRenderer
                         question={currentQuestion}
@@ -276,28 +378,28 @@ export function TakeAssessmentPage() {
                     />
                 )}
 
-                {/* Navigation */}
-                <div className="flex items-center justify-between mt-12 pt-8 border-t border-muted/50 gap-6">
+                {/* Navigation - Compact Style */}
+                <div className="mt-10 flex flex-col md:flex-row items-center justify-between gap-6 p-6 bg-white rounded-3xl border border-gray-100 shadow-sm">
                     <Button
-                        variant="outline"
-                        className="rounded-xl font-bold h-11 px-6 border-muted-foreground/20 hover:bg-muted"
+                        variant="ghost"
+                        className="rounded-xl font-bold h-10 px-4 hover:bg-gray-50 flex-1 md:flex-none w-full md:w-auto text-xs"
                         onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
                         disabled={currentQuestionIndex === 0}
                     >
                         <ChevronLeft className="h-4 w-4 mr-2" />
-                        Sebelumnya
+                        Soal Sebelumnya
                     </Button>
 
-                    <div className="hidden md:flex gap-2 flex-wrap justify-center flex-1 max-w-md">
+                    <div className="flex gap-1.5 flex-wrap justify-center flex-1 max-w-sm px-4">
                         {questions.map((_, index) => (
                             <button
                                 key={index}
                                 onClick={() => setCurrentQuestionIndex(index)}
-                                className={`w-9 h-9 rounded-full border-2 transition-all duration-200 text-xs font-bold flex items-center justify-center ${index === currentQuestionIndex
-                                    ? 'border-primary bg-primary text-primary-foreground shadow-md scale-110'
+                                className={`w-7 h-7 rounded-lg border-2 transition-all duration-300 text-[10px] font-black flex items-center justify-center ${index === currentQuestionIndex
+                                    ? 'border-violet-600 bg-violet-600 text-white shadow-md shadow-violet-200'
                                     : answers[questions[index].id]
-                                        ? 'border-emerald-500/50 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
-                                        : 'border-muted text-muted-foreground hover:border-primary/30'
+                                        ? 'border-emerald-500 bg-emerald-50 text-emerald-600'
+                                        : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-violet-200'
                                     }`}
                             >
                                 {index + 1}
@@ -306,12 +408,12 @@ export function TakeAssessmentPage() {
                     </div>
 
                     <Button
-                        variant="outline"
-                        className="rounded-xl font-bold h-11 px-6 border-muted-foreground/20 hover:bg-muted"
+                        variant="ghost"
+                        className="rounded-xl font-bold h-10 px-4 hover:bg-gray-50 flex-1 md:flex-none w-full md:w-auto text-xs text-violet-600"
                         onClick={() => setCurrentQuestionIndex(prev => Math.min(questions.length - 1, prev + 1))}
                         disabled={currentQuestionIndex === questions.length - 1}
                     >
-                        Selanjutnya
+                        Soal Selanjutnya
                         <ChevronRight className="h-4 w-4 ml-2" />
                     </Button>
                 </div>
@@ -319,28 +421,35 @@ export function TakeAssessmentPage() {
 
             {/* Submit Confirmation Dialog */}
             <Dialog open={showSubmitDialog} onOpenChange={setShowSubmitDialog}>
-                <DialogContent className="rounded-2xl max-w-sm">
-                    <DialogHeader className="space-y-3">
-                        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2 text-primary">
-                            <AlertCircle className="h-6 w-6" />
+                <DialogContent className="rounded-[32px] max-w-sm border-0 p-8">
+                    <DialogHeader className="space-y-4">
+                        <div className="w-16 h-16 bg-amber-50 rounded-3xl flex items-center justify-center mx-auto mb-2 text-amber-500 border border-amber-100">
+                            <AlertCircle className="h-8 w-8" />
                         </div>
-                        <DialogTitle className="text-center text-xl font-bold">Kumpulkan Ujian?</DialogTitle>
-                        <DialogDescription className="text-center font-medium">
-                            Anda telah menjawab <span className="text-primary font-bold">{answeredCount} dari {questions.length}</span> soal.
+                        <DialogTitle className="text-center text-2xl font-black text-gray-800">Selesai Berjuang?</DialogTitle>
+                        <DialogDescription className="text-center text-gray-500 font-medium leading-relaxed">
+                            Anda telah menjawab <span className="text-violet-600 font-black">{answeredCount} dari {questions.length}</span> soal dengan sungguh-sungguh.
                             {answeredCount < questions.length && (
-                                <span className="block mt-4 p-3 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 rounded-xl text-xs font-bold leading-relaxed">
-                                    <AlertCircle className="inline h-3 w-3 mr-1 mb-0.5" />
-                                    Peringatan: Masih ada {questions.length - answeredCount} soal yang belum Anda jawab.
-                                </span>
+                                <div className="mt-4 p-4 bg-rose-50 rounded-2xl text-rose-600 text-xs font-bold ring-1 ring-rose-100 flex gap-3 items-center">
+                                    <AlertCircle className="h-5 w-5 shrink-0" />
+                                    <span>Hati-hati! Sisa {questions.length - answeredCount} soal belum terjawab.</span>
+                                </div>
                             )}
                         </DialogDescription>
                     </DialogHeader>
-                    <DialogFooter className="grid grid-cols-2 gap-3 sm:justify-center mt-6">
-                        <Button variant="outline" className="rounded-xl font-bold h-11" onClick={() => setShowSubmitDialog(false)}>
-                            Batal
+                    <DialogFooter className="grid grid-cols-2 gap-3 mt-8">
+                        <Button
+                            variant="ghost"
+                            className="rounded-2xl font-bold h-12 hover:bg-gray-100"
+                            onClick={() => setShowSubmitDialog(false)}
+                        >
+                            Periksa Lagi
                         </Button>
-                        <Button className="rounded-xl font-bold h-11 shadow-sm shadow-primary/20" onClick={handleSubmit}>
-                            Selesaikan
+                        <Button
+                            className="rounded-2xl font-black h-12 bg-gray-800 hover:bg-gray-900 shadow-xl shadow-gray-200 transition-all active:scale-95"
+                            onClick={handleSubmit}
+                        >
+                            Kumpulkan
                         </Button>
                     </DialogFooter>
                 </DialogContent>

@@ -48,6 +48,7 @@ import type {
   PenggunaWithTenant,
 } from "../api/usersApi";
 import { StatCard } from "@/fitur/superadmin/komponen/dashboard/StatCard";
+import { motion, AnimatePresence } from "framer-motion";
 
 const statusInfo = {
   aktif: { label: "Aktif", color: "bg-emerald-500", text: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-100" },
@@ -230,10 +231,30 @@ export function GlobalUsersPage() {
     );
   };
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="space-y-6 font-sans text-gray-900 antialiased pb-10">
+    <motion.div
+      className="space-y-6 font-sans text-gray-900 antialiased pb-10"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl font-bold tracking-tight text-gray-800">Manajemen Pengguna</h1>
           <p className="text-gray-500 text-xs">
@@ -247,10 +268,10 @@ export function GlobalUsersPage() {
           <Add size={18} variant="Bold" />
           <span>Tambah Pengguna Baru</span>
         </button>
-      </div>
+      </motion.div>
 
       {/* Stats Overview */}
-      <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <motion.section variants={item} className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Pengguna"
           value={usersData?.count || 0}
@@ -283,10 +304,10 @@ export function GlobalUsersPage() {
           color="bg-red-500"
           trend="Flagged"
         />
-      </section>
+      </motion.section>
 
       {/* Filters Bar - Separate Card to match TenantsPage */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-300 shadow-sm">
+      <motion.div variants={item} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-300 shadow-sm">
         <div className="relative flex-1 max-w-md group">
           <SearchNormal1
             size={18}
@@ -343,10 +364,10 @@ export function GlobalUsersPage() {
             </Select>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Table Card */}
-      <div className="bg-white border border-gray-300 rounded-xl shadow-sm overflow-hidden">
+      <motion.div variants={item} className="bg-white border border-gray-300 rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -499,7 +520,7 @@ export function GlobalUsersPage() {
             </div>
           </div>
         )}
-      </div>
+      </motion.div>
 
       <CreateUserDialog
         open={userDialogOpen}
@@ -511,6 +532,6 @@ export function GlobalUsersPage() {
         isSubmitting={createUserMutation.isPending || updateUserMutation.isPending}
         user={editingUser}
       />
-    </div>
+    </motion.div>
   );
 }

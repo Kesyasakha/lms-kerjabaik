@@ -1,5 +1,6 @@
 import { formatTanggal } from "@/pustaka/utils";
 import type { AuditLogWithUser } from "../../tipe/auditLog.types";
+import { motion } from "framer-motion";
 
 interface ActivityListProps {
     logs: AuditLogWithUser[];
@@ -34,12 +35,32 @@ export function ActivityList({ logs, isLoading }: ActivityListProps) {
         )
     }
 
+    const container = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.05,
+            },
+        },
+    };
+
+    const item = {
+        hidden: { opacity: 0, x: -10 },
+        show: { opacity: 1, x: 0 },
+    };
+
     return (
-        <div className="space-y-0">
+        <motion.div
+            className="space-y-0"
+            variants={container}
+            initial="hidden"
+            animate="show"
+        >
             {logs.map((log, i) => {
                 const isLast = i === logs.length - 1;
                 return (
-                    <div key={log.id} className="flex gap-3 group">
+                    <motion.div key={log.id} variants={item} className="flex gap-3 group">
                         <div className="flex flex-col items-center shrink-0 mt-[3px]">
                             <div className="w-2 h-2 min-w-[8px] min-h-[8px] rounded-full bg-violet-400 ring-4 ring-violet-50 group-hover:ring-violet-100 transition-all box-content"></div>
                             {!isLast && <div className="w-px h-full bg-gray-200 my-1"></div>}
@@ -57,9 +78,9 @@ export function ActivityList({ logs, isLoading }: ActivityListProps) {
                                 </p>
                             )}
                         </div>
-                    </div>
+                    </motion.div>
                 );
             })}
-        </div>
+        </motion.div>
     );
 }

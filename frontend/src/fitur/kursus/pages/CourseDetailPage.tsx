@@ -259,14 +259,22 @@ export function CourseDetailPage() {
                       <CheckCircle className="h-5 w-5" />
                       <span className="font-medium">Anda sudah terdaftar</span>
                     </div>
-                    {enrollmentStatus.status === 'aktif' && (
+                    {enrollmentStatus.status === 'aktif' ? (
                       <Button
                         className="w-full"
                         onClick={handleContinueLearning}
                       >
                         Lanjutkan Belajar
                       </Button>
-                    )}
+                    ) : enrollmentStatus.status === 'selesai' ? (
+                      <Button
+                        className="w-full"
+                        variant="outline"
+                        onClick={handleContinueLearning}
+                      >
+                        Tinjau Materi
+                      </Button>
+                    ) : null}
                   </div>
                 ) : (
                   <Button

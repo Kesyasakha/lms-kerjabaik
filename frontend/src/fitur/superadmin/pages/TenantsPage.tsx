@@ -30,6 +30,7 @@ import {
   Setting4,
 } from "iconsax-react";
 import type { TenantWithStats, TenantFilters } from "../tipe/tenant.types";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function TenantsPage() {
   const navigate = useNavigate();
@@ -138,10 +139,30 @@ export function TenantsPage() {
     }));
   };
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="space-y-6 font-sans text-gray-900 antialiased selection:bg-violet-100 selection:text-violet-900">
+    <motion.div
+      className="space-y-6 font-sans text-gray-900 antialiased selection:bg-violet-100 selection:text-violet-900"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl font-bold tracking-tight text-gray-800">Manajemen Tenant</h1>
           <p className="text-gray-500 text-xs">
@@ -155,10 +176,10 @@ export function TenantsPage() {
           <Add size={18} />
           <span>Tambah Tenant</span>
         </button>
-      </div>
+      </motion.div>
 
       {/* Stats Overview */}
-      <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <motion.section variants={item} className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Tenant"
           value={tenantsData?.count || 0}
@@ -191,11 +212,11 @@ export function TenantsPage() {
           color="bg-violet-500"
           trend="+12%"
         />
-      </section>
+      </motion.section>
 
       {/* Filters & Table Section */}
       <div className="space-y-6">
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-4 rounded-xl border border-gray-300 shadow-sm">
+        <motion.div variants={item} className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-4 rounded-xl border border-gray-300 shadow-sm">
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
             <div className="flex items-center gap-2">
               <Select
@@ -245,9 +266,9 @@ export function TenantsPage() {
               <Setting4 size={18} />
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="rounded-xl border border-gray-300 bg-card text-card-foreground shadow-sm overflow-hidden transition-all">
+        <motion.div variants={item} className="rounded-xl border border-gray-300 bg-card text-card-foreground shadow-sm overflow-hidden transition-all">
           <TenantTable
             tenants={tenantsData?.data || []}
             isLoading={isLoading}
@@ -293,7 +314,7 @@ export function TenantsPage() {
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
 
       {/* Dialogs */}
@@ -306,6 +327,6 @@ export function TenantsPage() {
       />
 
       {/* Delete Confirmation Dialog dihapus karena menggunakan pemberitahuan.konfirmasi */}
-    </div>
+    </motion.div>
   );
 }

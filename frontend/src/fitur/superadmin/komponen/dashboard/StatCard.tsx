@@ -1,6 +1,6 @@
-import { TrendUp } from 'iconsax-react';
+import { TrendUp, Icon } from 'iconsax-react';
 import { LucideIcon } from 'lucide-react';
-import { Icon } from 'iconsax-react';
+import { motion } from "framer-motion";
 
 interface StatCardProps {
     title: string;
@@ -13,7 +13,10 @@ interface StatCardProps {
 
 export function StatCard({ title, value, subtext, icon: Icon, color, trend = "+12.5%" }: StatCardProps) {
     return (
-        <div className="p-5 bg-white dark:bg-gray-800 rounded-xl border border-gray-300 dark:border-gray-700 shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] hover:shadow-md transition-shadow duration-200">
+        <motion.div
+            whileHover={{ y: -4 }}
+            className="p-5 bg-white dark:bg-gray-800 rounded-xl border border-gray-300 dark:border-gray-700 shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] hover:shadow-md transition-shadow duration-200 cursor-pointer"
+        >
             <div className="flex justify-between items-start mb-4">
                 <div className={`p-2.5 rounded-xl ${color}`}>
                     <Icon size={20} className="text-white" variant="Bold" />
@@ -27,6 +30,6 @@ export function StatCard({ title, value, subtext, icon: Icon, color, trend = "+1
                 <h3 className="text-xl font-bold text-gray-800 dark:text-white">{value}</h3>
                 <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">{subtext}</p>
             </div>
-        </div>
+        </motion.div>
     );
 }

@@ -139,12 +139,13 @@ export function CourseCard({ enrollment, onContinue }: CourseCardProps) {
                         </Button>
                     ) : status === 'selesai' ? (
                         <Button
-                            className="w-full rounded-sm font-bold h-10 text-sm border-gray-200 dark:border-zinc-800"
+                            className="w-full rounded-sm font-bold h-10 text-sm border-gray-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-900"
                             variant="outline"
                             asChild
                         >
-                            <Link to={`/pembelajar/kursus/${kursus.id}`}>
-                                Lihat detail
+                            <Link to={`/pembelajar/learn/${enrollment.id}`} className="flex items-center justify-center gap-2">
+                                Tinjau materi
+                                <ChevronRight className="w-4 h-4" />
                             </Link>
                         </Button>
                     ) : (

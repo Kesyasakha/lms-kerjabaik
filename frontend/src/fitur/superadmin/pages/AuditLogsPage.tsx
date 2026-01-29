@@ -28,6 +28,7 @@ import { cn } from "@/pustaka/utils";
 import { Badge } from "@/komponen/ui/badge";
 import { StatCard } from "@/fitur/superadmin/komponen/dashboard/StatCard";
 import type { AuditLogFilters } from "../tipe/auditLog.types";
+import { motion, AnimatePresence } from "framer-motion";
 
 // --- Dictionaries & Helpers ---
 
@@ -125,18 +126,38 @@ export function AuditLogsPage() {
     setFilters({ page: 1, limit: 50 });
   };
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="space-y-6 font-sans text-gray-900 antialiased pb-10">
+    <motion.div
+      className="space-y-6 font-sans text-gray-900 antialiased pb-10"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header Section */}
-      <div className="flex flex-col gap-1">
+      <motion.div variants={item} className="flex flex-col gap-1">
         <h1 className="text-xl font-bold tracking-tight text-gray-800">Jejak Audit</h1>
         <p className="text-gray-500 text-xs">
           Tinjau seluruh aktivitas sensitif dan perubahan sistem yang dilakukan oleh Superadmin dan Admin.
         </p>
-      </div>
+      </motion.div>
 
       {/* Stats Summary */}
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <motion.div variants={item} className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Log"
           value={data?.count || 0}
@@ -154,11 +175,11 @@ export function AuditLogsPage() {
           trend="Hari Ini"
         />
         {/* Placeholder for future stats if backend provides specifics */}
-      </div>
+      </motion.div>
 
       <div className="space-y-6">
         {/* Filters Bar - Horizontal */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-300 shadow-sm">
+        <motion.div variants={item} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-300 shadow-sm">
           {/* Date Range Group */}
           <div className="flex flex-wrap items-end gap-3 w-full lg:w-auto">
             <div className="space-y-1.5">
@@ -243,10 +264,10 @@ export function AuditLogsPage() {
               Reset
             </Button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Table */}
-        <div className="bg-white rounded-xl border border-gray-300 shadow-sm overflow-hidden transition-all">
+        <motion.div variants={item} className="bg-white rounded-xl border border-gray-300 shadow-sm overflow-hidden transition-all">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -366,8 +387,8 @@ export function AuditLogsPage() {
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

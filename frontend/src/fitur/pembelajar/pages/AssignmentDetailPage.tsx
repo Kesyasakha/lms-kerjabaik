@@ -6,10 +6,14 @@ import {
     File,
     X,
     CheckCircle,
-    AlertCircle
+    AlertCircle,
+    Calendar,
+    Clock,
+    FileText,
+    MessageSquare
 } from 'lucide-react';
 import { Button } from '@/komponen/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/komponen/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/komponen/ui/card';
 import { Badge } from '@/komponen/ui/badge';
 import { Textarea } from '@/komponen/ui/textarea';
 import { Label } from '@/komponen/ui/label';
@@ -143,223 +147,245 @@ export function AssignmentDetailPage() {
         }
     };
 
-    if (isLoading) return <Skeleton className="h-96 w-full" />;
-    if (!assignment) return <div>Tugas tidak ditemukan</div>;
+    if (isLoading) return <Skeleton className="h-screen w-full" />;
+    if (!assignment) return <div className="p-8 text-center text-gray-500">Tugas tidak ditemukan</div>;
 
     return (
-        <div className="space-y-8 max-w-4xl mx-auto py-8">
-            <Button
-                variant="ghost"
-                onClick={() => navigate('/pembelajar/assessments')}
-                className="mb-4 pl-3 pr-4 rounded-xl font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-200"
-            >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Kembali ke Pusat Asesmen
-            </Button>
-
-            <Card className="rounded-2xl shadow-none border-border/60 overflow-hidden bg-white dark:bg-zinc-950">
-                <CardHeader className="p-8">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-muted pb-8 mb-8">
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="rounded-full bg-primary/5 text-primary border-none font-bold text-[10px] px-3 uppercase tracking-wider">{assignment.asesmen?.kursus?.judul}</Badge>
-                                {isGraded && (
-                                    <Badge className="bg-emerald-50 text-emerald-700 border-none rounded-full shadow-none font-bold text-[10px] px-3 uppercase tracking-wider">
-                                        Nilai: {submission.nilai} / 100
-                                    </Badge>
-                                )}
+        <div className="min-h-screen bg-zinc-50/50 pb-12">
+            {/* Minimalist Header */}
+            <div className="sticky top-0 z-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-gray-100 shadow-sm mb-8">
+                <div className="container max-w-7xl mx-auto px-4 py-3">
+                    <div className="flex items-center gap-4">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate('/pembelajar/assessments')}
+                            className="h-8 w-8 p-0 rounded-full hover:bg-gray-100 text-gray-500"
+                        >
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-violet-500 bg-violet-50 px-2 py-0.5 rounded-md">Project</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">{assignment.asesmen?.kursus?.judul}</span>
                             </div>
-                            <CardTitle className="text-3xl font-black text-gray-900 dark:text-white leading-tight">{assignment.judul}</CardTitle>
+                            <h1 className="text-sm font-bold text-gray-900 truncate">{assignment.judul}</h1>
                         </div>
-                        {assignment.deadline && (
-                            <div className="md:text-right shrink-0">
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Tenggat Waktu</p>
-                                <p className="font-black text-rose-600 text-sm">
-                                    {format(new Date(assignment.deadline), 'd MMM yyyy, HH:mm', { locale: localeId })}
-                                </p>
-                            </div>
+                        {isGraded && (
+                            <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-none font-bold">
+                                Nilai: {submission.nilai}/100
+                            </Badge>
+                        )}
+                        {needsRevision && (
+                            <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-200 border-none font-bold">
+                                Perlu Revisi
+                            </Badge>
+                        )}
+                        {isWaitingForGrade && (
+                            <Badge className="bg-sky-100 text-sky-700 hover:bg-sky-200 border-none font-bold">
+                                Menunggu Dinilai
+                            </Badge>
                         )}
                     </div>
+                </div>
+            </div>
 
-                    <div className="prose dark:prose-invert max-w-none">
-                        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 mb-4 flex items-center gap-2">
-                            <AlertCircle className="h-4 w-4" />
-                            Deskripsi Tugas
-                        </h3>
-                        <p className="whitespace-pre-wrap text-base text-gray-700 dark:text-zinc-300 leading-relaxed bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-2xl border border-border/40 italic">
-                            {assignment.deskripsi}
-                        </p>
-                    </div>
-                </CardHeader>
-            </Card>
+            <div className="container max-w-7xl mx-auto px-4">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-            {!isGraded && (
-                <Card className="rounded-2xl shadow-none border-border/60 overflow-hidden bg-white dark:bg-zinc-950">
-                    <CardHeader className="p-8 pb-0">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle className="text-xl font-bold">Pengumpulan Tugas</CardTitle>
-                                <CardDescription className="text-xs font-medium mt-1">
-                                    Pastikan file dalam format PDF atau DOCX dengan resolusi yang jelas (Maks. 10MB)
-                                </CardDescription>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-8 space-y-8">
-                        {needsRevision && (
-                            <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 p-6 rounded-2xl flex items-start gap-4 mb-4 relative overflow-hidden group">
-                                <div className="absolute top-0 left-0 w-1 h-full bg-amber-500" />
-                                <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-xl text-amber-600">
-                                    <AlertCircle className="h-5 w-5" />
-                                </div>
-                                <div>
-                                    <p className="font-black text-amber-900 dark:text-amber-100 uppercase tracking-widest text-[10px]">Perlu Revisi</p>
-                                    <p className="text-amber-800 dark:text-amber-200 text-sm mt-1 leading-relaxed font-medium">
-                                        Instruktur meminta Anda untuk melakukan revisi. Silakan unggah perbaikan Anda di bawah ini.
-                                    </p>
-                                    {submission?.feedback && (
-                                        <div className="mt-4 pt-4 border-t border-amber-200 dark:border-amber-900/40">
-                                            <p className="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase tracking-widest mb-1">Pesan Instruktur:</p>
-                                            <p className="text-sm text-amber-900/80 dark:text-amber-100/80 italic font-serif">"{submission.feedback}"</p>
+                    {/* LEft Column: Assignment Details (Sticky) */}
+                    <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
+                        <Card className="rounded-[24px] border-none shadow-xl shadow-gray-200/50 bg-white overflow-hidden">
+                            <div className="h-2 w-full bg-gradient-to-r from-violet-500 to-fuchsia-500" />
+                            <CardContent className="p-8">
+                                <h1 className="text-2xl font-black text-gray-800 leading-tight mb-4">{assignment.judul}</h1>
+
+                                <div className="flex items-center gap-4 text-sm text-gray-500 mb-8 border-b border-gray-100 pb-6">
+                                    {assignment.deadline && (
+                                        <div className="flex items-center gap-2">
+                                            <Calendar className="h-4 w-4 text-rose-500" />
+                                            <span className="font-semibold text-rose-600">
+                                                Deadline: {format(new Date(assignment.deadline), 'd MMM yyyy, HH:mm', { locale: localeId })}
+                                            </span>
                                         </div>
                                     )}
                                 </div>
+
+                                <div className="prose prose-sm prose-gray dark:prose-invert max-w-none">
+                                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                        <FileText className="h-4 w-4" />
+                                        Instruksi Pengerjaan
+                                    </h3>
+                                    <div className="text-gray-600 leading-relaxed space-y-4 bg-gray-50/50 p-6 rounded-2xl border border-gray-100/50">
+                                        {assignment.deskripsi}
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Right Column: Work Area */}
+                    <div className="lg:col-span-7 space-y-6">
+
+                        {/* Status & Feedback Area */}
+                        {needsRevision && submission?.feedback && (
+                            <div className="bg-amber-50 rounded-[24px] border border-amber-100 p-6 relative overflow-hidden">
+                                <div className="flex gap-4">
+                                    <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center shrink-0 text-amber-600">
+                                        <MessageSquare className="h-5 w-5" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="font-bold text-amber-900">Catatan dari Instruktur</h3>
+                                        <p className="text-amber-800/90 text-sm leading-relaxed italic">"{submission.feedback}"</p>
+                                    </div>
+                                </div>
                             </div>
                         )}
 
-                        {isWaitingForGrade && !file ? (
-                            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-2xl flex items-center justify-between border border-border/40 group hover:border-sky-500/30 transition-colors">
-                                <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-sky-100 dark:bg-sky-900/30 rounded-2xl text-sky-600 dark:text-sky-400">
-                                        <File className="h-8 w-8" />
+                        {isGraded && (
+                            <div className="bg-emerald-50 rounded-[24px] border border-emerald-100 p-6 relative overflow-hidden">
+                                <div className="flex gap-4 items-center">
+                                    <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center shrink-0 text-emerald-600">
+                                        <CheckCircle className="h-6 w-6" />
                                     </div>
                                     <div>
-                                        <p className="font-bold text-gray-900 dark:text-white">Tugas Terikirim</p>
-                                        <a
-                                            href={submission.url_berkas}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-xs text-sky-600 dark:text-sky-400 hover:underline font-bold mt-1 inline-block"
-                                        >
-                                            Pratonton Berkas
-                                        </a>
+                                        <h3 className="font-bold text-emerald-900">Tugas Telah Dinilai</h3>
+                                        <p className="text-emerald-800/80 text-sm">Kerja bagus! Anda telah menyelesaikan tugas ini.</p>
+                                    </div>
+                                    <div className="ml-auto text-right">
+                                        <div className="text-3xl font-black text-emerald-600">{submission.nilai}</div>
+                                        <div className="text-[10px] font-bold text-emerald-400 uppercase">Poin</div>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Dikirim Pada</span>
-                                    <p className="text-xs font-bold text-gray-700 dark:text-zinc-400">
-                                        {submission.created_at && format(new Date(submission.created_at), 'd MMM, HH:mm')}
-                                    </p>
-                                </div>
-                            </div>
-                        ) : (
-                            <div
-                                className={`group relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 cursor-pointer ${file
-                                    ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-900/50'
-                                    : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-900/50'
-                                    }`}
-                                onDragOver={(e) => e.preventDefault()}
-                                onDrop={handleDrop}
-                                onClick={() => !file && fileInputRef.current?.click()}
-                            >
-                                {file ? (
-                                    <div className="flex flex-col items-center">
-                                        <div className="p-4 bg-zinc-900 dark:bg-zinc-100 rounded-2xl text-white dark:text-zinc-900 mb-4 shadow-sm">
-                                            <File className="h-10 w-10" />
-                                        </div>
-                                        <p className="font-bold text-lg text-gray-900 dark:text-white">{file.name}</p>
-                                        <p className="text-xs font-bold text-muted-foreground mt-1 uppercase tracking-widest">
-                                            Ukuran: {(file.size / 1024 / 1024).toFixed(2)} MB
-                                        </p>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="mt-6 rounded-xl font-bold text-rose-500 hover:text-rose-600 hover:bg-rose-50"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setFile(null);
-                                            }}
-                                        >
-                                            <X className="h-4 w-4 mr-2" />
-                                            Batalkan & Ganti
-                                        </Button>
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col items-center">
-                                        <div className="p-4 bg-zinc-100 dark:bg-zinc-900 rounded-full text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 group-hover:scale-110 transition-all duration-300 mb-4 shadow-inner">
-                                            <Upload className="h-10 w-10" />
-                                        </div>
-                                        <p className="font-bold text-gray-900 dark:text-white">Seret file ke sini atau klik untuk memilih</p>
-                                        <p className="text-xs font-medium text-muted-foreground mt-2 italic">Ekstensi yang didukung: PDF, DOCX (Maks. 10MB)</p>
-                                        <input
-                                            ref={fileInputRef}
-                                            type="file"
-                                            className="hidden"
-                                            accept=".pdf,.doc,.docx"
-                                            onChange={handleFileChange}
-                                        />
+                                {submission.feedback && (
+                                    <div className="mt-4 pt-4 border-t border-emerald-200/50">
+                                        <p className="text-xs font-bold text-emerald-800 mb-1">Feedback:</p>
+                                        <p className="text-emerald-700 text-sm italic">"{submission.feedback}"</p>
                                     </div>
                                 )}
                             </div>
                         )}
 
-                        <div className="space-y-3">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Catatan Tambahan (Opsional)</Label>
-                            <Textarea
-                                placeholder="Tambahkan informasi tambahan jika diperlukan..."
-                                value={catatan}
-                                onChange={(e) => setCatatan(e.target.value)}
-                                disabled={isWaitingForGrade && !file}
-                                className="rounded-2xl border-border/40 min-h-[120px] focus-visible:ring-primary/20"
-                            />
-                        </div>
+                        {/* Submission Form */}
+                        {!isGraded && (
+                            <Card className="rounded-[24px] border-gray-100 shadow-sm overflow-hidden bg-white">
+                                <CardHeader className="px-8 pt-8 pb-4 border-b border-gray-50 flex flex-row items-center justify-between">
+                                    <div>
+                                        <CardTitle className="text-lg font-bold text-gray-800">Area Pengumpulan</CardTitle>
+                                        <p className="text-xs text-gray-500 mt-1">Format: PDF, DOCX (Maks. 10MB)</p>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-8 space-y-6">
 
-                        <Button
-                            className="w-full rounded-2xl h-12 font-black bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all duration-200 shadow-lg text-base"
-                            onClick={handleSubmit}
-                            disabled={submitMutation.isPending || (isWaitingForGrade && !file)}
-                        >
-                            {submitMutation.isPending
-                                ? 'Sedang Mengunggah...'
-                                : isWaitingForGrade && !file
-                                    ? 'Menunggu Penilaian'
-                                    : needsRevision
-                                        ? 'Kirim Revisi Tugas'
-                                        : 'Kumpulkan Tugas Sekarang'}
-                        </Button>
-                    </CardContent>
-                </Card>
-            )}
+                                    {/* Upload Zone */}
+                                    {isWaitingForGrade && !file ? (
+                                        <div className="bg-sky-50 rounded-2xl p-6 border border-sky-100 flex items-center gap-4">
+                                            <div className="p-3 bg-white rounded-xl shadow-sm text-sky-500">
+                                                <File className="h-6 w-6" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-sky-900 text-sm">File Terkirim</p>
+                                                <a
+                                                    href={submission.url_berkas}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="text-xs text-sky-600 hover:underline truncate block"
+                                                >
+                                                    Lihat berkas pengumpulan
+                                                </a>
+                                            </div>
+                                            <div className="text-xs font-bold text-sky-400 px-3 py-1 bg-white rounded-full">
+                                                Menunggu Penilaian
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div
+                                            className={`group relative border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-300 cursor-pointer ${file
+                                                ? 'border-violet-200 bg-violet-50/30'
+                                                : 'border-gray-200 hover:border-violet-400 hover:bg-violet-50/10'
+                                                }`}
+                                            onDragOver={(e) => e.preventDefault()}
+                                            onDrop={handleDrop}
+                                            onClick={() => !file && fileInputRef.current?.click()}
+                                        >
+                                            {file ? (
+                                                <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
+                                                    <div className="p-4 bg-white rounded-2xl shadow-lg shadow-violet-100 text-violet-600 mb-4 relative group-hover:scale-105 transition-transform">
+                                                        <File className="h-8 w-8" />
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setFile(null);
+                                                            }}
+                                                            className="absolute -top-2 -right-2 bg-rose-500 text-white p-1 rounded-full hover:bg-rose-600 transition-colors shadow-sm"
+                                                        >
+                                                            <X className="h-3 w-3" />
+                                                        </button>
+                                                    </div>
+                                                    <p className="font-bold text-gray-800">{file.name}</p>
+                                                    <p className="text-xs font-medium text-gray-400 mt-1 uppercase tracking-widest">
+                                                        {(file.size / 1024 / 1024).toFixed(2)} MB
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col items-center py-4">
+                                                    <div className="p-4 bg-gray-50 rounded-full text-gray-400 group-hover:bg-violet-50 group-hover:text-violet-500 transition-colors mb-4">
+                                                        <Upload className="h-8 w-8" />
+                                                    </div>
+                                                    <p className="font-bold text-gray-700 group-hover:text-violet-700 transition-colors">
+                                                        Klik untuk upload atau drag file
+                                                    </p>
+                                                    <p className="text-xs text-gray-400 mt-2">
+                                                        Dukungan file: PDF, DOC, DOCX
+                                                    </p>
+                                                    <input
+                                                        ref={fileInputRef}
+                                                        type="file"
+                                                        className="hidden"
+                                                        accept=".pdf,.doc,.docx"
+                                                        onChange={handleFileChange}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
 
-            {isGraded && (
-                <Card className="rounded-2xl shadow-none border-emerald-200/50 dark:border-emerald-900/30 bg-emerald-50/50 dark:bg-emerald-900/10 overflow-hidden relative">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500" />
-                    <CardHeader className="p-8 pb-4">
-                        <div className="flex items-center gap-3 text-emerald-700 dark:text-emerald-400">
-                            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
-                                <CheckCircle className="h-5 w-5" />
-                            </div>
-                            <CardTitle className="font-black text-xl">Hasil Penilaian</CardTitle>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-8 pt-0 space-y-6">
-                        <div className="flex justify-between items-center bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-emerald-100 dark:border-zinc-800">
-                            <div className="space-y-1">
-                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Skor Akhir</span>
-                                <p className="text-sm font-bold text-gray-500">Bagus! Tugas Anda telah dinilai.</p>
-                            </div>
-                            <span className="text-4xl font-black text-emerald-600">{submission.nilai} <span className="text-sm text-muted-foreground font-medium">/ 100</span></span>
-                        </div>
-                        {submission.feedback && (
-                            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-emerald-100 dark:border-zinc-800">
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">Feedback dari Instruktur</p>
-                                <p className="text-gray-700 dark:text-zinc-300 italic font-medium leading-relaxed">"{submission.feedback}"</p>
-                            </div>
+                                    {/* Notes Field */}
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Catatan Tambahan</Label>
+                                        <Textarea
+                                            placeholder="Tuliskan pesan untuk instruktur..."
+                                            value={catatan}
+                                            onChange={(e) => setCatatan(e.target.value)}
+                                            disabled={isWaitingForGrade && !file}
+                                            className="rounded-xl border-gray-200 bg-gray-50/50 min-h-[100px] focus:ring-violet-500/20 focus:border-violet-500 transition-all resize-none"
+                                        />
+                                    </div>
+
+                                    <Button
+                                        className="w-full rounded-xl h-12 font-bold bg-gray-900 text-white hover:bg-black shadow-lg shadow-gray-200 disabled:opacity-50 disabled:shadow-none"
+                                        onClick={handleSubmit}
+                                        disabled={submitMutation.isPending || (isWaitingForGrade && !file)}
+                                    >
+                                        {submitMutation.isPending ? (
+                                            <span className="flex items-center gap-2">
+                                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                Mengunggah...
+                                            </span>
+                                        ) : needsRevision ? (
+                                            'Kirim Revisi'
+                                        ) : isWaitingForGrade && !file ? (
+                                            'Menunggu Penilaian'
+                                        ) : (
+                                            'Kumpulkan Tugas'
+                                        )}
+                                    </Button>
+                                </CardContent>
+                            </Card>
                         )}
-                    </CardContent>
-                </Card>
-            )}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
-
