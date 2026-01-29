@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { pemberitahuan } from "@/pustaka/pemberitahuan";
 import { Button } from "@/komponen/ui/button";
 import { Label } from "@/komponen/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/komponen/ui/card";
@@ -20,12 +21,23 @@ export function AssignmentBuilder({
   const updateMutation = useUpdateAssessment();
 
   const handleSave = () => {
+    pemberitahuan.tampilkanPemuatan("Menyimpan instruksi...");
     updateMutation.mutate(
       {
         assessmentId: assessment.id,
         data: { deskripsi: instructions },
       },
-      { onSuccess: onSaveSuccess },
+      {
+        onSuccess: () => {
+          pemberitahuan.hilangkanPemuatan();
+          pemberitahuan.sukses("Instruksi tugas berhasil disimpan");
+          if (onSaveSuccess) onSaveSuccess();
+        },
+        onError: (error: any) => {
+          pemberitahuan.hilangkanPemuatan();
+          pemberitahuan.gagal(error.message || "Gagal menyimpan instruksi");
+        },
+      },
     );
   };
 

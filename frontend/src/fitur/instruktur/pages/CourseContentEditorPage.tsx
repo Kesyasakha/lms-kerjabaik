@@ -48,6 +48,8 @@ import { cn } from "@/pustaka/utils";
 
 // --- Sortable Module Item (Sidebar) ---
 
+// --- Sortable Module Item (Sidebar) ---
+
 interface SortableModuleItemProps {
   module: Module;
   isSelected: boolean;
@@ -77,7 +79,7 @@ function SortableModuleItem({
       style={style}
       onClick={() => onSelect(module)}
       className={cn(
-        "group flex items-center gap-2 rounded-lg border p-3 cursor-pointer transition-all hover:bg-accent",
+        "group flex items-center gap-2 rounded-lg border p-2 cursor-pointer transition-all hover:bg-accent",
         isSelected ? "bg-accent border-primary ring-1 ring-primary" : "bg-card",
       )}
     >
@@ -87,28 +89,28 @@ function SortableModuleItem({
         className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-foreground"
         onClick={(e) => e.stopPropagation()}
       >
-        <GripVertical className="h-4 w-4" />
+        <GripVertical className="h-3.5 w-3.5" />
       </div>
 
       <div className="flex-1 min-w-0">
-        <h4 className="font-medium text-sm truncate">{module.judul}</h4>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+        <h4 className="font-medium text-xs truncate">{module.judul}</h4>
+        <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
           <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3" /> {module.durasi_menit || 0}m
+            <Clock className="h-2.5 w-2.5" /> {module.durasi_menit || 0}m
           </span>
         </div>
       </div>
 
       <div
         className={cn(
-          "flex items-center gap-1",
+          "flex items-center gap-0.5",
           isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100",
         )}
       >
         <Button
           size="icon"
           variant="ghost"
-          className="h-7 w-7"
+          className="h-6 w-6"
           onClick={(e) => {
             e.stopPropagation();
             onEdit(module);
@@ -119,7 +121,7 @@ function SortableModuleItem({
         <Button
           size="icon"
           variant="ghost"
-          className="h-7 w-7 text-destructive hover:text-destructive"
+          className="h-6 w-6 text-destructive hover:text-destructive"
           onClick={(e) => {
             e.stopPropagation();
             onDelete(module);
@@ -129,7 +131,7 @@ function SortableModuleItem({
         </Button>
       </div>
 
-      {isSelected && <ChevronRight className="h-4 w-4 text-primary" />}
+      {isSelected && <ChevronRight className="h-3.5 w-3.5 text-primary" />}
     </div>
   );
 }
@@ -247,7 +249,7 @@ export default function CourseContentEditorPage() {
 
   if (courseLoading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         <Skeleton className="h-12 w-full" />
         <Skeleton className="h-96 w-full" />
       </div>
@@ -257,40 +259,42 @@ export default function CourseContentEditorPage() {
   if (!course) return <div>Kursus tidak ditemukan</div>;
 
   return (
-    <div className="h-[calc(100vh-100px)] flex flex-col">
+    <div className="h-[calc(100vh-80px)] flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between pb-6 border-b mb-6">
+      <div className="flex items-center justify-between pb-4 border-b mb-4">
         <div>
           <Link
             to={`/instruktur/kursus/${kursusId}`}
-            className="flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-1"
+            className="flex items-center text-xs text-muted-foreground hover:text-foreground transition-colors mb-1"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" /> Kembali ke Detail
+            <ArrowLeft className="mr-2 h-3 w-3" /> Kembali ke Detail
           </Link>
-          <h1 className="text-2xl font-bold">{course.judul}</h1>
-          <p className="text-muted-foreground">Editor Konten</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold">{course.judul}</h1>
+            <Badge variant="outline" className="text-[10px] px-2 py-0 h-5">Editor</Badge>
+          </div>
         </div>
         <div className="flex gap-2">
-          <Button onClick={handleAddModule}>
-            <Plus className="mr-2 h-4 w-4" /> Tambah Modul
+          <Button onClick={handleAddModule} size="sm" className="h-8 text-xs">
+            <Plus className="mr-2 h-3 w-3" /> Tambah Modul
           </Button>
         </div>
       </div>
 
       {/* Editor Layout */}
-      <div className="flex flex-1 gap-6 min-h-0">
+      <div className="flex flex-1 gap-4 min-h-0">
         {/* Left Sidebar: Module List */}
-        <div className="w-80 flex flex-col gap-4 overflow-y-auto pr-2">
+        <div className="w-72 flex flex-col gap-3 overflow-y-auto pr-2">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold px-1">Daftar Modul</h3>
-            <Badge variant="secondary">{modules?.length || 0}</Badge>
+            <h3 className="font-semibold px-1 text-sm">Daftar Modul</h3>
+            <Badge variant="secondary" className="text-[10px] px-1.5 h-5">{modules?.length || 0}</Badge>
           </div>
 
           <div className="flex-1 space-y-2">
             {modulesLoading ? (
               <div className="space-y-2">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-16 w-full" />
+                  <Skeleton key={i} className="h-12 w-full" />
                 ))}
               </div>
             ) : (
@@ -318,8 +322,8 @@ export default function CourseContentEditorPage() {
             )}
 
             {modules?.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-                <p className="text-sm">Belum ada modul</p>
+              <div className="text-center py-6 text-muted-foreground border-2 border-dashed rounded-lg">
+                <p className="text-xs">Belum ada modul</p>
                 <Button
                   variant="link"
                   onClick={handleAddModule}
@@ -336,23 +340,23 @@ export default function CourseContentEditorPage() {
         <div className="flex-1 bg-background rounded-lg border shadow-sm flex flex-col min-h-0">
           {activeModule ? (
             <div className="flex flex-col h-full">
-              <div className="border-b p-4 bg-muted/20">
+              <div className="border-b p-3 bg-muted/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <Badge variant="outline">Modul {activeModule.urutan}</Badge>
-                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Badge variant="outline" className="text-[10px] px-1.5 h-5">Modul {activeModule.urutan}</Badge>
+                  <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                     <Clock className="h-3 w-3" />{" "}
                     {activeModule.durasi_menit || 0} menit
                   </span>
                 </div>
-                <h2 className="text-xl font-bold">{activeModule.judul}</h2>
+                <h2 className="text-lg font-bold">{activeModule.judul}</h2>
                 {activeModule.deskripsi && (
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
                     {activeModule.deskripsi}
                   </p>
                 )}
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex-1 overflow-y-auto p-4">
                 <ModuleContentEditor
                   moduleId={activeModule.id}
                   kursusId={kursusId!}
@@ -360,10 +364,10 @@ export default function CourseContentEditorPage() {
               </div>
             </div>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8">
-              <BookOpen className="h-16 w-16 mb-4 opacity-20" />
-              <h3 className="text-lg font-semibold">Pilih Modul</h3>
-              <p>Pilih modul di sidebar kiri untuk mengelola kontennya</p>
+            <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-6">
+              <BookOpen className="h-12 w-12 mb-3 opacity-20" />
+              <h3 className="text-base font-semibold">Pilih Modul</h3>
+              <p className="text-sm">Pilih modul di sidebar kiri untuk mengelola kontennya</p>
             </div>
           )}
         </div>

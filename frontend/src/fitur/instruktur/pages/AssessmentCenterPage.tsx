@@ -150,15 +150,15 @@ export default function AssessmentCenterPage() {
 
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-1">
         <div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-lg font-bold text-gray-900 dark:text-white">
             Pusat Penilaian
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">
-            Kelola dan nilai submission dari peserta
+          <p className="text-gray-600 dark:text-gray-400 text-xs">
+            Kelola dan nilai tugas yang dikumpulkan peserta
           </p>
         </div>
 
@@ -166,14 +166,14 @@ export default function AssessmentCenterPage() {
         {submissions && submissions.count > 0 && (
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="text-sm text-muted-foreground">Progress</p>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant="secondary" className="font-mono">
-                  {submissions.data.filter(s => s.status === "pending").length} Pending
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Progres</p>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="font-mono text-[10px] h-5 px-1.5">
+                  {submissions.data.filter(s => s.status === "pending").length} Menunggu
                 </Badge>
-                <span className="text-muted-foreground">/</span>
-                <Badge variant="default" className="font-mono">
-                  {submissions.data.filter(s => s.status === "graded").length} Graded
+                <span className="text-muted-foreground text-xs">/</span>
+                <Badge variant="default" className="font-mono text-[10px] h-5 px-1.5">
+                  {submissions.data.filter(s => s.status === "graded").length} Dinilai
                 </Badge>
               </div>
             </div>
@@ -182,20 +182,22 @@ export default function AssessmentCenterPage() {
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col gap-4">
+      <Card className="border-border border shadow-sm bg-muted/30">
+        <CardContent className="p-3">
+          <div className="flex flex-col gap-3">
             {/* Search */}
-            <SearchInput
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onClear={() => setSearchQuery("")}
-              placeholder="Cari peserta, email, atau assignment..."
-              className="w-full"
-            />
+            <div className="flex items-center gap-2">
+              <SearchInput
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onClear={() => setSearchQuery("")}
+                placeholder="Cari peserta, email, atau tugas..."
+                className="w-full h-8 text-xs bg-background"
+              />
+            </div>
 
             {/* Filters Row */}
-            <div className="flex flex-col gap-4 md:flex-row">
+            <div className="flex flex-col gap-2 md:flex-row">
               <Select
                 value={filters.id_kursus || "all"}
                 onValueChange={(value) =>
@@ -206,14 +208,14 @@ export default function AssessmentCenterPage() {
                   }))
                 }
               >
-                <SelectTrigger className="w-full md:w-[250px]">
-                  <Filter className="mr-2 h-4 w-4" />
+                <SelectTrigger className="w-full md:w-[250px] h-8 text-xs bg-background">
+                  <Filter className="mr-2 h-3 w-3" />
                   <SelectValue placeholder="Pilih Kursus" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Semua Kursus</SelectItem>
+                  <SelectItem value="all" className="text-xs">Semua Kursus</SelectItem>
                   {courses?.data.map((course) => (
-                    <SelectItem key={course.id} value={course.id}>
+                    <SelectItem key={course.id} value={course.id} className="text-xs">
                       {course.judul}
                     </SelectItem>
                   ))}
@@ -230,15 +232,15 @@ export default function AssessmentCenterPage() {
                   }))
                 }
               >
-                <SelectTrigger className="w-full md:w-[200px]">
+                <SelectTrigger className="w-full md:w-[200px] h-8 text-xs bg-background">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Semua Status</SelectItem>
-                  <SelectItem value="pending">Menunggu</SelectItem>
-                  <SelectItem value="graded">Dinilai</SelectItem>
-                  <SelectItem value="rejected">Ditolak</SelectItem>
-                  <SelectItem value="revision_requested">Revisi</SelectItem>
+                  <SelectItem value="all" className="text-xs">Semua Status</SelectItem>
+                  <SelectItem value="pending" className="text-xs">Menunggu</SelectItem>
+                  <SelectItem value="graded" className="text-xs">Dinilai</SelectItem>
+                  <SelectItem value="rejected" className="text-xs">Ditolak</SelectItem>
+                  <SelectItem value="revision_requested" className="text-xs">Revisi</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -246,16 +248,16 @@ export default function AssessmentCenterPage() {
                 value={dateFilter}
                 onValueChange={handleDateFilterChange}
               >
-                <SelectTrigger className="w-full md:w-[200px]">
-                  <Calendar className="mr-2 h-4 w-4" />
+                <SelectTrigger className="w-full md:w-[200px] h-8 text-xs bg-background">
+                  <Calendar className="mr-2 h-3 w-3" />
                   <SelectValue placeholder="Waktu" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Semua Waktu</SelectItem>
-                  <SelectItem value="recent">Terbaru (3 hari)</SelectItem>
-                  <SelectItem value="today">Hari Ini</SelectItem>
-                  <SelectItem value="7days">7 Hari Terakhir</SelectItem>
-                  <SelectItem value="30days">30 Hari Terakhir</SelectItem>
+                  <SelectItem value="all" className="text-xs">Semua Waktu</SelectItem>
+                  <SelectItem value="recent" className="text-xs">Terbaru (3 hari)</SelectItem>
+                  <SelectItem value="today" className="text-xs">Hari Ini</SelectItem>
+                  <SelectItem value="7days" className="text-xs">7 Hari Terakhir</SelectItem>
+                  <SelectItem value="30days" className="text-xs">30 Hari Terakhir</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -264,61 +266,59 @@ export default function AssessmentCenterPage() {
       </Card>
 
       {/* Submissions Table */}
-      <Card>
-        <CardHeader>
+      <Card className="border-border border shadow-sm">
+        <CardHeader className="p-3 pb-0">
           <div className="flex items-center justify-between">
-            <CardTitle>Submissions</CardTitle>
+            <CardTitle className="text-sm font-bold">Data Pengumpulan</CardTitle>
             <div className="flex items-center gap-4">
-
               {submissions && submissions.count > 0 && (
-                <p className="text-sm text-muted-foreground">
-                  Total: {submissions.count} submissions
+                <p className="text-[10px] text-muted-foreground">
+                  Total: {submissions.count} data
                 </p>
               )}
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {isLoading ? (
-            <div className="space-y-3">
-              {[...Array(10)].map((_, i) => (
-                <Skeleton key={i} className="h-16 w-full" />
+            <div className="space-y-3 p-4">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full" />
               ))}
             </div>
           ) : sortedData.length > 0 ? (
             <>
-              <div className="rounded-md border border-border/60 overflow-hidden">
+              <div className="border-t border-border/60">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-muted/30 border-b hover:bg-muted/30">
-
+                    <TableRow className="bg-muted/30 border-b hover:bg-muted/30 h-8">
                       <SortableTableHeader
                         sortKey="student_name"
                         currentSortKey={sortConfig.key as string}
                         currentDirection={sortConfig.direction}
                         onSort={(key) => handleSort(key as keyof Submission)}
-                        className="py-3 font-bold text-foreground"
+                        className="py-1 px-4 font-semibold text-xs text-foreground h-8"
                       >
                         Peserta
                       </SortableTableHeader>
-                      <TableHead className="py-3 font-bold text-foreground">Kursus</TableHead>
-                      <TableHead className="py-3 font-bold text-foreground">Assignment</TableHead>
-                      <TableHead className="py-3 font-bold text-foreground">File</TableHead>
+                      <TableHead className="py-1 px-2 font-semibold text-xs text-foreground h-8">Kursus</TableHead>
+                      <TableHead className="py-1 px-2 font-semibold text-xs text-foreground h-8">Tugas</TableHead>
+                      <TableHead className="py-1 px-2 font-semibold text-xs text-foreground h-8">Berkas</TableHead>
                       <SortableTableHeader
                         sortKey="submitted_at"
                         currentSortKey={sortConfig.key as string}
                         currentDirection={sortConfig.direction}
                         onSort={(key) => handleSort(key as keyof Submission)}
-                        className="py-3 font-bold text-foreground"
+                        className="py-1 px-2 font-semibold text-xs text-foreground h-8"
                       >
-                        Submitted
+                        Waktu Kirim
                       </SortableTableHeader>
                       <SortableTableHeader
                         sortKey="status"
                         currentSortKey={sortConfig.key as string}
                         currentDirection={sortConfig.direction}
                         onSort={(key) => handleSort(key as keyof Submission)}
-                        className="py-3 font-bold text-foreground"
+                        className="py-1 px-2 font-semibold text-xs text-foreground h-8"
                       >
                         Status
                       </SortableTableHeader>
@@ -327,65 +327,57 @@ export default function AssessmentCenterPage() {
                         currentSortKey={sortConfig.key as string}
                         currentDirection={sortConfig.direction}
                         onSort={(key) => handleSort(key as keyof Submission)}
-                        className="py-3 font-bold text-foreground"
+                        className="py-1 px-2 font-semibold text-xs text-foreground h-8"
                       >
                         Nilai
                       </SortableTableHeader>
-                      <TableHead className="py-3 font-bold text-foreground px-4 text-center w-[120px]">Aksi</TableHead>
+                      <TableHead className="py-1 px-4 text-center w-[100px] h-8 font-semibold text-xs text-foreground">Aksi</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {sortedData.map((submission) => {
                       const StatusIcon = statusIcons[submission.status];
                       return (
-                        <TableRow key={submission.id} className="group hover:bg-muted/10 transition-colors border-b last:border-0">
-
-                          <TableCell className="py-2.5">
+                        <TableRow key={submission.id} className="group hover:bg-muted/10 transition-colors border-b last:border-0 h-10">
+                          <TableCell className="py-1 px-4">
                             <div>
-                              <p className="font-bold text-sm text-foreground">
+                              <p className="font-semibold text-xs text-foreground truncate max-w-[150px]">
                                 {submission.student_name}
                               </p>
-                              <p className="text-[10px] text-muted-foreground">
+                              <p className="text-[10px] text-muted-foreground truncate max-w-[150px]">
                                 {submission.student_email}
                               </p>
                             </div>
                           </TableCell>
-                          <TableCell className="max-w-[180px] py-2.5">
-                            <p className="truncate text-sm font-medium">
+                          <TableCell className="max-w-[150px] py-1 px-2">
+                            <p className="truncate text-xs font-medium" title={submission.kursus_judul}>
                               {submission.kursus_judul}
                             </p>
                           </TableCell>
-                          <TableCell className="max-w-[180px] py-2.5">
-                            <p className="truncate text-sm text-muted-foreground">
+                          <TableCell className="max-w-[150px] py-1 px-2">
+                            <p className="truncate text-xs text-muted-foreground" title={submission.assignment_title}>
                               {submission.assignment_title}
                             </p>
                           </TableCell>
-                          <TableCell className="py-2.5">
+                          <TableCell className="py-1 px-2">
                             {submission.url_berkas ? (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-7 text-xs px-2 bg-muted/50 hover:bg-muted text-primary"
-                                asChild
+                              <a
+                                href={submission.url_berkas}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 text-[10px] text-primary hover:underline"
                               >
-                                <a
-                                  href={submission.url_berkas}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-1"
-                                >
-                                  <FileText className="h-3 w-3" />
-                                  View
-                                </a>
-                              </Button>
+                                <FileText className="h-3 w-3" />
+                                <span>Lihat</span>
+                              </a>
                             ) : (
-                              <span className="text-xs text-muted-foreground italic">
-                                No file
+                              <span className="text-[10px] text-muted-foreground italic">
+                                -
                               </span>
                             )}
                           </TableCell>
-                          <TableCell className="py-2.5">
-                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <TableCell className="py-1 px-2">
+                            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                               {formatDistanceToNow(
                                 new Date(submission.submitted_at),
                                 {
@@ -395,32 +387,32 @@ export default function AssessmentCenterPage() {
                               )}
                             </div>
                           </TableCell>
-                          <TableCell className="py-2.5">
-                            <Badge variant={statusColors[submission.status]} className="text-[10px] uppercase px-2 py-0.5 h-auto font-bold shadow-none">
-                              <StatusIcon className="mr-1 h-3 w-3" />
+                          <TableCell className="py-1 px-2">
+                            <Badge variant={statusColors[submission.status]} className="text-[10px] uppercase px-1.5 py-0 h-5 font-bold shadow-none rounded-sm">
+                              <StatusIcon className="mr-1 h-2.5 w-2.5" />
                               {statusLabels[submission.status]}
                             </Badge>
                           </TableCell>
-                          <TableCell className="py-2.5">
+                          <TableCell className="py-1 px-2">
                             {submission.grade !== null ? (
-                              <span className="font-bold text-sm">
+                              <span className="font-bold text-xs text-foreground">
                                 {submission.grade}
                               </span>
                             ) : (
-                              <span className="text-muted-foreground text-xs">-</span>
+                              <span className="text-muted-foreground text-[10px]">-</span>
                             )}
                           </TableCell>
-                          <TableCell className="py-2.5 px-4 text-center">
+                          <TableCell className="py-1 px-4 text-center">
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-8 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-transparent transition-all"
+                              className="h-6 text-[10px] px-2 font-medium bg-secondary/30 hover:bg-secondary text-secondary-foreground"
                               onClick={() =>
                                 setSelectedSubmissionId(submission.id)
                               }
                             >
-                              <Eye className="mr-1.5 h-3.5 w-3.5" />
-                              Detail
+                              <Eye className="mr-1 h-3 w-3" />
+                              Nilai
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -432,9 +424,11 @@ export default function AssessmentCenterPage() {
 
               {/* Pagination */}
               {submissions && submissions.totalPages > 1 && (
-                <div className="mt-4 flex items-center justify-center gap-2">
+                <div className="p-2 border-t flex items-center justify-center gap-2">
                   <Button
                     variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
                     onClick={() =>
                       setFilters((prev) => ({
                         ...prev,
@@ -445,11 +439,13 @@ export default function AssessmentCenterPage() {
                   >
                     Sebelumnya
                   </Button>
-                  <span className="text-sm text-muted-foreground">
-                    Halaman {filters.page} dari {submissions.totalPages}
+                  <span className="text-xs text-muted-foreground">
+                    Hal am {filters.page} / {submissions.totalPages}
                   </span>
                   <Button
                     variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
                     onClick={() =>
                       setFilters((prev) => ({
                         ...prev,
@@ -467,15 +463,15 @@ export default function AssessmentCenterPage() {
               )}
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <Clock className="h-16 w-16 text-muted-foreground/50" />
-              <h3 className="mt-4 text-lg font-semibold">
-                Tidak ada submission
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Clock className="h-10 w-10 text-muted-foreground/30" />
+              <h3 className="mt-2 text-sm font-semibold">
+                Tidak ada data pengumpulan
               </h3>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 {filters.id_kursus || filters.status
                   ? "Coba ubah filter pencarian Anda"
-                  : "Belum ada submission dari peserta"}
+                  : "Belum ada pengumpulan dari peserta"}
               </p>
             </div>
           )}

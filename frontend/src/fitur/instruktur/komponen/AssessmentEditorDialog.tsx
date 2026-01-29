@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { pemberitahuan } from "@/pustaka/pemberitahuan";
 import {
   Dialog,
   DialogContent,
@@ -94,13 +95,26 @@ export function AssessmentEditorDialog({
       status,
     };
 
+    pemberitahuan.tampilkanPemuatan(assessment ? "Menyimpan perubahan..." : "Membuat asesmen...");
+
+    const onSuccess = () => {
+      pemberitahuan.hilangkanPemuatan();
+      pemberitahuan.sukses(assessment ? "Asesmen berhasil diperbarui" : "Asesmen berhasil dibuat");
+      onClose();
+    };
+
+    const onError = (error: any) => {
+      pemberitahuan.hilangkanPemuatan();
+      pemberitahuan.gagal(error.message || "Gagal menyimpan asesmen");
+    };
+
     if (assessment) {
       updateMutation.mutate(
         { assessmentId: assessment.id, data },
-        { onSuccess: onClose },
+        { onSuccess, onError },
       );
     } else {
-      createMutation.mutate({ kursusId, data }, { onSuccess: onClose });
+      createMutation.mutate({ kursusId, data }, { onSuccess, onError });
     }
   };
 

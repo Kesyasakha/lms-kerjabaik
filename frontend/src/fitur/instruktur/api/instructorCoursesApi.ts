@@ -24,8 +24,8 @@ export async function getInstructorCourses(
     .select("id, id_lembaga, role")
     .eq("auth_id", authUser.id)
     .single()) as {
-    data: { id: string; id_lembaga: string; role: string } | null;
-  };
+      data: { id: string; id_lembaga: string; role: string } | null;
+    };
 
   if (!currentUser) throw new Error("User not found");
   if (currentUser.role !== "instruktur") {
@@ -116,7 +116,7 @@ export async function getInstructorCourses(
         avg_score =
           avgData && avgData.length > 0
             ? avgData.reduce((sum, s) => sum + (s.nilai || 0), 0) /
-              avgData.length
+            avgData.length
             : null;
       }
 
@@ -169,8 +169,8 @@ export async function getInstructorCourseDetail(
     .select("id, id_lembaga, role")
     .eq("auth_id", authUser.id)
     .single()) as {
-    data: { id: string; id_lembaga: string; role: string } | null;
-  };
+      data: { id: string; id_lembaga: string; role: string } | null;
+    };
 
   if (!currentUser) throw new Error("User not found");
   if (currentUser.role !== "instruktur") {
@@ -199,13 +199,13 @@ export async function getInstructorCourseDetail(
     .from("pendaftaran_kursus")
     .select("*", { count: "exact", head: true })
     .eq("id_kursus", kursusId)
-    .eq("status", "active");
+    .eq("status", "aktif");
 
   const { count: completedStudents } = await supabase
     .from("pendaftaran_kursus")
     .select("*", { count: "exact", head: true })
     .eq("id_kursus", kursusId)
-    .eq("status", "completed");
+    .eq("status", "selesai");
 
   const completion_rate =
     totalEnrolled && totalEnrolled > 0
@@ -253,8 +253,8 @@ export async function getCourseEnrollments(kursusId: string) {
     .select("id, id_lembaga, role")
     .eq("auth_id", authUser.id)
     .single()) as {
-    data: { id: string; id_lembaga: string; role: string } | null;
-  };
+      data: { id: string; id_lembaga: string; role: string } | null;
+    };
 
   if (!currentUser) throw new Error("User not found");
   if (currentUser.role !== "instruktur") {

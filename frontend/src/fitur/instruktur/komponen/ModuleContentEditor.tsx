@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast } from "sonner";
+import { pemberitahuan } from "@/pustaka/pemberitahuan";
 import {
   DndContext,
   closestCenter,
@@ -93,13 +93,13 @@ function SortableContentItem({
   const Icon = () => {
     switch (content.tipe) {
       case "text":
-        return <FileText className="h-5 w-5 text-blue-500" />;
+        return <FileText className="h-4 w-4 text-blue-500" />;
       case "video":
-        return <Video className="h-5 w-5 text-red-500" />;
+        return <Video className="h-4 w-4 text-red-500" />;
       case "file":
-        return <File className="h-5 w-5 text-yellow-500" />;
+        return <File className="h-4 w-4 text-yellow-500" />;
       default:
-        return <FileText className="h-5 w-5" />;
+        return <FileText className="h-4 w-4" />;
     }
   };
 
@@ -107,23 +107,23 @@ function SortableContentItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="group relative flex items-center gap-3 rounded-lg border bg-card p-4 shadow-sm transition-colors hover:bg-accent/50"
+      className="group relative flex items-center gap-2 rounded-lg border bg-card p-2 shadow-sm transition-colors hover:bg-accent/50"
     >
       <div
         {...attributes}
         {...listeners}
         className="cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-foreground"
       >
-        <GripVertical className="h-5 w-5" />
+        <GripVertical className="h-4 w-4" />
       </div>
 
-      <div className="flex items-center justify-center p-2 rounded-md bg-muted">
+      <div className="flex items-center justify-center p-1.5 rounded-md bg-muted">
         <Icon />
       </div>
 
       <div className="flex-1 min-w-0">
-        <h4 className="font-medium truncate">{content.judul}</h4>
-        <p className="text-xs text-muted-foreground capitalize">
+        <h4 className="font-medium text-sm truncate">{content.judul}</h4>
+        <p className="text-[10px] text-muted-foreground capitalize">
           {content.tipe}
         </p>
       </div>
@@ -133,20 +133,20 @@ function SortableContentItem({
           <Button
             variant="ghost"
             size="sm"
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
+            className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
           >
-            <MoreVertical className="h-4 w-4" />
+            <MoreVertical className="h-3.5 w-3.5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => onEdit(content)}>
-            <Edit2 className="mr-2 h-4 w-4" /> Edit
+            <Edit2 className="mr-2 h-3.5 w-3.5" /> Edit
           </DropdownMenuItem>
           <DropdownMenuItem
             className="text-destructive focus:text-destructive"
             onClick={() => onDelete(content)}
           >
-            <Trash2 className="mr-2 h-4 w-4" /> Hapus
+            <Trash2 className="mr-2 h-3.5 w-3.5" /> Hapus
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -174,34 +174,34 @@ function AssessmentItem({
   const Icon = () => {
     switch (assessment.tipe) {
       case "kuis":
-        return <HelpCircle className="h-5 w-5 text-purple-500" />;
+        return <HelpCircle className="h-4 w-4 text-purple-500" />;
       case "tugas":
-        return <ClipboardList className="h-5 w-5 text-green-500" />;
+        return <ClipboardList className="h-4 w-4 text-green-500" />;
       case "ujian":
-        return <CheckCircle2 className="h-5 w-5 text-orange-500" />;
+        return <CheckCircle2 className="h-4 w-4 text-orange-500" />;
       default:
-        return <HelpCircle className="h-5 w-5" />;
+        return <HelpCircle className="h-4 w-4" />;
     }
   };
 
   return (
-    <div className="group relative flex items-center gap-3 rounded-lg border bg-card p-4 shadow-sm transition-colors hover:bg-accent/50">
+    <div className="group relative flex items-center gap-2 rounded-lg border bg-card p-2 shadow-sm transition-colors hover:bg-accent/50">
       {/* Assesmen belum support reorder antar tabel di MVP ini */}
       <div className="text-muted-foreground/20">
-        <GripVertical className="h-5 w-5" />
+        <GripVertical className="h-4 w-4" />
       </div>
 
-      <div className="flex items-center justify-center p-2 rounded-md bg-muted">
+      <div className="flex items-center justify-center p-1.5 rounded-md bg-muted">
         <Icon />
       </div>
 
       <div className="flex-1 min-w-0">
-        <h4 className="font-medium truncate">{assessment.judul}</h4>
+        <h4 className="font-medium text-sm truncate">{assessment.judul}</h4>
         <div className="flex items-center gap-2">
-          <p className="text-xs text-muted-foreground capitalize">
+          <p className="text-[10px] text-muted-foreground capitalize">
             {assessment.tipe === "kuis" ? "Kuis Otomatis" : "Tugas Mandiri"}
           </p>
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted border font-medium uppercase">
+          <span className="text-[10px] px-1.5 py-0 rounded-full bg-muted border font-medium uppercase">
             {assessment.status}
           </span>
         </div>
@@ -211,7 +211,7 @@ function AssessmentItem({
         <Button
           variant="outline"
           size="sm"
-          className="h-8 text-xs"
+          className="h-7 text-[10px]"
           onClick={() => onBuilder(assessment)}
         >
           {assessment.tipe === "tugas" ? "Edit Instruksi" : "Susun Soal"}
@@ -221,7 +221,7 @@ function AssessmentItem({
           <Button
             variant="default"
             size="sm"
-            className="h-8 text-xs bg-green-600 hover:bg-green-700 text-white"
+            className="h-7 text-[10px] bg-green-600 hover:bg-green-700 text-white"
             onClick={() => onPublish(assessment)}
           >
             <CheckCircle2 className="mr-1 h-3 w-3" /> Publikasikan
@@ -233,20 +233,20 @@ function AssessmentItem({
             <Button
               variant="ghost"
               size="sm"
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              <MoreVertical className="h-4 w-4" />
+              <MoreVertical className="h-3.5 w-3.5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => onEdit(assessment)}>
-              <Edit2 className="mr-2 h-4 w-4" /> Edit Pengaturan
+              <Edit2 className="mr-2 h-3.5 w-3.5" /> Edit Pengaturan
             </DropdownMenuItem>
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
               onClick={() => onDelete(assessment)}
             >
-              <Trash2 className="mr-2 h-4 w-4" /> Hapus
+              <Trash2 className="mr-2 h-3.5 w-3.5" /> Hapus
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -326,20 +326,66 @@ export function ModuleContentEditor({
     setIsDialogOpen(true);
   };
 
+  const handleDeleteContent = (content: Content) => {
+    pemberitahuan.konfirmasi(
+      "Hapus Materi?",
+      `Apakah Anda yakin ingin menghapus materi **${content.judul}**?`,
+      async () => {
+        try {
+          pemberitahuan.tampilkanPemuatan("Menghapus materi...");
+          await deleteContent.mutateAsync({
+            contentId: content.id,
+            moduleId,
+          });
+          pemberitahuan.sukses("Materi berhasil dihapus.");
+        } catch (error) {
+          pemberitahuan.gagal("Gagal menghapus materi.");
+        } finally {
+          pemberitahuan.hilangkanPemuatan();
+        }
+      }
+    );
+  };
+
+  const handleDeleteAssessment = (assessment: Assessment) => {
+    pemberitahuan.konfirmasi(
+      "Hapus Asesmen?",
+      `Apakah Anda yakin ingin menghapus asesmen **${assessment.judul}**?`,
+      async () => {
+        try {
+          pemberitahuan.tampilkanPemuatan("Menghapus asesmen...");
+          await deleteAssessment.mutateAsync({
+            assessmentId: assessment.id,
+            moduleId,
+            kursusId,
+          });
+          pemberitahuan.sukses("Asesmen berhasil dihapus.");
+        } catch (error) {
+          pemberitahuan.gagal("Gagal menghapus asesmen.");
+        } finally {
+          pemberitahuan.hilangkanPemuatan();
+        }
+      }
+    );
+  };
+
   const handleSave = async () => {
     if (!title) {
-      toast.error("Judul materi wajib diisi");
+      pemberitahuan.gagal("Judul materi wajib diisi");
       return;
     }
 
     if (contentType === "video" && !body) {
-      toast.error("Link video wajib diisi");
+      pemberitahuan.gagal("Link video wajib diisi");
       return;
     }
 
     if (isSaving) return;
 
     setIsSaving(true);
+    pemberitahuan.tampilkanPemuatan(
+      editingContent ? "Menyimpan perubahan..." : "Menambahkan materi..."
+    );
     try {
       const data: CreateContentData = {
         tipe: contentType,
@@ -350,17 +396,22 @@ export function ModuleContentEditor({
 
       if (editingContent) {
         await updateContent.mutateAsync({ contentId: editingContent.id, data });
+        pemberitahuan.sukses("Materi berhasil diperbarui");
       } else {
         await createContent.mutateAsync({ moduleId, data });
+        pemberitahuan.sukses("Materi baru berhasil ditambahkan");
       }
 
       setIsDialogOpen(false);
       resetForm();
     } catch (error: any) {
       console.error("Failed to save content in handleSave:", error);
-      toast.error(error?.message || "Terjadi kesalahan saat menyimpan materi");
+      pemberitahuan.gagal(
+        error?.message || "Terjadi kesalahan saat menyimpan materi"
+      );
     } finally {
       setIsSaving(false);
+      pemberitahuan.hilangkanPemuatan();
     }
   };
 
@@ -374,18 +425,32 @@ export function ModuleContentEditor({
         moduleId,
         contentIds: newOrder.map((c) => c.id),
       });
+      pemberitahuan.sukses("Urutan materi berhasil diperbarui");
     }
   };
 
   const handlePublishAssessment = async (assessment: Assessment) => {
-    try {
-      await updateAssessment.mutateAsync({
-        assessmentId: assessment.id,
-        data: { status: "published" },
-      });
-    } catch (error) {
-      console.error("Failed to publish assessment:", error);
-    }
+    pemberitahuan.konfirmasi(
+      "Publikasikan Asesmen?",
+      `Anda akan mempublikasikan **${assessment.judul}**. Siswa akan dapat melihat dan mengerjakan asesmen ini. Lanjutkan?`,
+      async () => {
+        try {
+          pemberitahuan.tampilkanPemuatan("Mempublikasikan...");
+          await updateAssessment.mutateAsync({
+            assessmentId: assessment.id,
+            data: { status: "published" },
+          });
+          pemberitahuan.sukses("Asesmen berhasil dipublikasikan.");
+        } catch (error) {
+          console.error("Failed to publish assessment:", error);
+          pemberitahuan.gagal("Gagal mempublikasikan asesmen.");
+        } finally {
+          pemberitahuan.hilangkanPemuatan();
+        }
+      },
+      undefined,
+      "Ya, Publikasikan",
+    );
   };
 
   const isLoading = isContentsLoading || isAssessmentsLoading;
@@ -399,42 +464,46 @@ export function ModuleContentEditor({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* aksi Bar */}
-      <div className="flex flex-wrap gap-2 pb-4 border-b">
+      <div className="flex flex-wrap gap-2 pb-3 border-b">
         <Button
           variant="outline"
           size="sm"
+          className="h-8 text-xs"
           onClick={() => handleOpenCreate("text")}
         >
-          <FileText className="mr-2 h-4 w-4 text-blue-500" /> Teks
+          <FileText className="mr-2 h-3.5 w-3.5 text-blue-500" /> Teks
         </Button>
         <Button
           variant="outline"
           size="sm"
+          className="h-8 text-xs"
           onClick={() => handleOpenCreate("video")}
         >
-          <Video className="mr-2 h-4 w-4 text-red-500" /> Video
+          <Video className="mr-2 h-3.5 w-3.5 text-red-500" /> Video
         </Button>
         <Button
           variant="outline"
           size="sm"
+          className="h-8 text-xs"
           onClick={() => {
             setEditingAssessment(null);
             setIsAssessmentDialogOpen(true);
           }}
         >
-          <HelpCircle className="mr-2 h-4 w-4 text-purple-500" /> Kuis
+          <HelpCircle className="mr-2 h-3.5 w-3.5 text-purple-500" /> Kuis
         </Button>
         <Button
           variant="outline"
           size="sm"
+          className="h-8 text-xs"
           onClick={() => {
             setEditingAssessment(null);
             setIsAssessmentDialogOpen(true);
           }}
         >
-          <ClipboardList className="mr-2 h-4 w-4 text-green-500" /> Tugas
+          <ClipboardList className="mr-2 h-3.5 w-3.5 text-green-500" /> Tugas
         </Button>
       </div>
 
@@ -458,9 +527,7 @@ export function ModuleContentEditor({
                         key={content.id}
                         content={content}
                         onEdit={handleOpenEdit}
-                        onDelete={(c) =>
-                          deleteContent.mutate({ contentId: c.id, moduleId })
-                        }
+                        onDelete={handleDeleteContent}
                       />
                     ))}
                   </div>
@@ -469,8 +536,8 @@ export function ModuleContentEditor({
             )}
 
             {assessments && assessments.length > 0 && (
-              <div className="space-y-2 pt-4">
-                <h5 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">
+              <div className="space-y-2 pt-2">
+                <h5 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-1">
                   Kuis & Tugas
                 </h5>
                 {assessments.map((assessment) => (
@@ -486,22 +553,16 @@ export function ModuleContentEditor({
                       setIsBuilderOpen(true);
                     }}
                     onPublish={handlePublishAssessment}
-                    onDelete={(a) =>
-                      deleteAssessment.mutate({
-                        assessmentId: a.id,
-                        moduleId,
-                        kursusId,
-                      })
-                    }
+                    onDelete={handleDeleteAssessment}
                   />
                 ))}
               </div>
             )}
           </>
         ) : (
-          <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg bg-muted/20">
-            <p>Belum ada konten di modul ini.</p>
-            <p className="text-sm">
+          <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg bg-muted/20">
+            <p className="text-sm">Belum ada konten di modul ini.</p>
+            <p className="text-xs">
               Tambahkan materi atau asesmen untuk memulai.
             </p>
           </div>

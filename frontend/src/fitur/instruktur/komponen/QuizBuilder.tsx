@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { pemberitahuan } from "@/pustaka/pemberitahuan";
 import { Button } from "@/komponen/ui/button";
 import { Input } from "@/komponen/ui/input";
 import { Label } from "@/komponen/ui/label";
@@ -95,9 +96,20 @@ export function QuizBuilder({ assessmentId, onSaveSuccess }: QuizBuilderProps) {
   };
 
   const handleSave = () => {
+    pemberitahuan.tampilkanPemuatan("Menyimpan pertanyaan...");
     saveMutation.mutate(
       { assessmentId, questions },
-      { onSuccess: onSaveSuccess },
+      {
+        onSuccess: () => {
+          pemberitahuan.hilangkanPemuatan();
+          pemberitahuan.sukses("Pertanyaan berhasil disimpan");
+          if (onSaveSuccess) onSaveSuccess();
+        },
+        onError: (error: any) => {
+          pemberitahuan.hilangkanPemuatan();
+          pemberitahuan.gagal(error.message || "Gagal menyimpan pertanyaan");
+        },
+      },
     );
   };
 
