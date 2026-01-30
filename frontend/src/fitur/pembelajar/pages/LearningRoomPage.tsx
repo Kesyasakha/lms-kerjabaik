@@ -6,7 +6,8 @@ import {
     Menu,
     CheckCircle,
     ArrowLeft,
-    Clock
+    Clock,
+    FileText
 } from 'lucide-react';
 import { Button } from '@/komponen/ui/button';
 import { Card } from '@/komponen/ui/card';
@@ -110,10 +111,13 @@ export function LearningRoomPage() {
 
     if (!course) return null;
 
+    const isFirstMaterial = allMaterials.findIndex(m => m.id === currentMaterialId) === 0;
+    const isLastMaterial = allMaterials.findIndex(m => m.id === currentMaterialId) === allMaterials.length - 1;
+
     return (
-        <div className="flex h-screen bg-background overflow-hidden">
-            {/* Sidebar for Desktop */}
-            <div className="hidden lg:block w-80 h-full border-r">
+        <div className="flex h-screen bg-gray-50/50 dark:bg-zinc-950 overflow-hidden">
+            {/* Sidebar for Desktop - Made slimmer (w-72) */}
+            <div className="hidden lg:block w-72 h-full border-r bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800">
                 <LearningSidebar
                     course={course}
                     progress={progress || []}
@@ -123,17 +127,17 @@ export function LearningRoomPage() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col h-full overflow-hidden">
-                {/* Header */}
-                <header className="h-[72px] border-b flex items-center justify-between px-6 bg-white dark:bg-zinc-950/50 backdrop-blur-md sticky top-0 z-20 shadow-sm">
-                    <div className="flex items-center gap-4 flex-1 min-w-0">
+            <div className="relative flex-1 flex flex-col h-full overflow-hidden">
+                {/* Header - Compact */}
+                <header className="h-16 border-b flex items-center justify-between px-4 sm:px-6 bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 sticky top-0 z-20">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
                         <Sheet>
                             <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="lg:hidden shrink-0">
+                                <Button variant="ghost" size="icon" className="lg:hidden shrink-0 h-9 w-9">
                                     <Menu className="h-5 w-5" />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="left" className="p-0 w-80">
+                            <SheetContent side="left" className="p-0 w-72">
                                 <LearningSidebar
                                     course={course}
                                     progress={progress || []}
@@ -144,40 +148,39 @@ export function LearningRoomPage() {
                                 />
                             </SheetContent>
                         </Sheet>
-
+                        
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="gap-2 shrink-0 font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-200 rounded-xl px-3"
-                            onClick={() => navigate('/pembelajar/dashboard')}
+                            className="h-9 gap-2 shrink-0 font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-2"
+                            onClick={() => navigate(courseId ? `/pembelajar/kursus/${courseId}` : '/pembelajar/dashboard')}
                         >
                             <ArrowLeft className="h-4 w-4" />
                             <span className="hidden sm:inline">Kembali</span>
                         </Button>
 
-                        <Separator orientation="vertical" className="h-6 mx-2 hidden sm:block" />
+                        <Separator orientation="vertical" className="h-5 mx-1 hidden sm:block bg-gray-200 dark:bg-zinc-700" />
 
                         <div className="flex flex-col min-w-0">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 truncate">Sedang Dipelajari</span>
-                            <h1 className="font-bold text-sm sm:text-base truncate text-gray-900 dark:text-white leading-tight">
+                            <h1 className="font-semibold text-sm sm:text-base truncate text-gray-900 dark:text-white leading-tight">
                                 {currentMaterial?.judul}
                             </h1>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3 ml-4">
+                    <div className="flex items-center gap-2 ml-4">
                         <Button
                             variant="outline"
                             size="sm"
-                            className="rounded-xl font-bold h-9 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-200 shadow-none"
+                            className="h-8 rounded-lg text-xs font-medium px-3 border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800"
                             onClick={handlePrevious}
                             disabled={allMaterials.findIndex(m => m.id === currentMaterialId) === 0}
                         >
-                            <ChevronLeft className="h-4 w-4 sm:mr-1" />
-                            <span className="hidden sm:inline">Kembali</span>
+                            <ChevronLeft className="h-3.5 w-3.5 sm:mr-1" />
+                            <span className="hidden sm:inline">Sebelumnya</span>
                         </Button>
                         <Button
-                            className="rounded-xl font-bold h-9 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all duration-200 shadow-sm"
+                            className="h-8 rounded-lg text-xs font-medium px-3 bg-gray-900 hover:bg-black text-white dark:bg-white dark:text-black dark:hover:bg-gray-100"
                             size="sm"
                             onClick={() => {
                                 handleComplete();
@@ -185,19 +188,19 @@ export function LearningRoomPage() {
                             }}
                             disabled={allMaterials.findIndex(m => m.id === currentMaterialId) === allMaterials.length - 1}
                         >
-                            <span className="hidden sm:inline">Materi Selanjutnya</span>
-                            <ChevronRight className="h-4 w-4 sm:ml-1" />
+                            <span className="hidden sm:inline">Selanjutnya</span>
+                            <ChevronRight className="h-3.5 w-3.5 sm:ml-1" />
                         </Button>
                     </div>
                 </header>
 
-                {/* Content Area */}
-                <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-zinc-50/50 dark:bg-zinc-950/20">
-                    <div className="max-w-4xl mx-auto space-y-8">
+                {/* Content Area - Reduced Padding */}
+                <div className="flex-1 overflow-y-auto w-full">
+                    <div className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6 pb-24">
                         {currentMaterial ? (
                             <>
                                 {currentMaterial.tipe === 'video' && currentMaterial.url_berkas ? (
-                                    <div className="rounded-2xl overflow-hidden shadow-2xl shadow-primary/5 bg-black ring-1 ring-white/10 aspect-video">
+                                    <div className="rounded-xl overflow-hidden bg-black aspect-video shadow-lg ring-1 ring-black/10">
                                         {(currentMaterial.url_berkas.includes('youtube.com') || currentMaterial.url_berkas.includes('youtu.be')) ? (
                                             <iframe
                                                 src={currentMaterial.url_berkas.includes('watch?v=')
@@ -218,77 +221,77 @@ export function LearningRoomPage() {
                                         )}
                                     </div>
                                 ) : currentMaterial.tipe === 'teks' && currentMaterial.konten ? (
-                                    <Card className="rounded-2xl p-8 md:p-12 shadow-none border-border/60 bg-white dark:bg-zinc-900 overflow-hidden relative">
-                                        <div className="absolute top-0 left-0 w-1 h-full bg-primary/20" />
+                                    <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 sm:p-10 shadow-sm border border-gray-100 dark:border-zinc-800">
                                         <TextContent content={currentMaterial.konten} />
-                                        <div className="mt-12 flex justify-center border-t pt-8">
-                                            <Button
-                                                className="rounded-xl font-bold px-8 h-11"
-                                                onClick={handleComplete}
-                                            >
-                                                <CheckCircle className="h-4 w-4 mr-2" />
-                                                Saya Mengerti & Tandai Selesai
-                                            </Button>
-                                        </div>
-                                    </Card>
+                                    </div>
                                 ) : currentMaterial.tipe === 'dokumen' && currentMaterial.url_berkas ? (
-                                    <Card className="rounded-2xl p-4 shadow-none border-border/60 bg-white dark:bg-zinc-900 overflow-hidden">
-                                        <div className="aspect-[3/4] w-full bg-muted rounded-xl overflow-hidden ring-1 ring-black/5">
+                                    <Card className="rounded-xl p-4 shadow-none border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+                                        <div className="aspect-[3/4] w-full bg-gray-100 dark:bg-zinc-800 rounded-lg overflow-hidden">
                                             <iframe
                                                 src={currentMaterial.url_berkas}
                                                 className="w-full h-full"
                                                 title={currentMaterial.judul}
                                             />
                                         </div>
-                                        <div className="mt-4 flex justify-between items-center p-2">
-                                            <p className="text-sm font-medium text-muted-foreground italic">Gunakan kontrol di atas untuk membaca dokumen</p>
-                                            <Button
-                                                className="rounded-xl font-bold h-10 px-6"
-                                                onClick={handleComplete}
-                                            >
-                                                <CheckCircle className="h-4 w-4 mr-2" />
-                                                Tandai Selesai
-                                            </Button>
+                                        <div className="mt-4 flex justify-between items-center px-1">
+                                            <p className="text-xs text-muted-foreground italic">Scroll untuk membaca dokumen</p>
                                         </div>
                                     </Card>
                                 ) : (
-                                    <div className="flex flex-col items-center justify-center h-80 bg-muted/30 rounded-2xl border-2 border-dashed border-muted">
-                                        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                                            <Menu className="h-8 w-8 text-muted-foreground/30" />
+                                    <div className="flex flex-col items-center justify-center h-64 bg-gray-50 dark:bg-zinc-900/50 rounded-2xl border border-dashed border-gray-200 dark:border-zinc-800">
+                                        <div className="w-12 h-12 bg-gray-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-3">
+                                            <FileText className="h-6 w-6 text-gray-400" />
                                         </div>
-                                        <p className="text-muted-foreground font-bold">Konten tidak didukung atau kosong</p>
+                                        <p className="text-sm text-gray-500 font-medium">Konten tidak tersedia</p>
                                     </div>
                                 )}
 
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-8 border-t border-muted">
-                                    <div className="space-y-2">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-4">
+                                    <div className="space-y-1.5">
                                         <div className="flex items-center gap-2">
-                                            <Badge variant="outline" className="rounded-full font-bold text-[10px] uppercase tracking-wider bg-primary/5 text-primary border-none px-3">
-                                                Materi {currentMaterial.tipe}
+                                            <Badge variant="secondary" className="rounded-md font-medium text-[10px] uppercase tracking-wider h-5 px-2">
+                                                {currentMaterial.tipe}
                                             </Badge>
                                             {progress?.find(p => p.id_materi === currentMaterial.id)?.status === 'selesai' && (
-                                                <Badge className="bg-emerald-50 text-emerald-700 border-none rounded-full shadow-none font-bold text-[10px] px-3">
+                                                <Badge className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900 rounded-md font-medium text-[10px] h-5 px-2 shadow-none">
                                                     Selesai
                                                 </Badge>
                                             )}
                                         </div>
-                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{currentMaterial.judul}</h2>
+                                        <h2 className="text-xl font-bold text-gray-900 dark:text-white leading-snug">{currentMaterial.judul}</h2>
                                         {currentMaterial.durasi_menit && (
-                                            <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                                                <Clock className="h-4 w-4" />
-                                                Estimasi waktu belajar: {currentMaterial.durasi_menit} menit
+                                            <p className="text-xs font-medium text-gray-500 flex items-center gap-1.5">
+                                                <Clock className="h-3.5 w-3.5" />
+                                                {currentMaterial.durasi_menit} menit
                                             </p>
                                         )}
                                     </div>
                                 </div>
+                                
+                                {/* Bottom Navigation - Only for Last Material */}
+                                {isLastMaterial && (
+                                    <div className="flex items-center justify-end pt-8 border-t border-gray-100 dark:border-zinc-800 mt-2">
+                                        <Button
+                                            className="rounded-xl font-bold h-12 bg-gray-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-black dark:hover:bg-white hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-gray-200/50 dark:shadow-zinc-900/50 w-full sm:w-auto px-8"
+                                            size="lg"
+                                            onClick={async () => {
+                                                await handleComplete();
+                                                navigate(courseId ? `/pembelajar/kursus/${courseId}` : '/pembelajar/dashboard');
+                                            }}
+                                        >
+                                            <CheckCircle className="h-4 w-4 mr-2" />
+                                            Selesai & Keluar
+                                        </Button>
+                                    </div>
+                                )}
                             </>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-20 text-center">
-                                <div className="w-20 h-20 bg-muted/50 rounded-full flex items-center justify-center mb-6 animate-pulse">
-                                    <ArrowLeft className="h-10 w-10 text-muted-foreground/20" />
+                                <div className="w-16 h-16 bg-gray-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-4">
+                                    <ArrowLeft className="h-8 w-8 text-gray-400" />
                                 </div>
-                                <h3 className="text-xl font-bold">Pilih materi untuk mulai belajar</h3>
-                                <p className="text-muted-foreground mt-2 max-w-sm">Gunakan bar samping untuk menavigasi modul dan materi yang tersedia dalam kursus ini.</p>
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Pilih materi</h3>
+                                <p className="text-sm text-gray-500 mt-1">Pilih materi dari sidebar di sebelah kiri.</p>
                             </div>
                         )}
                     </div>
