@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/komponen/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/komponen/ui/card';
-import { Badge } from '@/komponen/ui/badge';
+
 import { Textarea } from '@/komponen/ui/textarea';
 import { Label } from '@/komponen/ui/label';
 import { Skeleton } from '@/komponen/ui/skeleton';
@@ -153,8 +153,8 @@ export function AssignmentDetailPage() {
     return (
         <div className="min-h-screen bg-zinc-50/50 pb-12">
             {/* Minimalist Header */}
-            <div className="sticky top-0 z-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-gray-100 shadow-sm mb-8">
-                <div className="container max-w-7xl mx-auto px-4 py-3">
+            <div className="sticky top-0 z-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-gray-100 shadow-sm mb-6">
+                <div className="container max-w-6xl mx-auto px-4 py-3">
                     <div className="flex items-center gap-4">
                         <Button
                             variant="ghost"
@@ -166,57 +166,58 @@ export function AssignmentDetailPage() {
                         </Button>
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-0.5">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-violet-500 bg-violet-50 px-2 py-0.5 rounded-md">Project</span>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">{assignment.asesmen?.kursus?.judul}</span>
+                                <span className="text-[10px] font-bold text-violet-600 uppercase tracking-wider">Project</span>
+                                <span className="text-[10px] font-medium text-gray-400">/</span>
+                                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider truncate">{assignment.asesmen?.kursus?.judul}</span>
                             </div>
-                            <h1 className="text-sm font-bold text-gray-900 truncate">{assignment.judul}</h1>
+                            <h1 className="text-base font-bold text-gray-900 truncate leading-tight">{assignment.judul}</h1>
                         </div>
                         {isGraded && (
-                            <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-none font-bold">
-                                Nilai: {submission.nilai}/100
-                            </Badge>
+                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100">
+                                <CheckCircle className="h-3.5 w-3.5" />
+                                <span className="text-[10px] font-bold">Nilai: {submission.nilai}/100</span>
+                            </div>
                         )}
                         {needsRevision && (
-                            <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-200 border-none font-bold">
-                                Perlu Revisi
-                            </Badge>
+                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg border border-amber-100">
+                                <AlertCircle className="h-3.5 w-3.5" />
+                                <span className="text-[10px] font-bold">Perlu Revisi</span>
+                            </div>
                         )}
                         {isWaitingForGrade && (
-                            <Badge className="bg-sky-100 text-sky-700 hover:bg-sky-200 border-none font-bold">
-                                Menunggu Dinilai
-                            </Badge>
+                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-sky-50 text-sky-700 rounded-lg border border-sky-100">
+                                <Clock className="h-3.5 w-3.5" />
+                                <span className="text-[10px] font-bold">Menunggu Dinilai</span>
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
 
-            <div className="container max-w-7xl mx-auto px-4">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="container max-w-6xl mx-auto px-4">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-                    {/* LEft Column: Assignment Details (Sticky) */}
-                    <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
-                        <Card className="rounded-[24px] border-none shadow-xl shadow-gray-200/50 bg-white overflow-hidden">
-                            <div className="h-2 w-full bg-gradient-to-r from-violet-500 to-fuchsia-500" />
-                            <CardContent className="p-8">
-                                <h1 className="text-2xl font-black text-gray-800 leading-tight mb-4">{assignment.judul}</h1>
-
-                                <div className="flex items-center gap-4 text-sm text-gray-500 mb-8 border-b border-gray-100 pb-6">
+                    {/* Left Column: Assignment Details */}
+                    <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-20">
+                        <Card className="rounded-2xl border-gray-200 shadow-sm bg-white overflow-hidden">
+                            <CardContent className="p-6">
+                                <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-50">
+                                    <h2 className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                                        <FileText className="h-4 w-4 text-violet-500" />
+                                        Detail Tugas
+                                    </h2>
                                     {assignment.deadline && (
-                                        <div className="flex items-center gap-2">
-                                            <Calendar className="h-4 w-4 text-rose-500" />
-                                            <span className="font-semibold text-rose-600">
-                                                Deadline: {format(new Date(assignment.deadline), 'd MMM yyyy, HH:mm', { locale: localeId })}
+                                        <div className="flex items-center gap-1.5 text-[10px] text-rose-600 bg-rose-50 px-2 py-1 rounded-md">
+                                            <Calendar className="h-3 w-3" />
+                                            <span className="font-bold">
+                                                {format(new Date(assignment.deadline), 'd MMM yyyy, HH:mm', { locale: localeId })}
                                             </span>
                                         </div>
                                     )}
                                 </div>
 
                                 <div className="prose prose-sm prose-gray dark:prose-invert max-w-none">
-                                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                        <FileText className="h-4 w-4" />
-                                        Instruksi Pengerjaan
-                                    </h3>
-                                    <div className="text-gray-600 leading-relaxed space-y-4 bg-gray-50/50 p-6 rounded-2xl border border-gray-100/50">
+                                    <div className="text-xs text-gray-600 leading-relaxed space-y-3">
                                         {assignment.deskripsi}
                                     </div>
                                 </div>
@@ -225,118 +226,109 @@ export function AssignmentDetailPage() {
                     </div>
 
                     {/* Right Column: Work Area */}
-                    <div className="lg:col-span-7 space-y-6">
+                    <div className="lg:col-span-7 space-y-4">
 
                         {/* Status & Feedback Area */}
                         {needsRevision && submission?.feedback && (
-                            <div className="bg-amber-50 rounded-[24px] border border-amber-100 p-6 relative overflow-hidden">
-                                <div className="flex gap-4">
-                                    <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center shrink-0 text-amber-600">
-                                        <MessageSquare className="h-5 w-5" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <h3 className="font-bold text-amber-900">Catatan dari Instruktur</h3>
-                                        <p className="text-amber-800/90 text-sm leading-relaxed italic">"{submission.feedback}"</p>
+                            <div className="bg-amber-50 rounded-2xl border border-amber-100 p-5">
+                                <div className="flex gap-3">
+                                    <MessageSquare className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                                    <div className="space-y-1">
+                                        <h3 className="text-xs font-bold text-amber-900 uppercase tracking-wide">Instruksi Revisi</h3>
+                                        <p className="text-amber-800/90 text-xs leading-relaxed italic">"{submission.feedback}"</p>
                                     </div>
                                 </div>
                             </div>
                         )}
 
                         {isGraded && (
-                            <div className="bg-emerald-50 rounded-[24px] border border-emerald-100 p-6 relative overflow-hidden">
-                                <div className="flex gap-4 items-center">
-                                    <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center shrink-0 text-emerald-600">
-                                        <CheckCircle className="h-6 w-6" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-emerald-900">Tugas Telah Dinilai</h3>
-                                        <p className="text-emerald-800/80 text-sm">Kerja bagus! Anda telah menyelesaikan tugas ini.</p>
-                                    </div>
-                                    <div className="ml-auto text-right">
-                                        <div className="text-3xl font-black text-emerald-600">{submission.nilai}</div>
-                                        <div className="text-[10px] font-bold text-emerald-400 uppercase">Poin</div>
-                                    </div>
+                            <div className="bg-emerald-50 rounded-2xl border border-emerald-100 p-5 flex items-center gap-4">
+                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shrink-0 text-emerald-600 shadow-sm">
+                                    <CheckCircle className="h-5 w-5" />
                                 </div>
-                                {submission.feedback && (
-                                    <div className="mt-4 pt-4 border-t border-emerald-200/50">
-                                        <p className="text-xs font-bold text-emerald-800 mb-1">Feedback:</p>
-                                        <p className="text-emerald-700 text-sm italic">"{submission.feedback}"</p>
-                                    </div>
-                                )}
+                                <div className="flex-1">
+                                    <h3 className="text-sm font-bold text-emerald-900">Selesai & Dinilai</h3>
+                                    {submission.feedback && (
+                                        <p className="text-emerald-700 text-xs mt-1">"{submission.feedback}"</p>
+                                    )}
+                                </div>
+                                <div className="text-center px-4 py-2 bg-white rounded-xl shadow-sm border border-emerald-100">
+                                    <div className="text-xl font-black text-emerald-600">{submission.nilai}</div>
+                                    <div className="text-[9px] font-bold text-emerald-400 uppercase">Poin</div>
+                                </div>
                             </div>
                         )}
 
                         {/* Submission Form */}
                         {!isGraded && (
-                            <Card className="rounded-[24px] border-gray-100 shadow-sm overflow-hidden bg-white">
-                                <CardHeader className="px-8 pt-8 pb-4 border-b border-gray-50 flex flex-row items-center justify-between">
+                            <Card className="rounded-2xl border-gray-200 shadow-sm overflow-hidden bg-white">
+                                <CardHeader className="px-6 pt-6 pb-3 border-b border-gray-50 flex flex-row items-center justify-between">
                                     <div>
-                                        <CardTitle className="text-lg font-bold text-gray-800">Area Pengumpulan</CardTitle>
-                                        <p className="text-xs text-gray-500 mt-1">Format: PDF, DOCX (Maks. 10MB)</p>
+                                        <CardTitle className="text-sm font-bold text-gray-800">Upload Pekerjaan</CardTitle>
+                                        <p className="text-[10px] text-gray-400 mt-0.5">Kirim file PDF/DOCX (Max 10MB)</p>
                                     </div>
                                 </CardHeader>
-                                <CardContent className="p-8 space-y-6">
+                                <CardContent className="p-6 space-y-5">
 
                                     {/* Upload Zone */}
                                     {isWaitingForGrade && !file ? (
-                                        <div className="bg-sky-50 rounded-2xl p-6 border border-sky-100 flex items-center gap-4">
-                                            <div className="p-3 bg-white rounded-xl shadow-sm text-sky-500">
-                                                <File className="h-6 w-6" />
+                                        <div className="bg-sky-50 rounded-xl p-4 border border-sky-100 flex items-center gap-3">
+                                            <div className="p-2 bg-white rounded-lg shadow-sm text-sky-500">
+                                                <File className="h-5 w-5" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-bold text-sky-900 text-sm">File Terkirim</p>
+                                                <p className="font-bold text-sky-900 text-xs">File Terkirim</p>
                                                 <a
                                                     href={submission.url_berkas}
                                                     target="_blank"
                                                     rel="noreferrer"
-                                                    className="text-xs text-sky-600 hover:underline truncate block"
+                                                    className="text-[10px] text-sky-600 hover:underline truncate block"
                                                 >
-                                                    Lihat berkas pengumpulan
+                                                    Lihat dokumen anda
                                                 </a>
                                             </div>
-                                            <div className="text-xs font-bold text-sky-400 px-3 py-1 bg-white rounded-full">
+                                            <div className="text-[10px] font-bold text-sky-400 px-2 py-1 bg-white rounded-md border border-sky-100">
                                                 Menunggu Penilaian
                                             </div>
                                         </div>
                                     ) : (
                                         <div
-                                            className={`group relative border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-300 cursor-pointer ${file
+                                            className={`group relative border border-dashed rounded-xl p-6 text-center transition-all duration-300 cursor-pointer ${file
                                                 ? 'border-violet-200 bg-violet-50/30'
-                                                : 'border-gray-200 hover:border-violet-400 hover:bg-violet-50/10'
+                                                : 'border-gray-300 hover:border-violet-400 hover:bg-violet-50/10'
                                                 }`}
                                             onDragOver={(e) => e.preventDefault()}
                                             onDrop={handleDrop}
                                             onClick={() => !file && fileInputRef.current?.click()}
                                         >
                                             {file ? (
-                                                <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
-                                                    <div className="p-4 bg-white rounded-2xl shadow-lg shadow-violet-100 text-violet-600 mb-4 relative group-hover:scale-105 transition-transform">
-                                                        <File className="h-8 w-8" />
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setFile(null);
-                                                            }}
-                                                            className="absolute -top-2 -right-2 bg-rose-500 text-white p-1 rounded-full hover:bg-rose-600 transition-colors shadow-sm"
-                                                        >
-                                                            <X className="h-3 w-3" />
-                                                        </button>
+                                                <div className="flex items-center gap-3 text-left">
+                                                    <div className="p-2.5 bg-white rounded-xl shadow-sm border border-violet-100 text-violet-600">
+                                                        <File className="h-5 w-5" />
                                                     </div>
-                                                    <p className="font-bold text-gray-800">{file.name}</p>
-                                                    <p className="text-xs font-medium text-gray-400 mt-1 uppercase tracking-widest">
-                                                        {(file.size / 1024 / 1024).toFixed(2)} MB
-                                                    </p>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-bold text-gray-800 text-xs truncate">{file.name}</p>
+                                                        <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">
+                                                            {(file.size / 1024 / 1024).toFixed(2)} MB
+                                                        </p>
+                                                    </div>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setFile(null);
+                                                        }}
+                                                        className="p-1.5 hover:bg-rose-50 text-gray-400 hover:text-rose-500 rounded-lg transition-colors"
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </button>
                                                 </div>
                                             ) : (
-                                                <div className="flex flex-col items-center py-4">
-                                                    <div className="p-4 bg-gray-50 rounded-full text-gray-400 group-hover:bg-violet-50 group-hover:text-violet-500 transition-colors mb-4">
-                                                        <Upload className="h-8 w-8" />
+                                                <div className="flex flex-col items-center py-2">
+                                                    <div className="p-2.5 bg-gray-100 rounded-full text-gray-500 group-hover:bg-violet-100 group-hover:text-violet-600 transition-colors mb-2">
+                                                        <Upload className="h-5 w-5" />
                                                     </div>
-                                                    <p className="font-bold text-gray-700 group-hover:text-violet-700 transition-colors">
-                                                        Klik untuk upload atau drag file
-                                                    </p>
-                                                    <p className="text-xs text-gray-400 mt-2">
-                                                        Dukungan file: PDF, DOC, DOCX
+                                                    <p className="text-xs font-semibold text-gray-600 group-hover:text-violet-700 transition-colors">
+                                                        Klik atau drag file ke sini
                                                     </p>
                                                     <input
                                                         ref={fileInputRef}
@@ -351,26 +343,26 @@ export function AssignmentDetailPage() {
                                     )}
 
                                     {/* Notes Field */}
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Catatan Tambahan</Label>
+                                    <div className="space-y-1.5">
+                                        <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider ml-0.5">Catatan (Opsional)</Label>
                                         <Textarea
-                                            placeholder="Tuliskan pesan untuk instruktur..."
+                                            placeholder="Tulis pesan untuk instruktur..."
                                             value={catatan}
                                             onChange={(e) => setCatatan(e.target.value)}
                                             disabled={isWaitingForGrade && !file}
-                                            className="rounded-xl border-gray-200 bg-gray-50/50 min-h-[100px] focus:ring-violet-500/20 focus:border-violet-500 transition-all resize-none"
+                                            className="rounded-xl border-gray-200 bg-gray-50 text-xs min-h-[80px] focus:ring-violet-500/20 focus:border-violet-500 resize-none placeholder:text-gray-400"
                                         />
                                     </div>
 
                                     <Button
-                                        className="w-full rounded-xl h-12 font-bold bg-gray-900 text-white hover:bg-black shadow-lg shadow-gray-200 disabled:opacity-50 disabled:shadow-none"
+                                        className="w-full rounded-xl h-10 text-xs font-bold bg-gray-900 text-white hover:bg-black shadow-lg shadow-gray-200 disabled:opacity-50 disabled:shadow-none"
                                         onClick={handleSubmit}
                                         disabled={submitMutation.isPending || (isWaitingForGrade && !file)}
                                     >
                                         {submitMutation.isPending ? (
                                             <span className="flex items-center gap-2">
-                                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                Mengunggah...
+                                                <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                Loading...
                                             </span>
                                         ) : needsRevision ? (
                                             'Kirim Revisi'

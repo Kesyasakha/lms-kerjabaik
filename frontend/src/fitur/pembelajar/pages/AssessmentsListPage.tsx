@@ -10,7 +10,9 @@ import {
     Timer1,
     ClipboardText,
     Chart,
-    TrendUp
+    TrendUp,
+    Sort,
+    Filter
 } from 'iconsax-react';
 import { Search } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,6 +24,13 @@ import { Input } from '@/komponen/ui/input';
 import { Button } from '@/komponen/ui/button';
 import { Badge } from '@/komponen/ui/badge';
 import { Skeleton } from '@/komponen/ui/skeleton';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/komponen/ui/select";
 import {
     useEnrollments,
     useAssessments,
@@ -64,6 +73,7 @@ export function AssessmentsListPage() {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('exams');
+    const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
     // Get unique course IDs from enrollments for filtering
     const enrolledCourseIds = enrollments?.map(e => e.id_kursus) || [];
@@ -75,7 +85,11 @@ export function AssessmentsListPage() {
     ).filter(a =>
         a.judul.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (a.deskripsi && a.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    ).sort((a, b) => {
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    });
 
     // Filter Tugas Proyek (Tasks/Assignments)
     const filteredAssignments = assignmentsList?.filter(a =>
@@ -83,7 +97,11 @@ export function AssessmentsListPage() {
     ).filter(a =>
         a.judul.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (a.asesmen?.kursus?.judul && a.asesmen.kursus.judul.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    ).sort((a, b) => {
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    });
 
     const pendingAssignments = filteredAssignments?.filter(
         a => !a.pengumpulan_tugas || a.pengumpulan_tugas.status === 'perlu_revisi'
@@ -99,7 +117,7 @@ export function AssessmentsListPage() {
         }).length || 0
     };
 
-    const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
+    const AssessmentCard = ({ assessment, courseName }: { assessment: Assessment, courseName?: string }) => {
         const attempts = allAttempts?.filter(a => a.id_asesmen === assessment.id) || [];
         const bestScore = attempts.reduce((max, attempt) => Math.max(max, attempt.nilai || 0), 0) || 0;
         const totalAttempts = attempts.length || 0;
@@ -133,6 +151,12 @@ export function AssessmentsListPage() {
                     <p className="text-xs text-gray-500 line-clamp-1">{assessment.deskripsi || "Tidak ada deskripsi tersedia."}</p>
 
                     <div className="flex flex-wrap items-center gap-4 mt-3">
+                         {/* Course Label Added Here */}
+                        <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-md border border-gray-100">
+                             <InfoCircle size={14} variant="Bulk" className="text-gray-400" />
+                             <span className="truncate max-w-[200px]">Kursus: {courseName || '-'}</span>
+                        </div>
+
                         <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400">
                             <Timer1 size={14} variant="Bulk" className="text-gray-300" />
                             <span>{assessment.durasi_menit} Menit</span>
@@ -198,7 +222,7 @@ export function AssessmentsListPage() {
             animate="show"
             className="space-y-8 pb-10"
         >
-            {/* Header & Search */}
+            {/* Header, Search & Filter */}
             <motion.div variants={item} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div>
                     <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-white dark:to-gray-400">Pusat Asesmen</h1>
@@ -207,14 +231,29 @@ export function AssessmentsListPage() {
                     </p>
                 </div>
 
-                <div className="relative group w-full lg:w-80">
-                    <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
-                    <Input
-                        placeholder="Cari asesmen atau tugas..."
-                        className="pl-10 h-10 text-xs bg-white border-gray-200 rounded-xl focus-visible:ring-primary/10 hover:border-violet-200 transition-all shadow-sm shadow-gray-100/50"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                    <div className="relative group w-full lg:w-80">
+                        <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
+                        <Input
+                            placeholder="Cari asesmen atau tugas..."
+                            className="pl-10 h-10 text-xs bg-white border-gray-200 rounded-xl focus-visible:ring-primary/10 hover:border-violet-200 transition-all shadow-sm shadow-gray-100/50"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    
+                    <Select value={sortOrder} onValueChange={(value: 'newest' | 'oldest') => setSortOrder(value)}>
+                        <SelectTrigger className="w-full sm:w-[140px] h-10 rounded-xl text-xs font-medium bg-white border-gray-200 hover:border-violet-200 transition-all shadow-sm shadow-gray-100/50">
+                            <div className="flex items-center gap-2">
+                                <Sort size={16} className="text-gray-500" />
+                                <SelectValue placeholder="Urutkan" />
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border-gray-100 shadow-xl shadow-gray-200/50">
+                            <SelectItem value="newest" className="text-xs font-medium focus:bg-gray-50 focus:text-primary cursor-pointer">Terbaru</SelectItem>
+                            <SelectItem value="oldest" className="text-xs font-medium focus:bg-gray-50 focus:text-primary cursor-pointer">Terlama</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </motion.div>
 
@@ -332,9 +371,16 @@ export function AssessmentsListPage() {
                                             </div>
                                         ))
                                     ) : quizzesAndExams && quizzesAndExams.length > 0 ? (
-                                        quizzesAndExams.map((assessment) => (
-                                            <AssessmentCard key={assessment.id} assessment={assessment} />
-                                        ))
+                                        quizzesAndExams.map((assessment) => {
+                                             const course = enrollments?.find(e => e.id_kursus === assessment.id_kursus)?.kursus;
+                                             return (
+                                                <AssessmentCard 
+                                                    key={assessment.id} 
+                                                    assessment={assessment} 
+                                                    courseName={course?.judul}
+                                                />
+                                            );
+                                        })
                                     ) : (
                                         <EmptyState message="Belum ada kuis atau ujian yang tersedia untuk Anda." />
                                     )}
@@ -391,13 +437,16 @@ export function AssessmentsListPage() {
                                                         <p className="text-xs text-gray-500 line-clamp-1">{assignment.deskripsi || "Tidak ada deskripsi tersedia."}</p>
 
                                                         <div className="flex flex-wrap items-center gap-4 mt-3">
+                                                            
+                                                             {/* Course Label Added Here */}
+                                                            <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-md border border-gray-100">
+                                                                <InfoCircle size={14} variant="Bulk" className="text-gray-400" />
+                                                                <span className="truncate max-w-[200px]">Kursus: {assignment.asesmen?.kursus?.judul || '-'}</span>
+                                                            </div>
+
                                                             <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400">
                                                                 <Timer1 size={14} variant="Bulk" className="text-gray-300" />
                                                                 <span>Tenggat: {assignment.deadline ? format(new Date(assignment.deadline), 'd MMM yyyy', { locale: localeId }) : '-'}</span>
-                                                            </div>
-                                                            <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400">
-                                                                <InfoCircle size={14} variant="Bulk" className="text-gray-300" />
-                                                                <span>Kursus: {assignment.asesmen?.kursus?.judul || '-'}</span>
                                                             </div>
                                                             {status === 'dinilai' && (
                                                                 <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400">
